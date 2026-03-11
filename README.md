@@ -3,14 +3,15 @@
 This thesis employs a Regression Discontinuity Design (RDD) to investigate whether LLM training cutoffs (specifically GPT-3.5/4's) create an adoption barrier for new Python libraries. Using a high-frequency panel of PyPI downloads and GitHub usage, we test if libraries present in the model's pre-training data diffuse more widely than those released shortly after the cutoff.
 
 ### Headline Findings
-- **No "Knowledge Wall":** We find no evidence that exclusion from LLM training data hinders the diffusion of new libraries; broad adoption remains resilient to training cutoffs.
-- **"Freshness Premium":** Among successful libraries, those released *after* the cutoff exhibit a statistically significant adoption advantage, contradicting the "collective narrowing" hypothesis.
-- **Seasonality Dominance:** Apparent adoption "dips" in 2021 are primarily driven by recurring seasonal cycles ("September Effect"), as identified through multi-year placebo cutoffs and Diff-in-RDD.
+- **No Robust "Knowledge Wall":** We find no evidence of a broad post-cutoff adoption penalty in the 2021 main sample; adoption remains resilient to LLM training cutoffs.
+- **2021 in Context:** The 2021 effect is not unusually negative when compared to placebo years and random-Monday permutation tests, suggesting the observed discontinuity is indistinguishable from background noise.
+- **Seasonality Caution:** Apparent adoption "dips" in 2021 likely reflect recurring seasonal cycles. While Diff-in-RDD against 2020 points toward this, it is treated as a secondary robustness check due to the limited seasonal baseline.
+- **Conditional "Freshness Premium":** A possible post-cutoff adoption advantage appears among successful libraries under the primary `rdrobust` specification, but this finding is sensitive to the choice of estimator (e.g., clustered WLS).
 
 ### 📍 Read This First
 - **[memos/memo_01.md](memos/memo_01.md)**: The definitive guide to the technical evolution, placebo discovery, and final empirical findings.
 - **[results/estimation_results.csv](results/estimation_results.csv)**: Main RD coefficients and standard errors (Tables 2–4).
-- **[results/diff_in_rdd_summary.txt](results/diff_in_rdd_summary.txt)**: Summary of the Difference-in-RDD analysis (Table 5).
+- **[results/diff_in_rdd_summary.txt](results/diff_in_rdd_summary.txt)**: Robustness check via Difference-in-RDD (Table 5).
 
 ## Project Structure
 
@@ -27,7 +28,7 @@ This thesis employs a Regression Discontinuity Design (RDD) to investigate wheth
   - `05_estimation.py`: Main RD estimation.
   - `06_robustness.py`: Bandwidth and donut-hole sensitivity.
   - `07_multi_cutoff_comparison.py`: Cross-year coefficient comparison.
-  - `08_diff_in_rdd.py`: Primary Difference-in-RDD analysis.
+  - `08_diff_in_rdd.py`: Secondary Difference-in-RDD analysis for seasonality robustness.
 
 ### Appendix & Utilities
   - `09_permutation_inference.py`: Non-parametric distribution of placebos.
