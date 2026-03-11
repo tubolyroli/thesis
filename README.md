@@ -1,6 +1,6 @@
-# Thesis: Generative AI and Creative Problem Solving in Software
+# Do LLMs know about new things?
 
-This thesis employs a Regression Discontinuity Design (RDD) to investigate whether LLM training cutoffs (e.g., GPT-3.5/4) create an adoption barrier for new Python libraries. Using a high-frequency panel of PyPI downloads and GitHub usage, we test if libraries present in the model's pre-training data diffuse more widely than those released shortly after the cutoff.
+This thesis employs a Regression Discontinuity Design (RDD) to investigate whether LLM training cutoffs (specifically GPT-3.5/4's) create an adoption barrier for new Python libraries. Using a high-frequency panel of PyPI downloads and GitHub usage, we test if libraries present in the model's pre-training data diffuse more widely than those released shortly after the cutoff.
 
 ### Headline Findings
 - **No "Knowledge Wall":** We find no evidence that exclusion from LLM training data hinders the diffusion of new libraries; broad adoption remains resilient to training cutoffs.
