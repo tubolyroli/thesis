@@ -148,3 +148,47 @@ def run_rdrobust_est(df: pd.DataFrame, outcome_col: str, h: float = None, donut_
         # Check if error is 'P>|t|' (key error)
         print(f"Error in rdrobust: {e}")
         return {"Label": label, "Outcome": outcome_col, "Estimate": np.nan, "Std.Err": np.nan, "P-value": np.nan, "N": 0, "BW": h, "Donut": "Yes" if donut_weeks else "No", "Method": "rdrobust"}
+
+def run_quantile_rdd(df: pd.DataFrame, outcome_col: str, q: float = 0.5, h: float = None, donut_weeks: list = None, label: str = ""):
+    """
+    Implements a Quantile RDD using Quantile Regression (QuantReg).
+    Default q=0.5 (Median RDD).
+    Specification: Y ~ alpha + beta*Treated + gamma1*Dist + gamma2*Dist*Treated
+    By default uses raw Y to provide a robust-to-outliers level estimate.
+    """
+    sub = df.copy()
+    
+    # 1. Apply Donut
+    if donut_weeks:
+        sub = sub[~sub["dist_to_cutoff"].isin(donut_weeks)]
+    
+    # 2. Restrict to bandwidth h
+    sub = sub[(sub["dist_to_cutoff"] >= -h) & (sub["dist_to_cutoff"] <= h)].copy()
+    
+    # Drop NAs in outcome
+    sub = sub.dropna(subset=[outcome_col])
+    
+    if len(sub) < 20: # Quantile regression needs more points
+        return {"Label": label, "Outcome": outcome_col, "Estimate": np.nan, "Std.Err": np.nan, "P-value": np.nan, "N": len(sub), "BW": h, "Donut": "Yes" if donut_weeks else "No", "Method": f"QuantReg({q})"}
+
+    # 3. Construct variables
+    sub["y"] = sub[outcome_col]
+    sub["x"] = sub["dist_to_cutoff"]
+    sub["treated"] = (sub["x"] >= 0).astype(int)
+    sub["x_treated"] = sub["x"] * sub["treated"]
+    
+    # 4. Estimation (Unweighted within bandwidth for standard QuantReg)
+    try:
+        model = smf.quantreg("y ~ treated + x + x_treated", data=sub).fit(q=q)
+        return {
+            "Label": label,
+            "Outcome": outcome_col,
+            "Estimate": model.params["treated"],
+            "Std.Err": model.bse["treated"],
+            "P-value": model.pvalues["treated"],
+            "N": int(model.nobs),
+            "BW": h, "Donut": "Yes" if donut_weeks else "No", "Method": f"QuantReg({q})"
+        }
+    except Exception as e:
+        print(f"Error in QuantReg: {e}")
+        return {"Label": label, "Outcome": outcome_col, "Estimate": np.nan, "Std.Err": np.nan, "P-value": np.nan, "N": 0, "BW": h, "Donut": "Yes" if donut_weeks else "No", "Method": f"QuantReg({q})"}

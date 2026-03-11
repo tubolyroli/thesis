@@ -1,49 +1,63 @@
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
-from config import MAIN_ANALYSIS_DATA, FIGURES_DIR, DONUT_WEEKS
-from utils import run_local_linear_rdd, setup_plotting_style
+import seaborn as sns
+from config import MAIN_ANALYSIS_DATA, RESULTS_DIR, FIGURES_DIR, DONUT_WEEKS
+from utils import run_local_linear_rdd, setup_plotting_style, run_quantile_rdd
+
+def run_bandwidth_sensitivity_median():
+    """Tests the stability of the Median RDD result across different bandwidths."""
+    if not MAIN_ANALYSIS_DATA.exists(): return
+    
+    df = pd.read_csv(MAIN_ANALYSIS_DATA)
+    df_min10 = df[df["total_downloads_52wk"] >= 10].copy()
+    
+    bandwidths = [12, 16, 20, 26, 30, 40, 52]
+    results = []
+    
+    print("Running Bandwidth Sensitivity for Median RDD...")
+    for h in bandwidths:
+        res = run_quantile_rdd(df_min10, "total_downloads_52wk", q=0.5, h=h, donut_weeks=DONUT_WEEKS, label=f"h={h}")
+        results.append(res)
+        
+    res_df = pd.DataFrame(results)
+    setup_plotting_style()
+    plt.figure(figsize=(10, 6))
+    plt.errorbar(res_df["BW"], res_df["Estimate"], yerr=res_df["Std.Err"]*1.96, fmt='o-', capsize=5)
+    plt.axhline(0, color='red', linestyle='--')
+    plt.title("Median RDD (q=0.5): Bandwidth Sensitivity")
+    plt.xlabel("Bandwidth (Weeks)")
+    plt.ylabel("Estimated Discontinuity (Downloads)")
+    
+    out_path = FIGURES_DIR / "median_rdd_bandwidth_sensitivity.png"
+    plt.savefig(out_path, dpi=300)
+    print(f"Saved Median RDD sensitivity plot to: {out_path}")
+
+def run_placebo_cutoffs_median():
+    """Tests Median RDD on placebo cutoff dates."""
+    if not MAIN_ANALYSIS_DATA.exists(): return
+    
+    df = pd.read_csv(MAIN_ANALYSIS_DATA)
+    df_min10 = df[df["total_downloads_52wk"] >= 10].copy()
+    
+    # Simple shift placebos
+    shifts = [-20, -15, -10, 10, 15, 20]
+    results = []
+    
+    print("Running Placebo Cutoff Tests for Median RDD...")
+    for s in shifts:
+        df_p = df_min10.copy()
+        df_p["dist_to_cutoff"] = df_p["dist_to_cutoff"] - s
+        res = run_quantile_rdd(df_p, "total_downloads_52wk", q=0.5, h=26, donut_weeks=DONUT_WEEKS, label=f"Shift: {s}")
+        results.append(res)
+        
+    print("\nMedian RDD Placebo Results:")
+    print(pd.DataFrame(results)[["Label", "Estimate", "Std.Err", "P-value"]].to_string(index=False))
 
 def main():
-    setup_plotting_style()
     FIGURES_DIR.mkdir(parents=True, exist_ok=True)
-    
-    if not MAIN_ANALYSIS_DATA.exists():
-        return
-
-    df = pd.read_csv(MAIN_ANALYSIS_DATA)
-    outcome = "total_downloads_52wk"
-    
-    # 1. Bandwidth Sensitivity
-    print("Running Bandwidth Sensitivity Test...")
-    bw_results = []
-    for h in range(10, 53, 2):
-        res = run_local_linear_rdd(df, outcome, h=h, donut_weeks=DONUT_WEEKS, cluster_col="dist_to_cutoff")
-        bw_results.append(res)
-        
-    bw_df = pd.DataFrame(bw_results)
-    
-    plt.figure()
-    plt.axhline(0, color='red', linestyle='--')
-    plt.errorbar(bw_df["BW"], bw_df["Estimate"], yerr=1.96*bw_df["Std.Err"], fmt='o', color='steelblue', capsize=5)
-    plt.title(f"Bandwidth Sensitivity: {outcome}")
-    plt.xlabel("Bandwidth (Weeks)")
-    plt.ylabel("RDD Estimate")
-    plt.savefig(FIGURES_DIR / "robustness_bw_sensitivity.png")
-    plt.close()
-    
-    # 2. Placebo Cutoffs (Shift within window)
-    print("Running Placebo Cutoff Tests (±10 weeks)...")
-    placebos = [-10, -5, 5, 10]
-    placebo_results = []
-    
-    for p in placebos:
-        df_p = df.copy()
-        df_p["dist_to_cutoff"] = df_p["dist_to_cutoff"] - p
-        res = run_local_linear_rdd(df_p, outcome, h=26, donut_weeks=None, label=f"Shift: {p}")
-        placebo_results.append(res)
-        
-    print("\nPlacebo Results:")
-    print(pd.DataFrame(placebo_results).round(4).to_string(index=False))
+    run_bandwidth_sensitivity_median()
+    run_placebo_cutoffs_median()
 
 if __name__ == "__main__":
     main()

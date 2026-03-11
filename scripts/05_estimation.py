@@ -1,6 +1,6 @@
 import pandas as pd
 from config import MAIN_ANALYSIS_DATA, RESULTS_DIR, DONUT_WEEKS
-from utils import run_local_linear_rdd, run_rdrobust_est
+from utils import run_local_linear_rdd, run_rdrobust_est, run_quantile_rdd
 
 def main():
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
@@ -9,42 +9,41 @@ def main():
         return
 
     df_full = pd.read_csv(MAIN_ANALYSIS_DATA)
+    df_min10 = df_full[df_full["total_downloads_52wk"] >= 10].copy()
     results = []
     
-    # 1. Main Outcome (Downloads) across Sample Thresholds
-    print("Running Table 2: Main RD estimates (Downloads) across sample thresholds...")
-    thresholds = {"Full": 0, "min10": 10, "min100": 100}
-    
-    for label, thresh in thresholds.items():
-        sub = df_full[df_full["total_downloads_52wk"] >= thresh].copy()
-        # Primary: rdrobust
-        results.append(run_rdrobust_est(sub, "total_downloads_52wk", h=26, donut_weeks=DONUT_WEEKS, label=f"Table 2: {label} (rdrobust)"))
-        # Sensitivity: WLS + HC1
-        results.append(run_local_linear_rdd(sub, "total_downloads_52wk", h=26, donut_weeks=DONUT_WEEKS, label=f"Table 3: {label} (WLS HC1)"))
-        # Sensitivity: WLS + Week Clustered
-        results.append(run_local_linear_rdd(sub, "total_downloads_52wk", h=26, donut_weeks=DONUT_WEEKS, label=f"Table 3: {label} (WLS Clustered)", cluster_col="dist_to_cutoff"))
+    # 1. Horizon Analysis (Catch-up check)
+    print("Running Horizon Analysis (Catch-up check)...")
+    horizons = [12, 26, 52]
+    for h_weeks in horizons:
+        outcome = f"cum_downloads_{h_weeks}wk"
+        results.append(run_rdrobust_est(df_min10, outcome, h=26, donut_weeks=DONUT_WEEKS, label=f"Horizon: {h_weeks}w Downloads"))
 
-    # 2. GitHub Margin Splits (Table 4)
-    print("Running Table 4: GitHub Margins...")
-    # Use min10 sample for GitHub outcomes as base
+    # 2. Distributional Analysis (Quantile RDD)
+    print("Running Distributional Analysis (Quantile RDD)...")
+    quantiles = [0.25, 0.5, 0.75, 0.90]
+    for q in quantiles:
+        results.append(run_quantile_rdd(df_min10, "total_downloads_52wk", q=q, h=26, donut_weeks=DONUT_WEEKS, label=f"Quantile: {q}"))
+
+    # 3. GitHub Margin Splits
+    print("Running GitHub Margins...")
     df_gh = df_full[df_full["total_downloads_52wk"] >= 10].copy()
+    results.append(run_rdrobust_est(df_gh, "matched_to_github", h=26, donut_weeks=DONUT_WEEKS, label="GitHub: Match Probability"))
     
-    # Extensive margin 1: Match Probability
-    results.append(run_rdrobust_est(df_gh, "matched_to_github", h=26, donut_weeks=DONUT_WEEKS, label="Table 4: Matched to GitHub"))
-    
-    # Intensive margin: Log Imports (Conditional on match)
     df_matched = df_gh[df_gh["matched_to_github"] == 1].copy()
-    results.append(run_rdrobust_est(df_matched, "cum_imports_52wk", h=26, donut_weeks=DONUT_WEEKS, label="Table 4: Log Imports (Cond)"))
+    for h_weeks in horizons:
+        outcome = f"cum_imports_{h_weeks}wk"
+        results.append(run_rdrobust_est(df_matched, outcome, h=26, donut_weeks=DONUT_WEEKS, label=f"GitHub: {h_weeks}w Log Imports (Cond)"))
 
     # Compile and Save
     results_df = pd.DataFrame(results)
-    results_df.to_csv(RESULTS_DIR / "estimation_results.csv", index=False)
+    results_df.to_csv(RESULTS_DIR / "estimation_results_final.csv", index=False)
     
     print("\n=========================================")
-    print("      REVISED RDD ESTIMATION RESULTS     ")
+    print("      FINAL RDD ESTIMATION RESULTS       ")
     print("=========================================\n")
     print(results_df[["Label", "Outcome", "Estimate", "Std.Err", "P-value", "Method", "N"]].round(4).to_string(index=False))
-    print(f"\nSaved results to: {RESULTS_DIR / 'estimation_results.csv'}")
+    print(f"\nSaved final results to: {RESULTS_DIR / 'estimation_results_final.csv'}")
 
 if __name__ == "__main__":
     main()
