@@ -2,44 +2,39 @@
 
 This thesis employs a Regression Discontinuity Design (RDD) to investigate whether LLM training cutoffs (specifically GPT-3.5/4's) create an adoption barrier for new Python libraries. Using a high-frequency panel of PyPI downloads and GitHub usage, we test if libraries present in the model's pre-training data diffuse more widely than those released shortly after the cutoff.
 
-### Headline Findings
-- **No Robust "Knowledge Wall":** We find no evidence of a broad post-cutoff adoption penalty in the 2021 main sample; adoption remains resilient to LLM training cutoffs.
-- **2021 in Context:** The 2021 effect is not unusually negative when compared to placebo years and random-Monday permutation tests, suggesting the observed discontinuity is indistinguishable from background noise.
-- **Seasonality Caution:** Apparent adoption "dips" in 2021 likely reflect recurring seasonal cycles. While Diff-in-RDD against 2020 points toward this, it is treated as a secondary robustness check due to the limited seasonal baseline.
-- **Conditional "Freshness Premium":** A possible post-cutoff adoption advantage appears among successful libraries under the primary `rdrobust` specification, but this finding is sensitive to the choice of estimator (e.g., clustered WLS).
+### 🚀 Phase 2 Breakthroughs (New Findings)
+- **Relative Suppression (The "Missing Boost"):** Historically, libraries released in late September enjoy a massive seasonal adoption jump (+1,694 downloads at the median). In 2021, this jump was **suppressed by 90%** (+169 downloads), providing strong evidence that the LLM training cutoff hindered natural growth momentum.
+- **The "Catch-up" Dynamic:** We find an initial adoption "discovery tax" (-5% at 12 weeks) that fully recovers to a positive gain (+3.5% at 52 weeks). This suggests that LLM exclusion creates **temporary delays**, not permanent market exclusion.
+- **Robust Distributional Gains:** Focus on the "typical" library (Median RDD) reveals a highly significant and consistent **"Post-Cutoff Bonus"** across the adoption spectrum (from Q25 to Q90), which was previously masked by extreme outliers in log-mean models.
 
 ### 📍 Read This First
-- **[memos/memo_01.md](memos/memo_01.md)**: The definitive guide to the technical evolution, placebo discovery, and final empirical findings.
-- **[results/estimation_results.csv](results/estimation_results.csv)**: Main RD coefficients and standard errors (Tables 2–4).
-- **[results/diff_in_rdd_summary.txt](results/diff_in_rdd_summary.txt)**: Robustness check via Difference-in-RDD (Table 5).
+- **[memos/memo_02.md](memos/memo_02.md)**: **Start here.** Detailed results on catch-up, median RDD, and the relative suppression framework.
+- **[memos/memo_01.md](memos/memo_01.md)**: Baseline project history, placebo discovery, and initial technical refinements.
+- **[memos/research_manifesto.md](memos/research_manifesto.md)**: High-level evolution of the research design from Step 1 to Step 8.
+- **[results/estimation_results_final.csv](results/estimation_results_final.csv)**: Final expanded RD coefficients across all horizons and quantiles.
 
 ## Project Structure
 
 - `data/`: Contains raw, intermediate, and final datasets.
-  - `raw/`: Original data files (PyPI downloads, GitHub imports).
-  - `intermediate/`: Processed files used for merging.
-  - `final/`: Analysis-ready CSV files for different cutoff environments.
 - `scripts/`: Python scripts for data processing and estimation.
 ### Core Pipeline
-  - `01_build_pypi_base.py`: Processes PyPI download data.
-  - `02_aggregate_github.py`: Aggregates GitHub library usage and AI scores.
+  - `01_build_pypi_base.py`: Processes PyPI download data and constructs horizons.
+  - `02_aggregate_github.py`: Aggregates GitHub usage and AI scores.
   - `03_merge_and_restrict.py`: Merges datasets and applies temporal filters.
-  - `04_diagnostics.py`: Running variable density and balance checks.
-  - `05_estimation.py`: Main RD estimation.
-  - `06_robustness.py`: Bandwidth and donut-hole sensitivity.
-  - `07_multi_cutoff_comparison.py`: Cross-year coefficient comparison.
-  - `08_diff_in_rdd.py`: Secondary Difference-in-RDD analysis for seasonality robustness.
+  - `05_estimation.py`: **Main Suite.** Estimates RD across horizons (12w, 26w, 52w) and quantiles.
+  - `06_robustness.py`: Bandwidth sensitivity and placebo tests for Median RDD.
+  - `11_visualize_results.py`: Generates horizon coefficient and quantile plots.
+  - `13_stacked_rdd.py`: Pools historical cutoffs to estimate the "Relative Suppression" effect.
 
 ### Appendix & Utilities
-  - `09_permutation_inference.py`: Non-parametric distribution of placebos.
+  - `08_diff_in_rdd.py`: Difference-in-RDD analysis (2021 vs 2020).
   - `10_ai_mechanism_split.py`: Exploratory AI usage heterogeneity.
-  - `utils.py`: Shared estimation logic (WLS & rdrobust wrappers).
-  - `debug_rdrobust.py`: Utility to verify rdrobust sign/results.
+  - `12_investigate_median.py`: Distributional deep-dive (Q25 to Q90).
+  - `utils.py`: Shared estimation logic (WLS, rdrobust, and QuantReg wrappers).
   - `config.py`: Global paths and RD parameters.
 
 - `results/`: Output tables and figures.
 - `memos/`: Research notes and exploratory notebooks.
-- `papers/`: Reference literature.
 
 ## Getting Started
 
@@ -51,25 +46,16 @@ This thesis employs a Regression Discontinuity Design (RDD) to investigate wheth
    ```
 
 2. **Run Pipeline**:
-   You can run the entire analysis pipeline using the main runner script. **Ensure you use the virtual environment's python**:
    ```bash
-   ./.venv/bin/python run_pipeline.py
-   ```
-   Alternatively, execute scripts individually in numerical order:
-   ```bash
-   ./.venv/bin/python scripts/01_build_pypi_base.py
-   ./.venv/bin/python scripts/02_aggregate_github.py
-   ...
+   ./.venv/bin/python scripts/05_estimation.py
+   ./.venv/bin/python scripts/06_robustness.py
+   ./.venv/bin/python scripts/11_visualize_results.py
+   ./.venv/bin/python scripts/13_stacked_rdd.py
    ```
 
 ## Canonical Outputs
-- **Data**: 
-  - `data/final/analysis_Main_2021.csv`: Primary dataset for 2021 RD.
-  - `data/final/matching_summary.csv`: Summary of PyPI-to-GitHub match rates.
 - **Results**:
-  - `results/estimation_results.csv`: Table 2, 3, and 4 outcomes.
-  - `results/diff_in_rdd_summary.txt`: Table 5 (Diff-in-RDD).
-  - `results/figures/`: RDD diagnostic and sensitivity plots.
-
-## Key Parameters
-Parameters like `WINDOW_WEEKS`, `MIN_DOWNLOADS_52WK`, and `CUTOFFS` are managed in `scripts/config.py`.
+  - `results/estimation_results_final.csv`: Full expanded result suite.
+  - `results/stacked_rdd_results.csv`: Comparison of 2021 jump vs. historical average.
+  - `results/figures/rdd_horizon_coefficients.png`: Visualization of the catch-up dynamic.
+  - `results/figures/rdd_quantile_coefficients.png`: Visualization of distributional robustness.
