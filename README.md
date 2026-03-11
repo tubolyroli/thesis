@@ -1,6 +1,16 @@
 # Thesis: Generative AI and Creative Problem Solving in Software
 
-This project analyzes the impact of Generative AI on the adoption and usage of software libraries using a Regression Discontinuity (RD) design.
+This thesis employs a Regression Discontinuity Design (RDD) to investigate whether LLM training cutoffs (e.g., GPT-3.5/4) create an adoption barrier for new Python libraries. Using a high-frequency panel of PyPI downloads and GitHub usage, we test if libraries present in the model's pre-training data diffuse more widely than those released shortly after the cutoff.
+
+### Headline Findings
+- **No "Knowledge Wall":** We find no evidence that exclusion from LLM training data hinders the diffusion of new libraries; broad adoption remains resilient to training cutoffs.
+- **"Freshness Premium":** Among successful libraries, those released *after* the cutoff exhibit a statistically significant adoption advantage, contradicting the "collective narrowing" hypothesis.
+- **Seasonality Dominance:** Apparent adoption "dips" in 2021 are primarily driven by recurring seasonal cycles ("September Effect"), as identified through multi-year placebo cutoffs and Diff-in-RDD.
+
+### 📍 Read This First
+- **[memos/memo_01.md](memos/memo_01.md)**: The definitive guide to the technical evolution, placebo discovery, and final empirical findings.
+- **[results/estimation_results.csv](results/estimation_results.csv)**: Main RD coefficients and standard errors (Tables 2–4).
+- **[results/diff_in_rdd_summary.txt](results/diff_in_rdd_summary.txt)**: Summary of the Difference-in-RDD analysis (Table 5).
 
 ## Project Structure
 
