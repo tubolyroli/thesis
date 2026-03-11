@@ -1,0 +1,46 @@
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual Environments
+.venv/
+env/
+venv/
+ENV/
+bin/
+lib/
+share/
+
+# IDE and OS-specific files
+.vscode/
+.idea/
+.DS_Store
+.history/
+
+# Data Files (Reproducible by scripts)
+data/raw/
+data/intermediate/
+data/final/
+*.parquet
+*.csv
+!scripts/*.csv
+!results/estimation_results.csv # Keep main result if small
+
+# Results (Reproducible plots and summaries)
+results/figures/
+results/*.csv
+results/*.txt
+results/*.png
+
+# Documents and Temporary Files
+~$*.docx
+*.pdf
+!SDS_Thesis_Proposal_Roland_Tuboly.pdf # Keep proposal
+konzi.docx
+literature.xlsx
+master_prompt.docx
+
+# Logs
+*.log
