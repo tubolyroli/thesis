@@ -35,18 +35,18 @@ Does the "static" nature of LLM training data (fixed cutoffs) create an adoption
 
 ### Step 4: The Discovery of the "Toy Package" Noise
 *   **Action:** Observed high variance in the full sample. Introduced the `min100` download threshold.
-*   **Finding:** Most Python libraries are "dead on arrival" (zero or near-zero downloads). The real economic action is among libraries that reach a baseline of success.
-*   **Result:** The `min100` sample revealed a **positive "Freshness Premium"** ($\beta \approx 0.16$), suggesting successful new tools actually outperform older ones, even without LLM training inclusion.
+*   **Finding:** Most Python libraries are "dead on arrival" (zero or near-zero downloads). The real action is among libraries that reach a baseline of success.
+*   **Result:** In some specifications, the `min100` sample revealed a **positive "Freshness Premium"**, though this finding is sensitive to the choice of estimator.
 
 ### Step 5: The "September Effect" Pivot (Placebo Testing)
 *   **Action:** Ran RDDs on "Placebo Cutoffs" (Sept 2018, 2019, 2020).
 *   **Finding:** A significant adoption "dip" occurs every September, regardless of LLM training dates.
-*   **Logic:** This shifted the narrative from "LLM exclusion" to "Seasonality." We cannot attribute the 2021 drop to AI if it happens every year.
+*   **Logic:** This shifted the narrative from "LLM exclusion" to "Seasonality." We cannot easily attribute the 2021 drop to AI if it happens every year.
 
 ### Step 6: Permutation & Diff-in-RDD
 *   **Action:** Ran 366 random "Monday Cutoffs" across 7 years to build a distribution of "natural" adoption jumps.
-*   **Finding:** The 2021 discontinuity is indistinguishable from background noise ($p = 0.60$).
-*   **Action:** Implemented **Difference-in-RDD** ($RD_{2021} - RD_{2020}$) to net out the seasonal effect.
+*   **Finding:** The 2021 discontinuity is indistinguishable from background noise in the permutation distribution ($p = 0.60$).
+*   **Action:** Implemented **Difference-in-RDD** ($RD_{2021} - RD_{2020}$) as a secondary robustness check to net out the seasonal effect.
 
 ### Step 7: Mechanism Testing (AI vs. Human)
 *   **Action:** Used AI-exposure scores from GitHub commits to split the sample.
@@ -55,11 +55,11 @@ Does the "static" nature of LLM training data (fixed cutoffs) create an adoption
 
 ### Step 8: Longitudinal & Distributional Extensions
 *   **Action:** Analyzed horizons at 12, 26, and 52 weeks to test for **Catch-up Dynamics**.
-*   **Finding:** A small -5% dip at 12 weeks recovers to a +3.5% gain by 52 weeks, suggesting any LLM exclusion cost is temporary, but the results are insignificant.
-*   **Action:** Implemented **Quantile RDD** (Median) to address outlier concerns and measure level-based adoption jumps.
-*   **Finding:** A robust "Post-Cutoff Bonus" exists across the distribution (+169 at median, +1,653 at Q90).
-*   **Action:** Developed the **"Relative Suppression"** framework by stacking historical cutoffs (2018-2020).
-*   **Finding:** The 2021 adoption boost was **90% smaller** than the historical seasonal average, providing the strongest evidence of LLM-driven adoption suppression.
+*   **Finding:** A small -5% dip at 12 weeks recovers to a +3.5% gain by 52 weeks, but these results remain statistically insignificant.
+*   **Action:** Implemented **Quantile RDD** (Median) to address outlier concerns.
+*   **Finding:** A "Post-Cutoff Bonus" appears at the median, but this result is sensitive to the specific estimator and baseline.
+*   **Action:** Explored a **"Relative Suppression"** framework by stacking historical cutoffs (2018-2020).
+*   **Finding:** The 2021 adoption boost was smaller than the historical seasonal average, though this interpretation is sensitive to the choice of seasonal baseline.
 
 ---
 
@@ -71,21 +71,21 @@ The Local Average Treatment Effect (LATE) of being released *after* a documented
 ### Identifying Assumptions
 1.  **Continuity:** All other factors affecting adoption (besides the LLM cutoff) vary smoothly across the threshold.
 2.  **No Manipulation:** Library authors do not strategically time their releases based on anticipated LLM training dates.
-3.  **Parallel Discontinuities:** In the absence of an LLM effect, the 2021 seasonal jump should have matched the 2018-2020 historical average.
+3.  **Parallel Discontinuities:** In the absence of an LLM effect, the 2021 seasonal jump should have matched the historical average (a strong and potentially untestable assumption).
 
 ### Main Threats to Identification (and mitigations)
 1.  **Seasonality:** Addressed via Placebo Cutoffs and Diff-in-RDD.
-2.  **Release-Date Ambiguity:** Addressed via a **2-week Donut-Hole RDD** (excluding libraries released within 7 days of the cutoff).
+2.  **Release-Date Ambiguity:** Addressed via a **2-week Donut-Hole RDD**.
 3.  **Outliers:** Addressed via log-transformations, the `min100` success filter, and **Median RDD**.
 4.  **Measurement Error (Identity):** Current matching is based on exact/normalized name strings; sensitivity to renames, forks, and mirrors is an ongoing area of refinement.
 
 ---
 
 ## 4. Current Findings Summary
-1.  **Resilience:** The software ecosystem is remarkably resilient to LLM "knowledge gaps."
-2.  **No Knowledge Wall:** Broad adoption patterns are not significantly altered by exclusion from training data.
-3.  **Freshness Premium:** Among successful tools, "newness" is a stronger signal than "LLM-knowability."
-4.  **Seasonality Caution:** The most significant "dips" in adoption are driven by cyclic ecosystem behavior, not technical training artifacts.
+1.  **No Robust Knowledge Wall:** Broad adoption patterns in 2021 are not significantly altered by exclusion from training data under primary estimators (`rdrobust` p = 0.45).
+2.  **Seasonality Dominance:** Most significant "dips" in adoption are driven by cyclic ecosystem behavior, which complicates naive 2021 comparisons.
+3.  **Estimator Sensitivity:** Findings like the "Freshness Premium" or "Relative Suppression" are sensitive to the choice of estimator and seasonal baseline.
+4.  **Temporary Delay (Suggestive):** Longitudinal patterns suggest that any initial "tax" may be temporary, but the evidence is not yet robust.
 
 ---
 

@@ -7,7 +7,7 @@
 ---
 
 ## 1. Executive Summary
-Following the supervisor's feedback on long-run outcomes and outliers, we extended the RDD analysis to include **multiple time horizons** (12, 26, 52 weeks) and **quantile-based estimation** (Median RDD). These tests reveal that while the "average" log-mean effect is statistically noisy, there is a robust, significant, and evolving relationship between release timing and adoption.
+Following the supervisor's feedback on long-run outcomes and outliers, we extended the RDD analysis to include **multiple time horizons** (12, 26, 52 weeks) and **quantile-based estimation** (Median RDD). These tests suggest potential nuance in the adoption-cutoff relationship, though the "average" log-mean effect remains statistically noisy and null in primary specifications.
 
 ---
 
@@ -16,11 +16,11 @@ We tested whether the exclusion from LLM training data leads to a permanent excl
 
 | Horizon | RDD Estimate (Log Downloads) | P-value | Interpretation |
 | :--- | :--- | :--- | :--- |
-| **12 Weeks** | **-0.0501** | 0.344 | Initial ~5% adoption "tax" |
+| **12 Weeks** | **-0.0501** | 0.344 | Suggestive initial ~5% "tax" |
 | **26 Weeks** | **+0.0658** | 0.271 | Mid-year recovery |
 | **52 Weeks** | **+0.0350** | 0.589 | Long-run catch-up |
 
-**The "Dip-and-Recovery" Pattern:** The results show a sign-flip from negative to positive over the first year. This supports the **Catch-up Hypothesis**: while libraries released after the cutoff may face an initial "discovery tax" because they are unknown to the LLM, successful libraries are eventually able to overcome this through other ecosystem channels (word-of-mouth, documentation, or subsequent model updates).
+**The "Dip-and-Recovery" Pattern:** While the point estimates show a sign-flip from negative to positive over the first year, they remain statistically insignificant. This provides **suggestive but not conclusive** support for the **Catch-up Hypothesis**: if libraries face an initial "discovery tax," they may overcome it through other ecosystem channels within 52 weeks.
 
 ---
 
@@ -34,7 +34,7 @@ To address concerns that a few high-growth outliers were skewing the results, we
 | **Q75 (High)** | **+715.8** | **0.0001** | QuantReg (0.75) |
 | **Q90 (Superstar)** | **+1653.1** | **0.0075** | QuantReg (0.90) |
 
-**Finding:** There is a highly significant **"Post-Cutoff Bonus"** that persists across the entire adoption distribution. The typical library (median) released just after the cutoff sees ~169 more downloads in its first year than one released just before. This suggests that the "LLM advantage" is either non-existent or completely overwhelmed by a **"Freshness Premium"** in the level of adoption counts.
+**Finding:** In level-based Quantile RDDs, we observe a positive **"Post-Cutoff Bonus."** However, this finding is sensitive to the choice of estimator and does not necessarily imply an LLM-driven effect; it may reflect a broader "Freshness Premium" where newness is a positive signal for adopters, regardless of training inclusion.
 
 ---
 
@@ -43,21 +43,20 @@ To test if the 2021 result is simply a reflection of normal seasonality, we comp
 
 *   **Stacked Placebo Jump (Median):** **+1,694 downloads** (Historical Average)
 *   **Main 2021 Jump (Median):** **+169 downloads** (LLM Year)
-*   **The Gap:** In 2021, the natural seasonal adoption boost was **suppressed by 90%**.
 
-**Thesis Argument:** This is the "Smoking Gun" for an LLM effect. While late-September releases *ordinarily* enjoy a massive seasonal boost, this boost was decimated in 2021—exactly when the LLM training cutoff created a knowledge gap for those new releases. The cutoff did not create a "dip" from zero; it **suppressed the natural growth momentum** that new tools typically enjoy.
+**Thesis Argument:** While the 2021 jump is positive, it is significantly smaller than the historical seasonal average. This suggests a **"Relative Suppression"** story: the training cutoff may not have created a "dip" from zero, but it may have dampened the natural growth momentum that new tools typically enjoy in late September. However, this interpretation is sensitive to the choice of historical baseline and the parallel discontinuities assumption.
 
 ---
 
 ## 5. Mechanism Check: AI-Mediated Usage
-We split the sample into libraries with high vs. low AI-scored GitHub usage to see if the "Suppression" was stronger for AI-exposed tools.
+We split the sample into libraries with high vs. low AI-scored GitHub usage.
 
 *   **Finding:** The difference-in-discontinuities between High-AI and Low-AI groups was **+0.36 log points (p=0.49)**.
-*   **Interpretation:** The direction is consistent with the hypothesis (AI-heavy tools doing relatively better than non-AI tools at the cutoff), but the result is statistically noisy due to smaller sample sizes on GitHub.
+*   **Interpretation:** The result is statistically null. We do not find robust evidence that AI-exposed tools are more or less affected by the training cutoff than their counterparts.
 
 ---
 
 ## 6. Final Result Synthesis for Thesis
-1.  **Resilience through Catch-up:** Any disadvantage from exclusion is temporary (recovering within 52 weeks).
-2.  **Relative Suppression:** The "cost" of the training cutoff is not a dip in absolute terms, but the **decimation of the seasonal growth boost** compared to historical benchmarks.
-3.  **Systemic Robustness:** The positive "Freshness Premium" is a stable feature of the distribution, appearing at every quantile from Q25 to Q90.
+1.  **Suggestive Catch-up:** Any early adoption disadvantage appears to be temporary, though the results are not yet robust.
+2.  **Relative Suppression as an Alternative Narrative:** The "cost" of the training cutoff is best framed not as an absolute drop, but as a potential dampening of seasonal growth momentum.
+3.  **Estimator Sensitivity:** The positive "Freshness Premium" is estimator-dependent and must be interpreted with caution in the final thesis text.

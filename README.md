@@ -24,29 +24,34 @@ This project investigates whether the "static" knowledge of Large Language Model
 ## 2. Empirical Strategy
 We employ a **Regression Discontinuity Design (RDD)** around the September 1, 2021 cutoff.
 
-*   **Running Variable:** Weeks since the September 2021 cutoff.
-*   **Treatment:** A library's inclusion in the LLM's pre-training data (proxied by release date).
-*   **Outcomes:** Cumulative PyPI downloads and GitHub imports at 12, 26, and 52 weeks post-release.
-*   **Identification:** 
-    *   **Donut-RDD:** We exclude a 2-week "donut hole" around the cutoff to handle release date ambiguity.
-    *   **Diff-in-RDD:** We net out seasonal effects by comparing the 2021 discontinuity to historical "placebo" cutoffs (2018–2020).
-    *   **Quantile RDD:** We use Median RDD to ensure results are robust to the "superstar" outliers typical of software adoption.
+*   **Primary Estimator:** `rdrobust` (local linear regression with bias-corrected inference).
+*   **Secondary Estimators:** Clustered WLS and permutation-based inference (using placebo years 2018–2020).
+*   **Supportive Analysis:** 
+    *   **Donut-RDD:** Excluding a 2-week window to handle release date ambiguity.
+    *   **Diff-in-RDD:** Comparing the 2021 discontinuity to historical seasonal averages (2018–2020) to net out potential seasonal effects.
+    *   **Quantile RDD:** Using Median RDD to ensure results are robust to the extreme skew characteristic of software adoption.
 
 ---
 
 ## 3. Key Findings
 
-### 3.1. The "Relative Suppression" Result (Primary Finding)
-While a naive RDD shows a positive "freshness bonus" for new libraries in 2021 (+169 downloads at the median), this is a massive **90% suppression** compared to the historical seasonal average of +1,694 downloads.
-*   **Interpretation:** The LLM cutoff did not create an absolute "dip" from zero, but it decimated the natural growth momentum that new Python tools typically enjoy in late September.
+### 3.1. Main Result: No Robust Evidence of a broad "Knowledge Wall"
+In the primary 2021 sample, we do not find robust evidence that the LLM training cutoff significantly suppressed adoption for new libraries.
+*   The 2021 discontinuity is statistically null under the primary `rdrobust` specification (p = 0.45) and clustered WLS (p = 0.66).
+*   Permutation tests show that the 2021 discontinuity is not unusually negative relative to placebo years.
 
-### 3.2. The "Catch-up" Dynamic
-Longitudinal analysis reveals an initial adoption "tax" (-5% at 12 weeks) that recovers to a positive gain (+3.5% at 52 weeks). 
-*   **Interpretation:** LLM exclusion creates **temporary delays** in adoption, not permanent exclusion. Successful libraries eventually overcome the "knowledge gap" through other ecosystem channels.
+### 3.2. Seasonality and the "Suppression" Narrative
+While naive comparisons suggest a "Relative Suppression" (where 2021 growth is lower than the historical seasonal average), this result is sensitive to the choice of seasonal baseline.
+*   Seasonality likely matters and complicates naive 2021 comparisons.
+*   Diff-in-RDD against 2020 points toward suppression, but it is treated as a secondary robustness check because it relies on a limited seasonal baseline.
 
-### 3.3. Mechanism Test: AI-Mediated Usage
-Exploratory split-sample RDDs on libraries with high vs. low AI-exposure (scored GitHub commits) show no significant difference in the adoption gap. 
-*   **Interpretation:** Even libraries heavily used in AI-generated code do not suffer disproportionately from training exclusion.
+### 3.3. Estimator Sensitivity and the "Freshness Premium"
+A "freshness premium" (positive discontinuity) appears among successful libraries under the `rdrobust` estimator, but this finding is not strongly supported by clustered WLS.
+*   **Interpretation:** LLM exclusion does not appear to create a uniform "discovery tax" across the entire ecosystem. Any observed effects are likely concentrated among specific subsets of libraries or sensitive to the choice of estimator.
+
+### 3.4. The "Catch-up" Dynamic
+Longitudinal analysis suggests that any early adoption "tax" tends to disappear at longer horizons (26 and 52 weeks).
+*   **Interpretation:** LLM exclusion may create temporary delays in adoption, but successful libraries eventually overcome the "knowledge gap" through other ecosystem channels.
 
 ---
 
