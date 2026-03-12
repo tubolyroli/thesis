@@ -6,6 +6,14 @@
 
 ---
 
+## 📍 What to Read First
+Reviewing this project for the first time, I recommend this order:
+1.  **[memos/research_manifesto.md](memos/research_manifesto.md)**: **The High-Level Map.** Chronological evolution of the research design, from Step 1 (Scoping) to Step 8 (Relative Suppression).
+2.  **[memos/memo_02.md](memos/memo_02.md)**: **The Key Result.** Detailed breakdown of the Phase 2 breakthroughs: Median RDD and the "Relative Suppression" framework.
+3.  **[master_analysis.ipynb](master_analysis.ipynb)**: **The Analysis Hub.** The primary notebook for visualizing results, comparing horizons, and interpreting the "Catch-up" dynamic.
+
+---
+
 ## 1. Research Overview
 This project investigates whether the "static" knowledge of Large Language Models (LLMs) creates an adoption barrier for new software tools. Specifically, we test if libraries released shortly **before** a major LLM training cutoff (September 2021 for GPT-3.5/4) diffuse more widely than those released shortly **after**.
 
