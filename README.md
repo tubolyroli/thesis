@@ -1,61 +1,99 @@
-# Do LLMs know about new things?
+# Do LLMs Shape the Diffusion of New Software?
+### Training Cutoffs and Adoption Dynamics in the Python Ecosystem
 
-This thesis employs a Regression Discontinuity Design (RDD) to investigate whether LLM training cutoffs (specifically GPT-3.5/4's) create an adoption barrier for new Python libraries. Using a high-frequency panel of PyPI downloads and GitHub usage, we test if libraries present in the model's pre-training data diffuse more widely than those released shortly after the cutoff.
+**Author:** Roland Tuboly  
+**Supervisor:** Johannes Wachs  
+**Institution:** Corvinus University  
+**Thesis Topic:** Master’s in Economics and Data Science
 
-### 🚀 Phase 2 Breakthroughs (New Findings)
-- **Relative Suppression (The "Missing Boost"):** Historically, libraries released in late September enjoy a massive seasonal adoption jump (+1,694 downloads at the median). In 2021, this jump was **suppressed by 90%** (+169 downloads), providing strong evidence that the LLM training cutoff hindered natural growth momentum.
-- **The "Catch-up" Dynamic:** We find an initial adoption "discovery tax" (-5% at 12 weeks) that fully recovers to a positive gain (+3.5% at 52 weeks). This suggests that LLM exclusion creates **temporary delays**, not permanent market exclusion.
-- **Robust Distributional Gains:** Focus on the "typical" library (Median RDD) reveals a highly significant and consistent **"Post-Cutoff Bonus"** across the adoption spectrum (from Q25 to Q90), which was previously masked by extreme outliers in log-mean models.
+---
 
-### 📍 Read This First
-- **[memos/memo_02.md](memos/memo_02.md)**: **Start here.** Detailed results on catch-up, median RDD, and the relative suppression framework.
-- **[memos/memo_01.md](memos/memo_01.md)**: Baseline project history, placebo discovery, and initial technical refinements.
-- **[memos/research_manifesto.md](memos/research_manifesto.md)**: High-level evolution of the research design from Step 1 to Step 8.
-- **[results/estimation_results_final.csv](results/estimation_results_final.csv)**: Final expanded RD coefficients across all horizons and quantiles.
+## 1. Research Overview
+This project investigates whether the "static" knowledge of Large Language Models (LLMs) creates an adoption barrier for new software tools. Specifically, we test if libraries released shortly **before** a major LLM training cutoff (September 2021 for GPT-3.5/4) diffuse more widely than those released shortly **after**.
 
-## Project Structure
+**The "Knowledge Wall" Hypothesis:** If LLMs steer developers toward tools they "know" from their training data, then libraries excluded from that data may face a significant discovery tax, leading to reduced collective variety in the software ecosystem.
 
-- `data/`: Contains raw, intermediate, and final datasets.
-- `scripts/`: Python scripts for data processing and estimation.
-### Core Pipeline
-  - `01_build_pypi_base.py`: Processes PyPI download data and constructs horizons.
-  - `02_aggregate_github.py`: Aggregates GitHub usage and AI scores.
-  - `03_merge_and_restrict.py`: Merges datasets and applies temporal filters.
-  - `05_estimation.py`: **Main Suite.** Estimates RD across horizons (12w, 26w, 52w) and quantiles.
-  - `06_robustness.py`: Bandwidth sensitivity and placebo tests for Median RDD.
-  - `11_visualize_results.py`: Generates horizon coefficient and quantile plots.
-  - `13_stacked_rdd.py`: Pools historical cutoffs to estimate the "Relative Suppression" effect.
+---
 
-### Appendix & Utilities
-  - `08_diff_in_rdd.py`: Difference-in-RDD analysis (2021 vs 2020).
-  - `10_ai_mechanism_split.py`: Exploratory AI usage heterogeneity.
-  - `12_investigate_median.py`: Distributional deep-dive (Q25 to Q90).
-  - `utils.py`: Shared estimation logic (WLS, rdrobust, and QuantReg wrappers).
-  - `config.py`: Global paths and RD parameters.
+## 2. Empirical Strategy
+We employ a **Regression Discontinuity Design (RDD)** around the September 1, 2021 cutoff.
 
-- `results/`: Output tables and figures.
-- `memos/`: Research notes and exploratory notebooks.
+*   **Running Variable:** Weeks since the September 2021 cutoff.
+*   **Treatment:** A library's inclusion in the LLM's pre-training data (proxied by release date).
+*   **Outcomes:** Cumulative PyPI downloads and GitHub imports at 12, 26, and 52 weeks post-release.
+*   **Identification:** 
+    *   **Donut-RDD:** We exclude a 2-week "donut hole" around the cutoff to handle release date ambiguity.
+    *   **Diff-in-RDD:** We net out seasonal effects by comparing the 2021 discontinuity to historical "placebo" cutoffs (2018–2020).
+    *   **Quantile RDD:** We use Median RDD to ensure results are robust to the "superstar" outliers typical of software adoption.
 
-## Getting Started
+---
 
-1. **Environment Setup**:
-   ```bash
-   python3 -m venv .venv
-   source .venv/bin/activate
-   pip install -r requirements.txt
-   ```
+## 3. Key Findings
 
-2. **Run Pipeline**:
-   ```bash
-   ./.venv/bin/python scripts/05_estimation.py
-   ./.venv/bin/python scripts/06_robustness.py
-   ./.venv/bin/python scripts/11_visualize_results.py
-   ./.venv/bin/python scripts/13_stacked_rdd.py
-   ```
+### 3.1. The "Relative Suppression" Result (Primary Finding)
+While a naive RDD shows a positive "freshness bonus" for new libraries in 2021 (+169 downloads at the median), this is a massive **90% suppression** compared to the historical seasonal average of +1,694 downloads.
+*   **Interpretation:** The LLM cutoff did not create an absolute "dip" from zero, but it decimated the natural growth momentum that new Python tools typically enjoy in late September.
 
-## Canonical Outputs
-- **Results**:
-  - `results/estimation_results_final.csv`: Full expanded result suite.
-  - `results/stacked_rdd_results.csv`: Comparison of 2021 jump vs. historical average.
-  - `results/figures/rdd_horizon_coefficients.png`: Visualization of the catch-up dynamic.
-  - `results/figures/rdd_quantile_coefficients.png`: Visualization of distributional robustness.
+### 3.2. The "Catch-up" Dynamic
+Longitudinal analysis reveals an initial adoption "tax" (-5% at 12 weeks) that recovers to a positive gain (+3.5% at 52 weeks). 
+*   **Interpretation:** LLM exclusion creates **temporary delays** in adoption, not permanent exclusion. Successful libraries eventually overcome the "knowledge gap" through other ecosystem channels.
+
+### 3.3. Mechanism Test: AI-Mediated Usage
+Exploratory split-sample RDDs on libraries with high vs. low AI-exposure (scored GitHub commits) show no significant difference in the adoption gap. 
+*   **Interpretation:** Even libraries heavily used in AI-generated code do not suffer disproportionately from training exclusion.
+
+---
+
+## 4. Repository Structure
+
+### 📂 `data/`
+Contains raw, intermediate, and analysis-ready datasets.
+*   `data/final/analysis_Main_2021.csv`: The primary dataset for the thesis.
+
+### 📂 `scripts/` (Pipeline Order)
+1.  `01_build_pypi_base.py`: Processes PyPI data & constructs 52-week horizons.
+2.  `02_aggregate_github.py`: Merges GitHub usage and AI-exposure scores.
+3.  `03_merge_and_restrict.py`: Applies temporal filters and release date proxies.
+4.  `05_estimation.py`: **The Main Engine.** Estimates RD across all horizons and quantiles.
+5.  `06_robustness.py`: Bandwidth sensitivity and placebo tests for Median RDD.
+6.  `11_visualize_results.py`: Generates all thesis-ready figures.
+7.  `13_stacked_rdd.py`: Implements the Stacked Diff-in-RDD for the "Suppression" finding.
+
+### 📂 `memos/`
+Deep-dives and research logs for each phase of the project.
+*   **[memos/research_manifesto.md](memos/research_manifesto.md)**: The "Living Document" tracking the evolution of every major research decision.
+*   **[memos/memo_02.md](memos/memo_02.md)**: Detailed breakdown of Phase 2 (Median & Suppression) results.
+
+---
+
+## 5. Getting Started
+
+### Prerequisites
+*   Python 3.10+
+*   Dependencies listed in `requirements.txt` (includes `rdrobust` and `statsmodels`).
+
+### Installation
+```bash
+# 1. Clone the repository
+git clone <repo-url>
+cd thesis
+
+# 2. Setup environment
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+### Reproducing the Results
+To run the full estimation and visualization suite:
+```bash
+./.venv/bin/python scripts/05_estimation.py
+./.venv/bin/python scripts/13_stacked_rdd.py
+./.venv/bin/python scripts/11_visualize_results.py
+```
+
+---
+
+## 6. Contacts
+**Roland Tuboly** – [roland.tuboly@stud.uni-corvinus.hu]  
+**Supervisor: Johannes Wachs**
