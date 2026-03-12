@@ -22,7 +22,7 @@ This project investigates whether the "static" knowledge of Large Language Model
 ---
 
 ## 2. Empirical Strategy
-We employ a **Regression Discontinuity Design (RDD)** around the September 1, 2021 cutoff.
+We employ a **Regression Discontinuity Design (RDD)** around the September 27, 2021 cutoff.
 
 *   **Primary Estimator:** `rdrobust` (local linear regression with bias-corrected inference).
 *   **Secondary Estimators:** Clustered WLS and permutation-based inference (using placebo years 2018–2020).
