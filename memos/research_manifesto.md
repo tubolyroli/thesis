@@ -1,9 +1,9 @@
 # Research Manifesto: The Evolution of the "Knowledge Wall" Thesis
 
 **Project Title:** Do LLMs Know About New Things? Training Cutoffs and the Diffusion of Python Libraries  
-**Researcher:** Roland Tuboly  
-**Supervisor Perspective:** Dr. Gemini (Thesis Co-Supervisor)  
-**Date:** March 11, 2026
+**Made by:** Roland Tuboly  
+**Supervisor:** Johannes Wachs
+**Date:** March 12, 2026
 
 ---
 
@@ -23,14 +23,15 @@ Does the "static" nature of LLM training data (fixed cutoffs) create an adoption
 ### Step 2: Data Engineering & Measurement Discipline
 *   **Action:** Built a high-frequency (weekly) panel of PyPI downloads and GitHub imports.
 *   **Measurement:** Defined the **Running Variable** as the number of weeks relative to the September 1, 2021 cutoff.
+*   **Release Date Proxy:** Following standard practice for noisy package metadata, we use the **First Observed Positive PyPI Download Week** as the initial release date.
 *   **Unit of Observation:** Library-week level, aggregated to cumulative totals at 12, 26, and 52 weeks post-release.
 *   **Restriction:** Applied a "1-year horizon" rule—only libraries with a full 52 weeks of post-release data are included to ensure fair comparison of long-run diffusion.
 
 ### Step 3: Establishing the Estimator Hierarchy
-*   **Action:** Moved from simple OLS to a formal Regression Discontinuity Design (RDD).
+*   **Action:** Used a formal Regression Discontinuity Design (RDD).
 *   **Primary Estimator:** `rdrobust` (Robust Bias-Corrected Local Linear Regression).
 *   **Secondary Estimator:** Clustered WLS (Weighted Least Squares) and Permutation Inference.
-*   **Logic:** `rdrobust` is the industry standard for minimizing bias near the cutoff, while WLS provides a sanity check on global trends.
+*   **Diagnostics:** Conducted **Release Density Tests**; found no evidence of "heaping" or strategic release manipulation around the cutoff date ($p > 0.10$).
 
 ### Step 4: The Discovery of the "Toy Package" Noise
 *   **Action:** Observed high variance in the full sample. Introduced the `min100` download threshold.
@@ -50,11 +51,11 @@ Does the "static" nature of LLM training data (fixed cutoffs) create an adoption
 ### Step 7: Mechanism Testing (AI vs. Human)
 *   **Action:** Used AI-exposure scores from GitHub commits to split the sample.
 *   **Finding:** No significant difference in the RDD coefficient between high-AI and low-AI usage libraries.
-*   **Interpretation:** Even libraries heavily used in AI-generated code do not suffer from the training cutoff.
+*   **Warning:** This analysis is **Exploratory**. Since AI-exposure is measured *after* release, it is a post-treatment variable and may introduce selection bias.
 
-### Step 8: Longitudinal & Distributional Extensions (Response to Supervisor)
+### Step 8: Longitudinal & Distributional Extensions
 *   **Action:** Analyzed horizons at 12, 26, and 52 weeks to test for **Catch-up Dynamics**.
-*   **Finding:** A small -5% dip at 12 weeks recovers to a +3.5% gain by 52 weeks, suggesting any LLM exclusion cost is temporary.
+*   **Finding:** A small -5% dip at 12 weeks recovers to a +3.5% gain by 52 weeks, suggesting any LLM exclusion cost is temporary, but the results are insignificant.
 *   **Action:** Implemented **Quantile RDD** (Median) to address outlier concerns and measure level-based adoption jumps.
 *   **Finding:** A robust "Post-Cutoff Bonus" exists across the distribution (+169 at median, +1,653 at Q90).
 *   **Action:** Developed the **"Relative Suppression"** framework by stacking historical cutoffs (2018-2020).
@@ -69,12 +70,14 @@ The Local Average Treatment Effect (LATE) of being released *after* a documented
 
 ### Identifying Assumptions
 1.  **Continuity:** All other factors affecting adoption (besides the LLM cutoff) vary smoothly across the threshold.
-2.  **No Manipulation:** Library authors do not strategically time their releases based on anticipated LLM training dates (highly plausible).
+2.  **No Manipulation:** Library authors do not strategically time their releases based on anticipated LLM training dates.
+3.  **Parallel Discontinuities:** In the absence of an LLM effect, the 2021 seasonal jump should have matched the 2018-2020 historical average.
 
 ### Main Threats to Identification (and mitigations)
 1.  **Seasonality:** Addressed via Placebo Cutoffs and Diff-in-RDD.
 2.  **Release-Date Ambiguity:** Addressed via a **2-week Donut-Hole RDD** (excluding libraries released within 7 days of the cutoff).
-3.  **Outliers:** Addressed via log-transformations and the `min100` success filter.
+3.  **Outliers:** Addressed via log-transformations, the `min100` success filter, and **Median RDD**.
+4.  **Measurement Error (Identity):** Current matching is based on exact/normalized name strings; sensitivity to renames, forks, and mirrors is an ongoing area of refinement.
 
 ---
 
