@@ -3,8 +3,6 @@
 
 **Author:** Roland Tuboly  
 **Supervisor:** Johannes Wachs  
-**Institution:** Corvinus University  
-**Thesis Topic:** Master’s in Economics and Data Science
 
 ---
 
@@ -93,7 +91,3 @@ To run the full estimation and visualization suite:
 ```
 
 ---
-
-## 6. Contacts
-**Roland Tuboly** – [roland.tuboly@stud.uni-corvinus.hu]  
-**Supervisor: Johannes Wachs**
