@@ -60,8 +60,8 @@ def run_local_linear_rdd(df: pd.DataFrame, outcome_col: str, h: float = None, do
         return {"Label": label, "Outcome": outcome_col, "Estimate": np.nan, "Std.Err": np.nan, "P-value": np.nan, "N": len(sub), "BW": h, "Donut": "Yes" if donut_weeks else "No", "Method": "WLS"}
 
     # 3. Construct variables
-    # Log transform only for download/import counts, not for binary outcomes
-    if outcome_col.startswith("cum") or "downloads" in outcome_col:
+    # Log transform for count-based outcomes
+    if any(k in outcome_col for k in ["downloads", "imports", "cum"]):
         sub["y"] = np.log1p(sub[outcome_col])
     else:
         sub["y"] = sub[outcome_col]
@@ -109,7 +109,7 @@ def run_rdrobust_est(df: pd.DataFrame, outcome_col: str, h: float = None, donut_
     
     sub = sub.dropna(subset=[outcome_col])
     
-    if outcome_col.startswith("cum") or "downloads" in outcome_col:
+    if any(k in outcome_col for k in ["downloads", "imports", "cum"]):
         y = np.log1p(sub[outcome_col])
     else:
         y = sub[outcome_col]

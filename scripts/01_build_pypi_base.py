@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from config import RAW_DIR, INTERM_DIR
+from config import RAW_DIR, INTERM_DIR, CHATGPT_RELEASE, GPT4_RELEASE, GPT4_TURBO_RELEASE
 from utils import normalize_name, check_monday_alignment, get_weeks_since
 
 def main() -> None:
@@ -33,28 +33,36 @@ def main() -> None:
     # Keep post-release observations only
     df_post = df.loc[df["weeks_since_release"] >= 0].copy()
 
-    def aggregate_horizon(max_weeks: int) -> pd.DataFrame:
+    # 1. Relative Horizons (Age-based)
+    def aggregate_relative(max_weeks: int) -> pd.DataFrame:
         sub = df_post.loc[df_post["weeks_since_release"] < max_weeks]
-        out = (
-            sub.groupby("package", as_index=False)["downloads"]
-            .sum()
-            .rename(columns={"downloads": f"cum_downloads_{max_weeks}wk"})
-        )
-        return out
+        return sub.groupby("package")["downloads"].sum().reset_index().rename(columns={"downloads": f"cum_downloads_{max_weeks}wk"})
 
-    pypi_12 = aggregate_horizon(12)
-    pypi_26 = aggregate_horizon(26)
-    pypi_52 = aggregate_horizon(52)
+    pypi_52 = aggregate_relative(52)
 
-    pypi_base = release_dates.merge(pypi_12, on="package", how="left")
-    pypi_base = pypi_base.merge(pypi_26, on="package", how="left")
-    pypi_base = pypi_base.merge(pypi_52, on="package", how="left")
+    # 2. Fixed Model Horizons (Calendar-based)
+    def aggregate_until(end_date: pd.Timestamp, col_name: str) -> pd.DataFrame:
+        sub = df_post.loc[df_post["week_start"] <= end_date]
+        return sub.groupby("package")["downloads"].sum().reset_index().rename(columns={"downloads": col_name})
 
-    for col in ["cum_downloads_12wk", "cum_downloads_26wk", "cum_downloads_52wk"]:
-        pypi_base[col] = pypi_base[col].fillna(0).astype("int64")
+    pypi_gpt4 = aggregate_until(GPT4_RELEASE, "cum_downloads_gpt4")
+    pypi_gpt4turbo = aggregate_until(GPT4_TURBO_RELEASE, "cum_downloads_gpt4turbo")
+    pypi_alltime = df_post.groupby("package")["downloads"].sum().reset_index().rename(columns={"downloads": "cum_downloads_alltime"})
+
+    # 3. Post-AI Activation (Time-Adjusted: Growth after Nov 2022)
+    pypi_post_ai = (
+        df_post.loc[df_post["week_start"] >= CHATGPT_RELEASE]
+        .groupby("package")["downloads"].sum().reset_index()
+        .rename(columns={"downloads": "post_ai_downloads_alltime"})
+    )
+
+    # Merge all
+    pypi_base = release_dates.copy()
+    for extra in [pypi_52, pypi_gpt4, pypi_gpt4turbo, pypi_alltime, pypi_post_ai]:
+        pypi_base = pypi_base.merge(extra, on="package", how="left").fillna(0)
 
     # Preserve earlier field name for compatibility
-    pypi_base["total_downloads_52wk"] = pypi_base["cum_downloads_52wk"]
+    pypi_base["total_downloads_52wk"] = pypi_base["cum_downloads_52wk"].astype("int64")
 
     # Source-level metadata for censoring checks later
     pypi_meta = pd.DataFrame(

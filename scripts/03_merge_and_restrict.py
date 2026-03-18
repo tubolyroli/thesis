@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from config import INTERM_DIR, FINAL_DIR, CUTOFFS, WINDOW_WEEKS, DONUT_WEEKS, HORIZON_WEEKS
+from config import INTERM_DIR, FINAL_DIR, CUTOFFS, WINDOW_WEEKS, DONUT_WEEKS
 from utils import get_weeks_since
 
 def process_cutoff(name, date, pypi_base, gh_agg, pypi_max, gh_max):
@@ -21,14 +21,16 @@ def process_cutoff(name, date, pypi_base, gh_agg, pypi_max, gh_max):
     # 2. Running variable
     df["dist_to_cutoff"] = get_weeks_since(df["release_week"], date)
     df["is_pre_cutoff"] = (df["dist_to_cutoff"] < 0).astype(int)
+    
+    # Wide Donut (e.g. Aug & Sept)
     df["in_donut"] = df["dist_to_cutoff"].isin(DONUT_WEEKS).astype(int)
 
-    # 3. Time Filtering (Bandwidth + Data Availability)
+    # 3. Time Filtering (Bandwidth)
     n_before_time = len(df)
     df = df.loc[(df["dist_to_cutoff"] >= -WINDOW_WEEKS) & (df["dist_to_cutoff"] <= WINDOW_WEEKS)].copy()
     
-    df["last_needed_week_52wk"] = df["release_week"] + pd.to_timedelta((HORIZON_WEEKS - 1) * 7, unit="D")
-    df = df.loc[(df["last_needed_week_52wk"] <= pypi_max) & (df["last_needed_week_52wk"] <= gh_max)].copy()
+    # Relaxing age-censoring: For Sept 2021 cutoff, all within WINDOW_WEEKS 
+    # already have data up to the current data max (Jan 2026).
     n_after_time = len(df)
 
     # Note: MIN_DOWNLOADS_52WK filter removed from main dataset to avoid selection bias.

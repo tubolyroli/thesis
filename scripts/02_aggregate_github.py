@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from config import RAW_DIR, INTERM_DIR, AI_SCORE_COLS, AI_WEIGHT_COLS
+from config import RAW_DIR, INTERM_DIR, AI_SCORE_COLS, AI_WEIGHT_COLS, CHATGPT_RELEASE, GPT4_RELEASE, GPT4_TURBO_RELEASE
 from utils import normalize_name, detect_column, check_monday_alignment, get_weeks_since
 
 def main() -> None:
@@ -47,24 +47,33 @@ def main() -> None:
     # Keep strictly post-release observations only
     df_gh = df_gh.loc[df_gh["weeks_since_release"] >= 0].copy()
 
-    def aggregate_imports(max_weeks: int) -> pd.DataFrame:
-        sub = df_gh.loc[df_gh["weeks_since_release"] < max_weeks, ["package", "import_count"]]
-        out = (
-            sub.groupby("package", as_index=False)["import_count"]
-            .sum()
-            .rename(columns={"import_count": f"cum_imports_{max_weeks}wk"})
-        )
-        return out
+    # 1. Age-based (Relative)
+    def aggregate_relative(max_weeks: int) -> pd.DataFrame:
+        sub = df_gh.loc[df_gh["weeks_since_release"] < max_weeks]
+        return sub.groupby("package")["import_count"].sum().reset_index().rename(columns={"import_count": f"cum_imports_{max_weeks}wk"})
 
-    gh_12 = aggregate_imports(12)
-    gh_26 = aggregate_imports(26)
-    gh_52 = aggregate_imports(52)
+    gh_52 = aggregate_relative(52)
 
-    gh_out = gh_12.merge(gh_26, on="package", how="outer")
-    gh_out = gh_out.merge(gh_52, on="package", how="outer")
+    # 2. Fixed Model Horizons (Calendar-based)
+    def aggregate_until(end_date: pd.Timestamp, col_name: str) -> pd.DataFrame:
+        sub = df_gh.loc[df_gh["week_start"] <= end_date]
+        return sub.groupby("package")["import_count"].sum().reset_index().rename(columns={"import_count": col_name})
 
-    for col in ["cum_imports_12wk", "cum_imports_26wk", "cum_imports_52wk"]:
-        gh_out[col] = gh_out[col].fillna(0).astype("int64")
+    gh_gpt4 = aggregate_until(GPT4_RELEASE, "cum_imports_gpt4")
+    gh_gpt4turbo = aggregate_until(GPT4_TURBO_RELEASE, "cum_imports_gpt4turbo")
+    gh_alltime = df_gh.groupby("package")["import_count"].sum().reset_index().rename(columns={"import_count": "cum_imports_alltime"})
+
+    # 3. Post-AI Activation (Time-Adjusted)
+    gh_post_ai = (
+        df_gh.loc[df_gh["week_start"] >= CHATGPT_RELEASE]
+        .groupby("package")["import_count"].sum().reset_index()
+        .rename(columns={"import_count": "post_ai_imports_alltime"})
+    )
+
+    # Merge all
+    gh_out = gh_52.copy()
+    for extra in [gh_gpt4, gh_gpt4turbo, gh_alltime, gh_post_ai]:
+        gh_out = gh_out.merge(extra, on="package", how="outer").fillna(0)
 
     # Weighted AI score over first 52 weeks
     if score_col is not None:

@@ -1,5 +1,5 @@
 import pandas as pd
-from config import MAIN_ANALYSIS_DATA, RESULTS_DIR, DONUT_WEEKS
+from config import MAIN_ANALYSIS_DATA, RESULTS_DIR, DONUT_WEEKS, PRIMARY_OUTCOMES
 from utils import run_local_linear_rdd, run_rdrobust_est, run_quantile_rdd
 
 def main():
@@ -9,31 +9,36 @@ def main():
         return
 
     df_full = pd.read_csv(MAIN_ANALYSIS_DATA)
+    # Apply baseline sample restriction for adoption analysis
     df_min10 = df_full[df_full["total_downloads_52wk"] >= 10].copy()
     results = []
     
-    # 1. Horizon Analysis (Catch-up check)
-    print("Running Horizon Analysis (Catch-up check)...")
-    horizons = [12, 26, 52]
-    for h_weeks in horizons:
-        outcome = f"cum_downloads_{h_weeks}wk"
-        results.append(run_rdrobust_est(df_min10, outcome, h=26, donut_weeks=DONUT_WEEKS, label=f"Horizon: {h_weeks}w Downloads"))
+    # 1. Main Adoption Horizons (PyPI)
+    print("Running PyPI Adoption Horizons...")
+    # PRIMARY_OUTCOMES include total_downloads_52wk, cum_downloads_gpt4, cum_downloads_gpt4turbo, cum_downloads_alltime, post_ai_downloads_alltime
+    for outcome in PRIMARY_OUTCOMES:
+        if outcome in df_min10.columns:
+            # Using a quarter-based bandwidth (h=13) to capture July/October as requested
+            results.append(run_rdrobust_est(df_min10, outcome, h=13, donut_weeks=DONUT_WEEKS, label=f"PyPI: {outcome}"))
 
-    # 2. Distributional Analysis (Quantile RDD)
-    print("Running Distributional Analysis (Quantile RDD)...")
-    quantiles = [0.25, 0.5, 0.75, 0.90]
-    for q in quantiles:
-        results.append(run_quantile_rdd(df_min10, "total_downloads_52wk", q=q, h=26, donut_weeks=DONUT_WEEKS, label=f"Quantile: {q}"))
+    # 2. Mechanism Analysis (GitHub)
+    print("Running GitHub Mechanism Analysis...")
+    df_gh = df_full[df_full["matched_to_github"] == 1].copy()
+    gh_outcomes = [
+        "cum_imports_52wk",
+        "cum_imports_gpt4",
+        "cum_imports_gpt4turbo",
+        "cum_imports_alltime",
+        "post_ai_imports_alltime"
+    ]
+    for outcome in gh_outcomes:
+        if outcome in df_gh.columns:
+            results.append(run_rdrobust_est(df_gh, outcome, h=13, donut_weeks=DONUT_WEEKS, label=f"GitHub: {outcome}"))
 
-    # 3. GitHub Margin Splits
-    print("Running GitHub Margins...")
-    df_gh = df_full[df_full["total_downloads_52wk"] >= 10].copy()
-    results.append(run_rdrobust_est(df_gh, "matched_to_github", h=26, donut_weeks=DONUT_WEEKS, label="GitHub: Match Probability"))
-    
-    df_matched = df_gh[df_gh["matched_to_github"] == 1].copy()
-    for h_weeks in horizons:
-        outcome = f"cum_imports_{h_weeks}wk"
-        results.append(run_rdrobust_est(df_matched, outcome, h=26, donut_weeks=DONUT_WEEKS, label=f"GitHub: {h_weeks}w Log Imports (Cond)"))
+    # 3. AI Intensity Split (Direct Mechanism Test)
+    # We will run this in script 10, but let's add a basic check here for the AI score itself
+    if "avg_ai_score_52wk" in df_gh.columns:
+        results.append(run_rdrobust_est(df_gh, "avg_ai_score_52wk", h=13, donut_weeks=DONUT_WEEKS, label="GitHub: AI Score intensity"))
 
     # Compile and Save
     results_df = pd.DataFrame(results)

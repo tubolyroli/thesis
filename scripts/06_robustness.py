@@ -1,63 +1,58 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-import seaborn as sns
-from config import MAIN_ANALYSIS_DATA, RESULTS_DIR, FIGURES_DIR, DONUT_WEEKS
-from utils import run_local_linear_rdd, setup_plotting_style, run_quantile_rdd
-
-def run_bandwidth_sensitivity_median():
-    """Tests the stability of the Median RDD result across different bandwidths."""
-    if not MAIN_ANALYSIS_DATA.exists(): return
-    
-    df = pd.read_csv(MAIN_ANALYSIS_DATA)
-    df_min10 = df[df["total_downloads_52wk"] >= 10].copy()
-    
-    bandwidths = [12, 16, 20, 26, 30, 40, 52]
-    results = []
-    
-    print("Running Bandwidth Sensitivity for Median RDD...")
-    for h in bandwidths:
-        res = run_quantile_rdd(df_min10, "total_downloads_52wk", q=0.5, h=h, donut_weeks=DONUT_WEEKS, label=f"h={h}")
-        results.append(res)
-        
-    res_df = pd.DataFrame(results)
-    setup_plotting_style()
-    plt.figure(figsize=(10, 6))
-    plt.errorbar(res_df["BW"], res_df["Estimate"], yerr=res_df["Std.Err"]*1.96, fmt='o-', capsize=5)
-    plt.axhline(0, color='red', linestyle='--')
-    plt.title("Median RDD (q=0.5): Bandwidth Sensitivity")
-    plt.xlabel("Bandwidth (Weeks)")
-    plt.ylabel("Estimated Discontinuity (Downloads)")
-    
-    out_path = FIGURES_DIR / "median_rdd_bandwidth_sensitivity.png"
-    plt.savefig(out_path, dpi=300)
-    print(f"Saved Median RDD sensitivity plot to: {out_path}")
-
-def run_placebo_cutoffs_median():
-    """Tests Median RDD on placebo cutoff dates."""
-    if not MAIN_ANALYSIS_DATA.exists(): return
-    
-    df = pd.read_csv(MAIN_ANALYSIS_DATA)
-    df_min10 = df[df["total_downloads_52wk"] >= 10].copy()
-    
-    # Simple shift placebos
-    shifts = [-20, -15, -10, 10, 15, 20]
-    results = []
-    
-    print("Running Placebo Cutoff Tests for Median RDD...")
-    for s in shifts:
-        df_p = df_min10.copy()
-        df_p["dist_to_cutoff"] = df_p["dist_to_cutoff"] - s
-        res = run_quantile_rdd(df_p, "total_downloads_52wk", q=0.5, h=26, donut_weeks=DONUT_WEEKS, label=f"Shift: {s}")
-        results.append(res)
-        
-    print("\nMedian RDD Placebo Results:")
-    print(pd.DataFrame(results)[["Label", "Estimate", "Std.Err", "P-value"]].to_string(index=False))
+from config import FINAL_DIR, RESULTS_DIR, CUTOFFS, DONUT_WEEKS
+from utils import run_rdrobust_est, run_quantile_rdd, setup_plotting_style
 
 def main():
-    FIGURES_DIR.mkdir(parents=True, exist_ok=True)
-    run_bandwidth_sensitivity_median()
-    run_placebo_cutoffs_median()
+    RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+    setup_plotting_style()
+    
+    robust_results = []
+    
+    # 1. Placebo Cutoffs (July vs October across years - High Hurdle)
+    print("Running High-Hurdle Placebo Sensitivity (Post-AI Growth in non-AI years)...")
+    # For placebos, we use the SAME outcome as the main result (post_ai_downloads_alltime)
+    for name, date in CUTOFFS.items():
+        if "Placebo" in name:
+            df_path = FINAL_DIR / f"analysis_{name}.csv"
+            if df_path.exists():
+                df = pd.read_csv(df_path)
+                # Baseline filter
+                df_min10 = df[df["total_downloads_52wk"] >= 10].copy()
+                
+                print(f"  Estimating Placebo: {name} (Outcome: post_ai_downloads_alltime)...")
+                res = run_rdrobust_est(
+                    df_min10, "post_ai_downloads_alltime", h=13, 
+                    donut_weeks=DONUT_WEEKS, label=f"Placebo: {name}"
+                )
+                robust_results.append(res)
+
+    # 2. Median RDD (Robust to outliers)
+    print("\nRunning Median RDD for Main 2021 (Post-AI Horizon)...")
+    main_df_path = FINAL_DIR / "analysis_Main_2021.csv"
+    if main_df_path.exists():
+        df_main = pd.read_csv(main_df_path)
+        df_min10 = df_main[df_main["total_downloads_52wk"] >= 10].copy()
+        
+        # Test Median for Post-AI Downloads (The primary "Activation" outcome)
+        print("  Estimating Median RDD...")
+        res_median = run_quantile_rdd(
+            df_min10, "post_ai_downloads_alltime", q=0.5, h=13, 
+            donut_weeks=DONUT_WEEKS, label="Main: Median RDD (Post-AI)"
+        )
+        robust_results.append(res_median)
+
+    # Compile and Save
+    robust_df = pd.DataFrame(robust_results)
+    out_path = RESULTS_DIR / "robustness_placebo_median_summary.csv"
+    robust_df.to_csv(out_path, index=False)
+    
+    print("\n=========================================")
+    print("      ROBUSTNESS & PLACEBO RESULTS       ")
+    print("=========================================\n")
+    print(robust_df[["Label", "Outcome", "Estimate", "Std.Err", "P-value", "N"]].round(4).to_string(index=False))
+    print(f"\nSaved robustness results to {out_path}")
 
 if __name__ == "__main__":
     main()
