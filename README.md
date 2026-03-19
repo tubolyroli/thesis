@@ -24,8 +24,8 @@ The empirical phase of this thesis is now complete. We have established three co
 
 #### Table 2: GitHub Implementation Results (Library Usage)
 | Specification | Outcome Variable | Estimate (Log) | P-value | N |
-| :--- | :--- | :--- | :--- | :--- | :--- |
-| **Main RDD (2021)** | **Post-AI Imports (Total)** | **26.767** | **0.014\*** | **28,243** |
+| :--- | :--- | :--- | :--- | :--- |
+| **Main RDD (2021)** | **Post-AI Imports (Total)** | **26.767** | **0.014*** | **28,243** |
 | | All-Time Imports | 27.863 | 0.005** | 28,243 |
 | | GPT-4 Era Imports | 23.256 | 0.044* | 28,243 |
 
