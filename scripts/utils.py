@@ -96,12 +96,13 @@ def run_local_linear_rdd(df: pd.DataFrame, outcome_col: str, h: float = None, do
             "Method": f"WLS ({fit_kwargs['cov_type']})"
         }
     except Exception as e:
-        print(f"Error in WLS: {e}")
-        return {"Label": label, "Outcome": outcome_col, "Estimate": np.nan, "Std.Err": np.nan, "P-value": np.nan, "N": 0, "BW": h, "Donut": "Yes" if donut_weeks else "No", "Method": "WLS"}
+        print(f"CRITICAL: WLS failed for {label}/{outcome_col}: {str(e)}")
+        return {"Label": label, "Outcome": outcome_col, "Estimate": np.nan, "Std.Err": np.nan, "P-value": np.nan, "N": 0, "BW": h, "Donut": "Yes" if donut_weeks else "No", "Method": f"WLS ERROR: {type(e).__name__}"}
 
 def run_rdrobust_est(df: pd.DataFrame, outcome_col: str, h: float = None, donut_weeks: list = None, label: str = ""):
     """
     Wrapper for the rdrobust package providing bias-corrected RD estimates.
+    Returns a dictionary containing Conventional, Bias-Corrected, and Robust estimates.
     """
     sub = df.copy()
     if donut_weeks:
@@ -109,6 +110,15 @@ def run_rdrobust_est(df: pd.DataFrame, outcome_col: str, h: float = None, donut_
     
     sub = sub.dropna(subset=[outcome_col])
     
+    if len(sub) < 10:
+        return {
+            "Label": label, "Outcome": outcome_col, 
+            "Estimate": np.nan, "Std.Err": np.nan, "P-value": np.nan,
+            "Estimate_Conv": np.nan, "Std.Err_Conv": np.nan, "P-value_Conv": np.nan,
+            "Estimate_BC": np.nan, "Std.Err_BC": np.nan, "P-value_BC": np.nan,
+            "N": len(sub), "BW": h, "Donut": "Yes" if donut_weeks else "No", "Method": "rdrobust (insufficient N)"
+        }
+
     if any(k in outcome_col for k in ["downloads", "imports", "cum"]):
         y = np.log1p(sub[outcome_col])
     else:
@@ -117,37 +127,43 @@ def run_rdrobust_est(df: pd.DataFrame, outcome_col: str, h: float = None, donut_
     x = sub["dist_to_cutoff"]
     
     try:
-        # rdrobust expects x=0 to be the cutoff. Our dist_to_cutoff is 0 at the cutoff.
-        # However, rdrobust treats x>=0 as treated by default. 
-        # In our case, dist_to_cutoff < 0 is PRE-cutoff.
-        # rdrobust implementation in Python might have different conventions, 
-        # but let's assume res.coef.loc['Robust', 'Coeff'] is the jump.
+        # rdrobust returns a class with results. 
+        # Indices in pv/coef/se are 'Conventional', 'Bias-Corrected', 'Robust'
         res = rdrobust.rdrobust(y=y, x=x, c=0, h=h, kernel='triangular')
         
-        # rdrobust returns a class with results. 
-        # Indices in pv are 'Conventional', 'Bias-Corrected', 'Robust'
-        # Column names are 'Coeff', 'Std. Err.', 'P>|t|'
-        
-        # Bandwidths are in res.bws
         bw_val = res.bws.loc['h', 'left'] if 'h' in res.bws.index else np.nan
         
-        # rdrobust returns the jump at c=0 (Post - Pre). 
-        # This matches our WLS 'treated' coefficient convention.
         return {
             "Label": label,
             "Outcome": outcome_col,
-            "Estimate": res.coef.loc['Robust', 'Coeff'],
+            "Estimate": res.coef.loc['Robust', 'Coeff'], # Default "Estimate" remains Robust for backward compatibility
             "Std.Err": res.se.loc['Robust', 'Std. Err.'],
             "P-value": res.pv.loc['Robust', 'P>|t|'],
+            
+            "Estimate_Conv": res.coef.loc['Conventional', 'Coeff'],
+            "Std.Err_Conv": res.se.loc['Conventional', 'Std. Err.'],
+            "P-value_Conv": res.pv.loc['Conventional', 'P>|t|'],
+            
+            "Estimate_BC": res.coef.loc['Bias-Corrected', 'Coeff'],
+            "Std.Err_BC": res.se.loc['Bias-Corrected', 'Std. Err.'],
+            "P-value_BC": res.pv.loc['Bias-Corrected', 'P>|t|'],
+            
             "N": int(res.N[0] + res.N[1]),
             "BW": bw_val,
             "Donut": "Yes" if donut_weeks else "No",
-            "Method": "rdrobust (Robust)"
+            "Method": "rdrobust (Robust/BC/Conv)"
         }
     except Exception as e:
-        # Check if error is 'P>|t|' (key error)
-        print(f"Error in rdrobust: {e}")
-        return {"Label": label, "Outcome": outcome_col, "Estimate": np.nan, "Std.Err": np.nan, "P-value": np.nan, "N": 0, "BW": h, "Donut": "Yes" if donut_weeks else "No", "Method": "rdrobust"}
+        import traceback
+        print(f"CRITICAL: rdrobust failed for {label}/{outcome_col}: {str(e)}")
+        # traceback.print_exc()
+        return {
+            "Label": label, "Outcome": outcome_col, 
+            "Estimate": np.nan, "Std.Err": np.nan, "P-value": np.nan,
+            "Estimate_Conv": np.nan, "Std.Err_Conv": np.nan, "P-value_Conv": np.nan,
+            "Estimate_BC": np.nan, "Std.Err_BC": np.nan, "P-value_BC": np.nan,
+            "N": 0, "BW": h, "Donut": "Yes" if donut_weeks else "No", "Method": f"rdrobust ERROR: {type(e).__name__}"
+        }
 
 def run_quantile_rdd(df: pd.DataFrame, outcome_col: str, q: float = 0.5, h: float = None, donut_weeks: list = None, label: str = ""):
     """
@@ -190,5 +206,5 @@ def run_quantile_rdd(df: pd.DataFrame, outcome_col: str, q: float = 0.5, h: floa
             "BW": h, "Donut": "Yes" if donut_weeks else "No", "Method": f"QuantReg({q})"
         }
     except Exception as e:
-        print(f"Error in QuantReg: {e}")
-        return {"Label": label, "Outcome": outcome_col, "Estimate": np.nan, "Std.Err": np.nan, "P-value": np.nan, "N": 0, "BW": h, "Donut": "Yes" if donut_weeks else "No", "Method": f"QuantReg({q})"}
+        print(f"CRITICAL: QuantReg failed for {label}/{outcome_col}: {str(e)}")
+        return {"Label": label, "Outcome": outcome_col, "Estimate": np.nan, "Std.Err": np.nan, "P-value": np.nan, "N": 0, "BW": h, "Donut": "Yes" if donut_weeks else "No", "Method": f"QuantReg ERROR: {type(e).__name__}"}

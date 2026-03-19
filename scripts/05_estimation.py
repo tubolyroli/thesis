@@ -1,5 +1,5 @@
 import pandas as pd
-from config import MAIN_ANALYSIS_DATA, RESULTS_DIR, DONUT_WEEKS, PRIMARY_OUTCOMES, MIN_DOWNLOADS_52WK, MIN_SUCCESS_LOW, MIN_SUCCESS_HIGH
+from config import MAIN_ANALYSIS_DATA, RESULTS_DIR, DONUT_WEEKS, PRIMARY_OUTCOMES, MIN_DOWNLOADS_FILTER, MIN_SUCCESS_LOW, MIN_SUCCESS_HIGH, DEFAULT_BW
 from utils import run_local_linear_rdd, run_rdrobust_est, run_quantile_rdd
 
 def main():
@@ -11,7 +11,7 @@ def main():
     df_full = pd.read_csv(MAIN_ANALYSIS_DATA)
 
     # 1. Baseline: Broad Ecosystem (min10)
-    df_min10 = df_full[df_full["total_downloads_52wk"] >= MIN_DOWNLOADS_52WK].copy()
+    df_min10 = df_full[df_full["total_downloads_52wk"] >= MIN_DOWNLOADS_FILTER].copy()
 
     # 2. Subsample: "Successful" Libraries (Pre-GPT Winners)
     # Using 26-week horizon as suggested by supervisor (500 and 1000 thresholds)
@@ -22,16 +22,16 @@ def main():
 
     # Run RD for different success tiers
     tiers = [
-        (df_min10, "Broad (min10)"),
-        (df_success_500, "Successful (min500@26w)"),
-        (df_success_1000, "Superstar (min1000@26w)")
+        (df_min10, "Broad"),
+        (df_success_500, f"Successful (min{MIN_SUCCESS_LOW}@26w)"),
+        (df_success_1000, f"Superstar (min{MIN_SUCCESS_HIGH}@26w)")
     ]
 
     for df_tier, tier_label in tiers:
         print(f"Running analysis for tier: {tier_label} (N={len(df_tier)})...")
         for outcome in PRIMARY_OUTCOMES:
             if outcome in df_tier.columns:
-                results.append(run_rdrobust_est(df_tier, outcome, h=13, donut_weeks=DONUT_WEEKS, label=f"{tier_label}: {outcome}"))
+                results.append(run_rdrobust_est(df_tier, outcome, h=DEFAULT_BW, donut_weeks=DONUT_WEEKS, label=f"{tier_label}: {outcome}"))
 
     # 3. Mechanism Analysis (GitHub)
 
@@ -46,12 +46,12 @@ def main():
     ]
     for outcome in gh_outcomes:
         if outcome in df_gh.columns:
-            results.append(run_rdrobust_est(df_gh, outcome, h=13, donut_weeks=DONUT_WEEKS, label=f"GitHub: {outcome}"))
+            results.append(run_rdrobust_est(df_gh, outcome, h=DEFAULT_BW, donut_weeks=DONUT_WEEKS, label=f"GitHub: {outcome}"))
 
     # 3. AI Intensity Split (Direct Mechanism Test)
     # We will run this in script 10, but let's add a basic check here for the AI score itself
     if "avg_ai_score_52wk" in df_gh.columns:
-        results.append(run_rdrobust_est(df_gh, "avg_ai_score_52wk", h=13, donut_weeks=DONUT_WEEKS, label="GitHub: AI Score intensity"))
+        results.append(run_rdrobust_est(df_gh, "avg_ai_score_52wk", h=DEFAULT_BW, donut_weeks=DONUT_WEEKS, label="GitHub: AI Score intensity"))
 
     # Compile and Save
     results_df = pd.DataFrame(results)
@@ -60,7 +60,9 @@ def main():
     print("\n=========================================")
     print("      FINAL RDD ESTIMATION RESULTS       ")
     print("=========================================\n")
-    print(results_df[["Label", "Outcome", "Estimate", "Std.Err", "P-value", "Method", "N"]].round(4).to_string(index=False))
+    # Display both Robust and Conventional results
+    display_cols = ["Label", "Outcome", "Estimate", "P-value", "Estimate_Conv", "P-value_Conv", "N"]
+    print(results_df[display_cols].round(4).to_string(index=False))
     print(f"\nSaved final results to: {RESULTS_DIR / 'estimation_results_final.csv'}")
 
 if __name__ == "__main__":

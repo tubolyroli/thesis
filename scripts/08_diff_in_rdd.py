@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import statsmodels.formula.api as smf
-from config import FINAL_DIR, RESULTS_DIR, DONUT_WEEKS
+from config import FINAL_DIR, RESULTS_DIR, DONUT_WEEKS, DEFAULT_BW, MIN_DOWNLOADS_FILTER, MIN_SUCCESS_LOW, MIN_SUCCESS_HIGH
 
 def main():
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
@@ -27,7 +27,7 @@ def main():
             df_p["is_2021"] = 0
             dfs.append(df_p)
             
-    if len(dfs) < 2:
+    if not dfs:
         print("Required analysis files for Diff-in-RDD not found.")
         return
 
@@ -36,7 +36,7 @@ def main():
     
     # 2. Filter & Prep
     # We use the h=13 (July vs Oct) bandwidth and Post-AI outcome
-    h = 13
+    h = DEFAULT_BW
     outcome = "post_ai_downloads_alltime"
     
     # Apply Donut and Bandwidth
@@ -44,18 +44,18 @@ def main():
     df = df[(df["dist_to_cutoff"] >= -h) & (df["dist_to_cutoff"] <= h)].copy()
     
     # Baseline filter (Min 10 downloads in first 52 weeks)
-    df_min10 = df[df["total_downloads_52wk"] >= 10].copy()
+    df_min10 = df[df["total_downloads_52wk"] >= MIN_DOWNLOADS_FILTER].copy()
     
     # Subsample: "Successful" Libraries (Pre-GPT Winners)
     # Using 26-week horizon as suggested by supervisor
-    df_success_500 = df[df["cum_downloads_26wk"] >= 500].copy()
-    df_success_1000 = df[df["cum_downloads_26wk"] >= 1000].copy()
+    df_success_low = df[df["cum_downloads_26wk"] >= MIN_SUCCESS_LOW].copy()
+    df_success_high = df[df["cum_downloads_26wk"] >= MIN_SUCCESS_HIGH].copy()
 
     results = []
     tiers = [
-        (df_min10, "Broad (min10)"),
-        (df_success_500, "Successful (min500@26w)"),
-        (df_success_1000, "Superstar (min1000@26w)")
+        (df_min10, "Broad"),
+        (df_success_low, f"Successful (min{MIN_SUCCESS_LOW}@26w)"),
+        (df_success_high, f"Superstar (min{MIN_SUCCESS_HIGH}@26w)")
     ]
 
     for df_tier, tier_label in tiers:
@@ -108,8 +108,9 @@ def main():
     print(results_df[["Tier", "Outcome", "Excess_Jump", "Std_Err", "P_value", "N"]].round(4).to_string(index=False))
     
     # Save the Broad result for final summary
-    if not results_df.empty:
-        results_df.head(1).to_csv(RESULTS_DIR / "diff_in_rdd_final.csv", index=False)
+    broad_res = results_df[results_df["Tier"] == "Broad"]
+    if not broad_res.empty:
+        broad_res.to_csv(RESULTS_DIR / "diff_in_rdd_final.csv", index=False)
 
 if __name__ == "__main__":
     main()

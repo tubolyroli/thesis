@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from config import FINAL_DIR, RESULTS_DIR, CUTOFFS, DONUT_WEEKS
+from config import FINAL_DIR, RESULTS_DIR, CUTOFFS, DONUT_WEEKS, DEFAULT_BW, MIN_DOWNLOADS_FILTER
 from utils import run_rdrobust_est, run_quantile_rdd, setup_plotting_style
 
 def main():
@@ -19,11 +19,11 @@ def main():
             if df_path.exists():
                 df = pd.read_csv(df_path)
                 # Baseline filter
-                df_min10 = df[df["total_downloads_52wk"] >= 10].copy()
+                df_min10 = df[df["total_downloads_52wk"] >= MIN_DOWNLOADS_FILTER].copy()
                 
                 print(f"  Estimating Placebo: {name} (Outcome: post_ai_downloads_alltime)...")
                 res = run_rdrobust_est(
-                    df_min10, "post_ai_downloads_alltime", h=13, 
+                    df_min10, "post_ai_downloads_alltime", h=DEFAULT_BW, 
                     donut_weeks=DONUT_WEEKS, label=f"Placebo: {name}"
                 )
                 robust_results.append(res)
@@ -33,12 +33,12 @@ def main():
     main_df_path = FINAL_DIR / "analysis_Main_2021.csv"
     if main_df_path.exists():
         df_main = pd.read_csv(main_df_path)
-        df_min10 = df_main[df_main["total_downloads_52wk"] >= 10].copy()
+        df_min10 = df_main[df_main["total_downloads_52wk"] >= MIN_DOWNLOADS_FILTER].copy()
         
         # Test Median for Post-AI Downloads (The primary "Activation" outcome)
         print("  Estimating Median RDD...")
         res_median = run_quantile_rdd(
-            df_min10, "post_ai_downloads_alltime", q=0.5, h=13, 
+            df_min10, "post_ai_downloads_alltime", q=0.5, h=DEFAULT_BW, 
             donut_weeks=DONUT_WEEKS, label="Main: Median RDD (Post-AI)"
         )
         robust_results.append(res_median)

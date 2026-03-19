@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import statsmodels.formula.api as smf
 import matplotlib.pyplot as plt
-from config import FINAL_DIR, RESULTS_DIR, FIGURES_DIR, DONUT_WEEKS
+from config import FINAL_DIR, RESULTS_DIR, FIGURES_DIR, DONUT_WEEKS, MIN_SUCCESS_LOW
 from utils import setup_plotting_style
 
 def main():
@@ -38,7 +38,7 @@ def main():
     df_full = pd.concat(dfs, ignore_index=True)
     
     # 2. Filter for "Successful" Libraries (min 500 at 26 weeks)
-    df_success = df_full[df_full["cum_downloads_26wk"] >= 500].copy()
+    df_success = df_full[df_full["cum_downloads_26wk"] >= MIN_SUCCESS_LOW].copy()
     print(f"Total Successful Sample: {len(df_success)}")
 
     # 3. Parameters
@@ -101,7 +101,7 @@ def main():
                 fmt='o-', color='darkred', capsize=5, linewidth=2, label="Excess Jump (2021 vs Placebos)")
     
     ax.axhline(0, color='black', linestyle='--', alpha=0.5)
-    ax.set_title("Bandwidth Sensitivity: The 'Suppression' Excess Jump\n(Subsample: Successful Libraries, min 500 @ 26w)", fontsize=13, fontweight='bold')
+    ax.set_title(f"Bandwidth Sensitivity: The 'Suppression' Excess Jump\n(Subsample: Successful Libraries, min {MIN_SUCCESS_LOW} @ 26w)", fontsize=13, fontweight='bold')
     ax.set_xlabel("Bandwidth (Weeks from Cutoff)", fontsize=12)
     ax.set_ylabel("Diff-in-RDD Estimate (Log Scale)", fontsize=12)
     ax.grid(True, linestyle=':', alpha=0.6)

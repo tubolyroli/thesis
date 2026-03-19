@@ -11,8 +11,12 @@ FIGURES_DIR = RESULTS_DIR / "figures"
 
 # Analysis Parameters
 WINDOW_WEEKS = 156 # Extended to 3 years to capture long horizons
+HORIZON_WEEKS = 52 # Standardized horizon for diffusion analysis
 DONUT_WEEKS = list(range(-8, 1)) # July vs October (Excludes Aug & Sept: ~9 weeks)
-MIN_DOWNLOADS_52WK = 10
+DEFAULT_BW = 13 # Bandwidth used across several scripts
+EXTENDED_BW = 26 # Horizon used for distributional/median analysis
+BW_GRID = [8, 13, 18, 26, 39, 52] # Standard bandwidth grid for sensitivity tests
+MIN_DOWNLOADS_FILTER = 10 # Baseline sample restriction
 MIN_SUCCESS_LOW = 500  # "Successful" threshold 1 (at 26 weeks)
 MIN_SUCCESS_HIGH = 1000 # "Successful" threshold 2 (at 26 weeks)
 SUCCESS_HORIZON = 26     # Weeks since release to measure pre-GPT success

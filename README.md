@@ -9,7 +9,7 @@
 ## 🚀 Quick Summary: The "Cutoff Tax" & Suppression
 The empirical phase of this thesis is now complete. We have established three core facts:
 1.  **The Suppression Fact:** Libraries released after the September 2021 cutoff suffer a **-12.79 log point "Excess Jump"** in adoption relative to historical seasonal norms (2018–2020). This "cutoff tax" is heaviest for high-potential "successful" libraries.
-2.  **The Activation Mechanism:** This diffusion gap was **dormant** before ChatGPT. It only "activated" once the model became a mass interface (Nov 2022), confirming the gap is driven by LLM-mediated discovery.
+2.  **The Activation Mechanism:** The implementation gap (actual code usage) was **dormant** before ChatGPT. It only activated once the model became a mass interface (Nov 2022). While interest-level downloads (PyPI) show a detectable earlier gap, the steering of actual developer tool-choice is strictly a post-AI phenomenon.
 3.  **Vulnerability:** Suppression is concentrated in **"Low AI Exposure"** libraries. Tools that are both excluded from the model's training data and "unprotected" by AI-mediated generation suffer the most.
 
 ### 📊 Core Empirical Evidence (September 2021 Cutoff)
@@ -67,10 +67,9 @@ By differencing out historical norms, we find that the September 2021 cutoff **u
 *   **Interpretation:** The "cutoff tax" is not a uniform penalty; it is **40% larger** for high-potential libraries than for the broad population.
 
 ### 3.2. The "Activation" Smoking Gun
-The diffusion gap is not an immediate property of the release date; it is an **LLM-driven phenomenon** that only appeared after the model became a mass interface.
-*   **Pre-ChatGPT (52w Horizon):** Statistically **insignificant** (p = 0.28).
-*   **Post-ChatGPT (All Horizons):** Highly **significant** (p < 0.05).
-*   **GitHub vs. PyPI:** The gap in GitHub usage (Estimate: 26.8) is **twice as large** as the gap in PyPI downloads (Estimate: 13.1), confirming the mechanism of AI-steered implementation.
+The diffusion gap is not an immediate property of the release date; it is an **LLM-driven phenomenon** that only fully activated once the model became a mass interface.
+*   **Implementation Gap (GitHub):** Statistically **insignificant** at the 52-week pre-ChatGPT horizon (Conventional p=0.72, Robust p=0.28). Developers were not uniquely biased against post-cutoff tools until they began using LLMs for code generation.
+*   **Discovery Gap (PyPI):** More sensitive to estimation; while Bias-Corrected estimates show an earlier gap, the **implementation gap** in GitHub usage (Estimate: 26.8) is **twice as large** as the interest gap in PyPI downloads (Estimate: 13.1), confirming the mechanism of AI-steered implementation.
 
 ### 3.3. Mechanism: AI Exposure as a "Protective" Factor
 Suppression is concentrated in libraries with **Low AI Exposure** (proxied by the average AI-score of GitHub commits).

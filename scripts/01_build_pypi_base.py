@@ -37,10 +37,7 @@ def main() -> None:
     release_dates = release_df.groupby("package")["release_week"].min().reset_index()
     
     # Mapping for Pass 2 (original project names to release dates)
-    project_to_release = release_df.set_index("project")["release_week"].to_dict()
-    # Ensure it uses the package-level min
     pkg_min_map = release_dates.set_index("package")["release_week"].to_dict()
-    project_to_release = {p: pkg_min_map[normalize_name(pd.Series([p]))[0]] for p in release_weeks.keys()}
 
     print(f"Found {len(release_dates):,} unique packages.")
 
@@ -48,6 +45,7 @@ def main() -> None:
     print("Pass 2: Aggregating horizons...")
     
     aggs = []
+    max_observed_date = pd.Timestamp.min
 
     for batch in parquet_file.iter_batches(batch_size=2_000_000, columns=["project", "week_start", "downloads"]):
         df_chunk = batch.to_pandas()
@@ -59,6 +57,12 @@ def main() -> None:
         
         # Calculate weeks since release
         df_chunk["week_start"] = pd.to_datetime(df_chunk["week_start"])
+        
+        # Track max week_start for metadata
+        chunk_max = df_chunk["week_start"].max()
+        if chunk_max > max_observed_date:
+            max_observed_date = chunk_max
+
         df_chunk["weeks_since_release"] = get_weeks_since(df_chunk["week_start"], df_chunk["release_week"])
         
         # Filter post-release
@@ -103,7 +107,7 @@ def main() -> None:
     
     pypi_meta = pd.DataFrame({
         "source": ["pypi"],
-        "max_week_start": [pd.to_datetime(full_agg.index.name if hasattr(full_agg.index, 'name') else CHATGPT_RELEASE).max()], # Placeholder or detect properly
+        "max_week_start": [max_observed_date],
         "n_unique_packages_raw": [len(release_dates)],
         "n_unique_packages_release_proxy": [len(pypi_base)]
     })

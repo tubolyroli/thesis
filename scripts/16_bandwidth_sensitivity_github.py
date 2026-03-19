@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from config import MAIN_ANALYSIS_DATA, RESULTS_DIR, DONUT_WEEKS
+from config import MAIN_ANALYSIS_DATA, RESULTS_DIR, DONUT_WEEKS, BW_GRID
 from utils import run_rdrobust_est, setup_plotting_style
 
 def main():
@@ -19,7 +19,7 @@ def main():
     
     outcome = "post_ai_imports_alltime"
     # Bandwidths to test (in weeks from cutoff)
-    bandwidths = [8, 13, 18, 26, 39, 52]
+    bandwidths = BW_GRID
     
     results = []
     print(f"Running sensitivity for {outcome}...")

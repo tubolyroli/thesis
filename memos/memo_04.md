@@ -38,10 +38,11 @@ We implemented a **Difference-in-Discontinuities** comparing the 2021 cohort aga
 *   **Conclusion:** The September 2021 cutoff **uniquely suppressed** the seasonal adoption boost usually seen in autumn releases. This suppression is **40% larger for Successful libraries** than for the broad population, suggesting the "cutoff tax" is heaviest for high-potential tools.
 
 ### 3B. The "Activation" Smoking Gun (GitHub Mechanism)
-Long-run estimates for the 2021 cohort confirm that the diffusion gap is an LLM-driven phenomenon:
-*   **Pre-ChatGPT (52w Horizon):** Statistically **insignificant** (p=0.28).
+Long-run estimates for the 2021 cohort confirm that the implementation gap is an LLM-driven phenomenon:
+*   **Implementation Gap (GitHub 52w):** Statistically **insignificant** (Conventional p=0.72, Robust p=0.28).
 *   **Post-ChatGPT (All Horizons):** Highly **significant** (p < 0.05).
-*   **Interpretation:** The discontinuity only "activated" once the model became a mass interface. The gap in GitHub usage (Estimate: 26.8) is **twice as large** as the gap in PyPI downloads (Estimate: 13.1), confirming the mechanism of AI-steered implementation.
+*   **Interpretation:** The discontinuity in actual code implementation only "activated" once the model became a mass interface. The gap in GitHub usage (Estimate: 26.8) is **twice as large** as the interest gap in PyPI downloads (Estimate: 13.1), confirming the mechanism of AI-steered tool choice.
+
 
 ## 4. Final RDD Estimation Results (Main 2021)
 

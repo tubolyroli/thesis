@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-from config import FINAL_DIR, RESULTS_DIR, FIGURES_DIR, DONUT_WEEKS
+from config import FINAL_DIR, RESULTS_DIR, FIGURES_DIR, DONUT_WEEKS, DEFAULT_BW, MIN_SUCCESS_LOW
 from utils import setup_plotting_style
 
 def main():
@@ -37,11 +37,11 @@ def main():
     df = pd.concat(dfs, ignore_index=True)
     
     # 2. Filter for "Successful" Libraries (min 500 at 26 weeks)
-    df_success = df[df["cum_downloads_26wk"] >= 500].copy()
+    df_success = df[df["cum_downloads_26wk"] >= MIN_SUCCESS_LOW].copy()
     print(f"Sample size (Successful @ 26w): {len(df_success)}")
 
     # 3. Preparation for Plotting
-    h = 13 # Match the bandwidth from Diff-in-RDD
+    h = DEFAULT_BW # Match the bandwidth from Diff-in-RDD
     outcome = "post_ai_downloads_alltime"
     
     # Apply Donut and Bandwidth
@@ -71,7 +71,7 @@ def main():
                     line_kws={'linestyle':'-' if "2021" in period else '--', 'alpha':0.8})
 
     ax.axvline(0, color="black", linestyle=":", alpha=0.5)
-    ax.set_title("Visualizing the 'Suppression' Effect: 2021 vs Historical Norms\n(Subsample: Successful Libraries, min 500 downloads @ 26w)", fontsize=13, fontweight='bold')
+    ax.set_title(f"Visualizing the 'Suppression' Effect: 2021 vs Historical Norms\n(Subsample: Successful Libraries, min {MIN_SUCCESS_LOW} downloads @ 26w)", fontsize=13, fontweight='bold')
     ax.set_xlabel("Weeks since Cutoff (Sept 2021 vs. Sept Placebos)", fontsize=11)
     ax.set_ylabel(f"log(1 + {outcome})", fontsize=11)
     
@@ -85,7 +85,7 @@ def main():
                 arrowprops=dict(facecolor='black', shrink=0.05, width=1, headwidth=8))
 
     plt.tight_layout()
-    out_path = FIGURES_DIR / "suppression_visual_success_500.png"
+    out_path = FIGURES_DIR / f"suppression_visual_success_{MIN_SUCCESS_LOW}.png"
     plt.savefig(out_path, dpi=300)
     print(f"Saved suppression plot to {out_path}")
 
