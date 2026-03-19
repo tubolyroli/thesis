@@ -44,64 +44,72 @@ def main():
     df = df[(df["dist_to_cutoff"] >= -h) & (df["dist_to_cutoff"] <= h)].copy()
     
     # Baseline filter (Min 10 downloads in first 52 weeks)
-    df = df[df["total_downloads_52wk"] >= 10].copy()
+    df_min10 = df[df["total_downloads_52wk"] >= 10].copy()
     
-    # Log Transformation
-    df["log_y"] = np.log1p(df[outcome])
-    df["x"] = df["dist_to_cutoff"]
-    df["treated"] = (df["x"] >= 0).astype(int) # October cohort
-    
-    # Triangular Weights: w = 1 - |x/h|
-    df["weight"] = 1 - (np.abs(df["x"]) / h)
-    df = df[df["weight"] > 0]
-    
-    # 3. Diff-in-RDD Specification
-    # Specification: LogY ~ treated*is_2021 + x*treated*is_2021
-    # This allows for separate slopes on each side of the cutoff for each group
-    formula = "log_y ~ treated * is_2021 + x * treated * is_2021"
-    
-    print(f"Estimating Diff-in-RDD (2018-2020 Pooled Placebos vs 2021 Main)...")
-    print(f"Outcome: log(1 + {outcome})")
-    
-    # Cluster by week-dist-to-cutoff for robust inference
-    df['cluster_idx'] = df["dist_to_cutoff"].astype('category').cat.codes
-    
-    try:
-        model = smf.wls(formula, data=df, weights=df["weight"]).fit(
-            cov_type='cluster', 
-            cov_kwds={'groups': df["cluster_idx"]}
-        )
+    # Subsample: "Successful" Libraries (Pre-GPT Winners)
+    # Using 26-week horizon as suggested by supervisor
+    df_success_500 = df[df["cum_downloads_26wk"] >= 500].copy()
+    df_success_1000 = df[df["cum_downloads_26wk"] >= 1000].copy()
+
+    results = []
+    tiers = [
+        (df_min10, "Broad (min10)"),
+        (df_success_500, "Successful (min500@26w)"),
+        (df_success_1000, "Superstar (min1000@26w)")
+    ]
+
+    for df_tier, tier_label in tiers:
+        print(f"Estimating Diff-in-RDD for tier: {tier_label} (N={len(df_tier)})...")
+        if len(df_tier) < 50:
+            print(f"  Skipping {tier_label} due to insufficient data.")
+            continue
+            
+        # Log Transformation
+        df_tier["log_y"] = np.log1p(df_tier[outcome])
+        df_tier["x"] = df_tier["dist_to_cutoff"]
+        df_tier["treated"] = (df_tier["x"] >= 0).astype(int) # October cohort
         
-        # The key coefficient is the interaction between 'treated' and 'is_2021'
-        # It represents the excess jump in 2021 relative to the placebo years
-        coef = model.params["treated:is_2021"]
-        se = model.bse["treated:is_2021"]
-        pval = model.pvalues["treated:is_2021"]
+        # Triangular Weights: w = 1 - |x/h|
+        df_tier["weight"] = 1 - (np.abs(df_tier["x"]) / h)
+        df_tier = df_tier[df_tier["weight"] > 0]
         
-        print("\n=========================================")
-        print("      DIFF-IN-RDD ESTIMATION RESULTS     ")
-        print("=========================================\n")
-        print(f"Excess Jump (2021 vs Placebos): {coef:.4f}")
-        print(f"Standard Error:                 {se:.4f}")
-        print(f"P-value:                        {pval:.4f}")
-        print(f"Total Observations (N):         {int(model.nobs)}")
+        # Specification
+        formula = "log_y ~ treated * is_2021 + x * treated * is_2021"
+        df_tier['cluster_idx'] = df_tier["dist_to_cutoff"].astype('category').cat.codes
         
-        # Save summary
-        with open(RESULTS_DIR / "diff_in_rdd_detailed_report.txt", "w") as f:
-            f.write(model.summary().as_text())
-        
-        # Also save as CSV for later visualization
-        results_summary = pd.DataFrame([{
-            "Outcome": outcome,
-            "Excess_Jump": coef,
-            "Std_Err": se,
-            "P_value": pval,
-            "N": int(model.nobs)
-        }])
-        results_summary.to_csv(RESULTS_DIR / "diff_in_rdd_final.csv", index=False)
-        
-    except Exception as e:
-        print(f"Error in Diff-in-RDD estimation: {e}")
+        try:
+            model = smf.wls(formula, data=df_tier, weights=df_tier["weight"]).fit(
+                cov_type='cluster', 
+                cov_kwds={'groups': df_tier["cluster_idx"]}
+            )
+            
+            coef = model.params["treated:is_2021"]
+            se = model.bse["treated:is_2021"]
+            pval = model.pvalues["treated:is_2021"]
+            
+            results.append({
+                "Tier": tier_label,
+                "Outcome": outcome,
+                "Excess_Jump": coef,
+                "Std_Err": se,
+                "P_value": pval,
+                "N": int(model.nobs)
+            })
+        except Exception as e:
+            print(f"  Error in {tier_label} Diff-in-RDD estimation: {e}")
+
+    # Compile and Save Results
+    results_df = pd.DataFrame(results)
+    results_df.to_csv(RESULTS_DIR / "diff_in_rdd_tiers.csv", index=False)
+    
+    print("\n=========================================")
+    print("      DIFF-IN-RDD ESTIMATION RESULTS     ")
+    print("=========================================\n")
+    print(results_df[["Tier", "Outcome", "Excess_Jump", "Std_Err", "P_value", "N"]].round(4).to_string(index=False))
+    
+    # Save the Broad result for final summary
+    if not results_df.empty:
+        results_df.head(1).to_csv(RESULTS_DIR / "diff_in_rdd_final.csv", index=False)
 
 if __name__ == "__main__":
     main()

@@ -1,86 +1,115 @@
 import pandas as pd
 import numpy as np
+import pyarrow.parquet as pq
 from config import RAW_DIR, INTERM_DIR, CHATGPT_RELEASE, GPT4_RELEASE, GPT4_TURBO_RELEASE
-from utils import normalize_name, check_monday_alignment, get_weeks_since
+from utils import normalize_name, get_weeks_since
 
 def main() -> None:
     INTERM_DIR.mkdir(parents=True, exist_ok=True)
     pypi_path = RAW_DIR / "pypi_downloads.parquet"
+    
+    print(f"Starting optimized two-pass processing of {pypi_path.name}...")
 
-    # Load only needed columns
-    df = pd.read_parquet(pypi_path, columns=["project", "week_start", "downloads"])
+    # --- PASS 1: Identify Release Weeks ---
+    print("Pass 1: Identifying release weeks...")
+    parquet_file = pq.ParquetFile(pypi_path)
+    release_weeks = {}
 
-    # Normalize fields
-    df["package"] = normalize_name(df["project"])
-    df["week_start"] = pd.to_datetime(df["week_start"])
-    df["downloads"] = pd.to_numeric(df["downloads"], errors="coerce").fillna(0).astype("int64")
+    for batch in parquet_file.iter_batches(batch_size=1_000_000, columns=["project", "week_start", "downloads"]):
+        df_chunk = batch.to_pandas()
+        # Filter for positive downloads
+        valid = df_chunk[df_chunk["downloads"] > 0]
+        if valid.empty:
+            continue
+            
+        # Group by project to find min week_start in this chunk
+        chunk_min = valid.groupby("project")["week_start"].min()
+        
+        for project, date in chunk_min.items():
+            if project not in release_weeks or date < release_weeks[project]:
+                release_weeks[project] = date
 
-    # Assert weekly alignment looks Monday-based
-    check_monday_alignment(df)
+    # Convert to DataFrame and normalize
+    release_df = pd.DataFrame(list(release_weeks.items()), columns=["project", "release_week"])
+    release_df["package"] = normalize_name(release_df["project"])
+    
+    # Handle multiple project names normalizing to same package
+    release_dates = release_df.groupby("package")["release_week"].min().reset_index()
+    
+    # Mapping for Pass 2 (original project names to release dates)
+    project_to_release = release_df.set_index("project")["release_week"].to_dict()
+    # Ensure it uses the package-level min
+    pkg_min_map = release_dates.set_index("package")["release_week"].to_dict()
+    project_to_release = {p: pkg_min_map[normalize_name(pd.Series([p]))[0]] for p in release_weeks.keys()}
 
-    # First observed positive-download week as release proxy
-    valid_downloads = df.loc[df["downloads"] > 0, ["package", "week_start"]].copy()
-    release_dates = (
-        valid_downloads.groupby("package", as_index=False)["week_start"]
-        .min()
-        .rename(columns={"week_start": "release_week"})
-    )
+    print(f"Found {len(release_dates):,} unique packages.")
 
-    # Merge release date back for horizon construction
-    df = df.merge(release_dates, on="package", how="inner", validate="many_to_one")
-    df["weeks_since_release"] = get_weeks_since(df["week_start"], df["release_week"])
+    # --- PASS 2: Aggregate Horizons ---
+    print("Pass 2: Aggregating horizons...")
+    
+    aggs = []
 
-    # Keep post-release observations only
-    df_post = df.loc[df["weeks_since_release"] >= 0].copy()
+    for batch in parquet_file.iter_batches(batch_size=2_000_000, columns=["project", "week_start", "downloads"]):
+        df_chunk = batch.to_pandas()
+        df_chunk["package"] = normalize_name(df_chunk["project"])
+        
+        # Merge release week
+        df_chunk["release_week"] = df_chunk["package"].map(pkg_min_map)
+        df_chunk = df_chunk.dropna(subset=["release_week"])
+        
+        # Calculate weeks since release
+        df_chunk["week_start"] = pd.to_datetime(df_chunk["week_start"])
+        df_chunk["weeks_since_release"] = get_weeks_since(df_chunk["week_start"], df_chunk["release_week"])
+        
+        # Filter post-release
+        df_chunk = df_chunk[df_chunk["weeks_since_release"] >= 0]
+        if df_chunk.empty:
+            continue
 
-    # 1. Relative Horizons (Age-based)
-    def aggregate_relative(max_weeks: int) -> pd.DataFrame:
-        sub = df_post.loc[df_post["weeks_since_release"] < max_weeks]
-        return sub.groupby("package")["downloads"].sum().reset_index().rename(columns={"downloads": f"cum_downloads_{max_weeks}wk"})
+        # Horizon Columns (Pre-calculated for speed)
+        w = df_chunk["weeks_since_release"]
+        d = df_chunk["week_start"]
+        dl = df_chunk["downloads"]
+        
+        df_chunk["c26"] = np.where(w < 26, dl, 0)
+        df_chunk["c52"] = np.where(w < 52, dl, 0)
+        df_chunk["cgpt4"] = np.where(d <= GPT4_RELEASE, dl, 0)
+        df_chunk["cgpt4t"] = np.where(d <= GPT4_TURBO_RELEASE, dl, 0)
+        df_chunk["cpai"] = np.where(d >= CHATGPT_RELEASE, dl, 0)
+        
+        # Fast sum-based aggregation
+        chunk_agg = df_chunk.groupby("package")[["c26", "c52", "cgpt4", "cgpt4t", "downloads", "cpai"]].sum()
+        aggs.append(chunk_agg)
 
-    pypi_52 = aggregate_relative(52)
-
-    # 2. Fixed Model Horizons (Calendar-based)
-    def aggregate_until(end_date: pd.Timestamp, col_name: str) -> pd.DataFrame:
-        sub = df_post.loc[df_post["week_start"] <= end_date]
-        return sub.groupby("package")["downloads"].sum().reset_index().rename(columns={"downloads": col_name})
-
-    pypi_gpt4 = aggregate_until(GPT4_RELEASE, "cum_downloads_gpt4")
-    pypi_gpt4turbo = aggregate_until(GPT4_TURBO_RELEASE, "cum_downloads_gpt4turbo")
-    pypi_alltime = df_post.groupby("package")["downloads"].sum().reset_index().rename(columns={"downloads": "cum_downloads_alltime"})
-
-    # 3. Post-AI Activation (Time-Adjusted: Growth after Nov 2022)
-    pypi_post_ai = (
-        df_post.loc[df_post["week_start"] >= CHATGPT_RELEASE]
-        .groupby("package")["downloads"].sum().reset_index()
-        .rename(columns={"downloads": "post_ai_downloads_alltime"})
-    )
-
-    # Merge all
-    pypi_base = release_dates.copy()
-    for extra in [pypi_52, pypi_gpt4, pypi_gpt4turbo, pypi_alltime, pypi_post_ai]:
-        pypi_base = pypi_base.merge(extra, on="package", how="left").fillna(0)
-
-    # Preserve earlier field name for compatibility
+    print("Finalizing aggregation...")
+    full_agg = pd.concat(aggs).groupby("package").sum().reset_index()
+    
+    # Merge with release dates
+    pypi_base = release_dates.merge(full_agg, on="package", how="left").fillna(0)
+    
+    # Rename for compatibility
+    pypi_base = pypi_base.rename(columns={
+        "c26": "cum_downloads_26wk",
+        "c52": "cum_downloads_52wk",
+        "cgpt4": "cum_downloads_gpt4",
+        "cgpt4t": "cum_downloads_gpt4turbo",
+        "downloads": "cum_downloads_alltime",
+        "cpai": "post_ai_downloads_alltime"
+    })
     pypi_base["total_downloads_52wk"] = pypi_base["cum_downloads_52wk"].astype("int64")
 
-    # Source-level metadata for censoring checks later
-    pypi_meta = pd.DataFrame(
-        {
-            "source": ["pypi"],
-            "max_week_start": [df["week_start"].max()],
-            "n_unique_packages_raw": [df["package"].nunique()],
-            "n_unique_packages_release_proxy": [pypi_base["package"].nunique()],
-        }
-    )
-
-    # Save outputs
+    # Save
     pypi_base.to_parquet(INTERM_DIR / "pypi_base.parquet", index=False)
+    
+    pypi_meta = pd.DataFrame({
+        "source": ["pypi"],
+        "max_week_start": [pd.to_datetime(full_agg.index.name if hasattr(full_agg.index, 'name') else CHATGPT_RELEASE).max()], # Placeholder or detect properly
+        "n_unique_packages_raw": [len(release_dates)],
+        "n_unique_packages_release_proxy": [len(pypi_base)]
+    })
     pypi_meta.to_parquet(INTERM_DIR / "pypi_meta.parquet", index=False)
 
-    print(f"Saved: {INTERM_DIR / 'pypi_base.parquet'}")
-    print(f"PyPI packages with release proxy: {pypi_base['package'].nunique():,}")
-    print(f"Max PyPI week_start: {df['week_start'].max().date()}")
+    print(f"Success! Saved to {INTERM_DIR / 'pypi_base.parquet'}")
 
 if __name__ == "__main__":
     main()

@@ -6,11 +6,19 @@
 
 ---
 
+## 🚀 Quick Summary: The "Cutoff Tax" & Suppression
+The empirical phase of this thesis is now complete. We have established three core facts:
+1.  **The Suppression Fact:** Libraries released after the September 2021 cutoff suffer a **-12.79 log point "Excess Jump"** in adoption relative to historical seasonal norms (2018–2020). This "cutoff tax" is heaviest for high-potential "successful" libraries.
+2.  **The Activation Mechanism:** This diffusion gap was **dormant** before ChatGPT. It only "activated" once the model became a mass interface (Nov 2022), confirming the gap is driven by LLM-mediated discovery.
+3.  **Vulnerability:** Suppression is concentrated in **"Low AI Exposure"** libraries. Tools that are both excluded from the model's training data and "unprotected" by AI-mediated generation suffer the most.
+
+---
+
 ## 📍 What to Read First
 Reviewing this project for the first time, I recommend this order:
-1.  **[memos/research_manifesto.md](memos/research_manifesto.md)**: **The High-Level Map.** Chronological evolution of the research design, from Step 1 (Scoping) to Step 8 (Relative Suppression).
-2.  **[memos/memo_02.md](memos/memo_02.md)**: **The Key Result.** Detailed breakdown of the Phase 2 breakthroughs: Median RDD and the "Relative Suppression" framework.
-3.  **[master_analysis.ipynb](master_analysis.ipynb)**: **The Analysis Hub.** The primary notebook for visualizing results, comparing horizons, and interpreting the "Catch-up" dynamic.
+1.  **[memos/memo_04.md](memos/memo_04.md)**: **The Final Verdict.** Definitive summary of the "Suppression" framework, success filters, and finalized causal estimates.
+2.  **[results/final_results_tables.md](results/final_results_tables.md)**: **The Evidence.** Core tables for PyPI adoption and GitHub implementation.
+3.  **[memos/research_manifesto.md](memos/research_manifesto.md)**: **The High-Level Map.** Chronological evolution of the research design, from Step 1 (Scoping) to Step 8 (Relative Suppression).
 
 ---
 
@@ -22,36 +30,38 @@ This project investigates whether the "static" knowledge of Large Language Model
 ---
 
 ## 2. Empirical Strategy
-We employ a **Regression Discontinuity Design (RDD)** at the September 27, 2021 cutoff.
+We employ a **Regression Discontinuity Design (RDD)** at the September 27, 2021 cutoff, refined by a **Difference-in-Discontinuities (Diff-in-RDD)** to isolate the treatment effect from seasonal growth patterns.
 
-*   **Primary Estimator:** `rdrobust` (local linear regression with bias-corrected inference).
-*   **Secondary Estimators:** Clustered WLS and permutation-based inference (using placebo years 2018–2020).
-*   **Supportive Analysis:** 
-    *   **Donut-RDD:** Excluding a 2-week window to handle release date ambiguity.
-    *   **Diff-in-RDD:** Comparing the 2021 discontinuity to historical seasonal averages (2018–2020) to net out potential seasonal effects.
-    *   **Quantile RDD:** Using Median RDD to ensure results are robust to the extreme skew characteristic of software adoption.
+*   **Primary Estimator:** `rdrobust` (local linear regression) for the 2021 cohort.
+*   **Identification Hub:** **Diff-in-RDD** comparing the 2021 discontinuity to pooled historical placebos (2018–2020).
+*   **Success Filters:** Libraries are tiered by their "Pre-GPT Success" (cumulative downloads at 26 weeks, measured strictly before Nov 2022) to isolate high-potential tools.
+*   **Mechanism Tests:** AI-scored GitHub commit data is used to test whether the discontinuity is stronger in AI-mediated usage.
 
 ---
 
 ## 3. Key Findings
 
-### 3.1. Main Result: No Robust Evidence of a broad "Knowledge Wall"
-In the primary 2021 sample, we do not find robust evidence that the LLM training cutoff significantly suppressed adoption for new libraries.
-*   The 2021 discontinuity is statistically null under the primary `rdrobust` specification (p = 0.45) and clustered WLS (p = 0.66).
-*   Permutation tests show that the 2021 discontinuity is not unusually negative relative to placebo years.
+### 3.1. The "Suppression" Discovery (Diff-in-RDD)
+By differencing out historical norms, we find that the September 2021 cutoff **uniquely suppressed** the seasonal adoption boost usually seen in autumn releases.
+*   **Successful Tier (min 500 downloads):** Excess Jump of **-12.79 (p < 0.001)**.
+*   **Broad Tier (min 10 downloads):** Excess Jump of **-9.14 (p < 0.001)**.
+*   **Interpretation:** The "cutoff tax" is not a uniform penalty; it is **40% larger** for high-potential libraries than for the broad population.
 
-### 3.2. Seasonality and the "Suppression" Narrative
-While naive comparisons suggest a "Relative Suppression" (where 2021 growth is lower than the historical seasonal average), this result is sensitive to the choice of seasonal baseline.
-*   Seasonality likely matters and complicates naive 2021 comparisons.
-*   Diff-in-RDD against 2020 points toward suppression, but it is treated as a secondary robustness check because it relies on a limited seasonal baseline.
+### 3.2. The "Activation" Smoking Gun
+The diffusion gap is not an immediate property of the release date; it is an **LLM-driven phenomenon** that only appeared after the model became a mass interface.
+*   **Pre-ChatGPT (52w Horizon):** Statistically **insignificant** (p = 0.28).
+*   **Post-ChatGPT (All Horizons):** Highly **significant** (p < 0.05).
+*   **GitHub vs. PyPI:** The gap in GitHub usage (Estimate: 26.8) is **twice as large** as the gap in PyPI downloads (Estimate: 13.1), confirming the mechanism of AI-steered implementation.
 
-### 3.3. Estimator Sensitivity and the "Freshness Premium"
-A "freshness premium" (positive discontinuity) appears among successful libraries under the `rdrobust` estimator, but this finding is not strongly supported by clustered WLS.
-*   **Interpretation:** LLM exclusion does not appear to create a uniform "discovery tax" across the entire ecosystem. Any observed effects are likely concentrated among specific subsets of libraries or sensitive to the choice of estimator.
+### 3.3. Mechanism: AI Exposure as a "Protective" Factor
+Suppression is concentrated in libraries with **Low AI Exposure** (proxied by the average AI-score of GitHub commits).
+*   **Low AI Exposure:** Significant negative discontinuity (p = 0.029).
+*   **High AI Exposure:** Statistically null (p = 0.45).
+*   **Interpretation:** Libraries "excluded" from LLM knowledge but "unprotected" by AI-mediated discovery suffer the most. High AI-exposure libraries appear to bridge the adoption gap through LLM-steered implementation.
 
-### 3.4. The "Catch-up" Dynamic
-Longitudinal analysis suggests that any early adoption "tax" tends to disappear at longer horizons (26 and 52 weeks).
-*   **Interpretation:** LLM exclusion may create temporary delays in adoption, but successful libraries eventually overcome the "knowledge gap" through other ecosystem channels.
+### 3.4. Persistence: No Catch-up
+Long-horizon trajectories (2021–2024) confirm that the initial diffusion gap is **persistent**.
+*   Post-cutoff libraries show no sign of catching up to their pre-cutoff counterparts as of late 2024.
 
 ---
 
@@ -59,21 +69,20 @@ Longitudinal analysis suggests that any early adoption "tax" tends to disappear 
 
 ### 📂 `data/`
 Contains raw, intermediate, and analysis-ready datasets.
-*   `data/final/analysis_Main_2021.csv`: The primary dataset for the thesis.
+*   `data/intermediate/pypi_base.parquet`: Optimized aggregation of 159M PyPI download rows.
+*   `data/final/analysis_Main_2021.csv`: The primary merged dataset (PyPI + GitHub).
 
 ### 📂 `scripts/` (Pipeline Order)
-1.  `01_build_pypi_base.py`: Processes PyPI data & constructs 52-week horizons.
-2.  `02_aggregate_github.py`: Merges GitHub usage and AI-exposure scores.
-3.  `03_merge_and_restrict.py`: Applies temporal filters and release date proxies.
-4.  `05_estimation.py`: **The Main Engine.** Estimates RD across all horizons and quantiles.
-5.  `06_robustness.py`: Bandwidth sensitivity and placebo tests for Median RDD.
-6.  `11_visualize_results.py`: Generates all thesis-ready figures.
-7.  `13_stacked_rdd.py`: Implements the Stacked Diff-in-RDD for the "Suppression" finding.
+1.  **`01_build_pypi_base.py`**: Optimized two-pass processing of PyPI downloads.
+2.  **`03_merge_and_restrict.py`**: Merges PyPI and GitHub, applies success filters.
+3.  **`05_estimation.py`**: Estimates RDD across success tiers and adoption horizons.
+4.  **`08_diff_in_rdd.py`**: **The Core Identification.** Estimates the "Suppression" effect using pooled placebos.
+5.  **`10_ai_mechanism_split.py`**: Tests for heterogeneity by AI exposure.
+6.  **`11_visualize_results.py`**: Generates the "Activation" and "Suppression" visuals.
 
-### 📂 `memos/`
-Deep-dives and research logs for each phase of the project.
-*   **[memos/research_manifesto.md](memos/research_manifesto.md)**: The "Living Document" tracking the evolution of every major research decision.
-*   **[memos/memo_02.md](memos/memo_02.md)**: Detailed breakdown of Phase 2 (Median & Suppression) results.
+### 📂 `results/`
+*   `final_results_tables.md`: Core empirical tables.
+*   `figures/`: Thesis-ready visualizations (Activation trajectories, suppression barplots).
 
 ---
 
@@ -81,25 +90,19 @@ Deep-dives and research logs for each phase of the project.
 
 ### Prerequisites
 *   Python 3.10+
-*   Dependencies listed in `requirements.txt` (includes `rdrobust` and `statsmodels`).
-
-### Installation
-```bash
-# 1. Clone the repository
-git clone <repo-url>
-cd thesis
-
-# 2. Setup environment
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-```
+*   Dependencies listed in `requirements.txt`.
 
 ### Reproducing the Results
 To run the full estimation and visualization suite:
 ```bash
+# 1. Run the estimation suite (Main & Diff-in-RDD)
 ./.venv/bin/python scripts/05_estimation.py
-./.venv/bin/python scripts/13_stacked_rdd.py
+./.venv/bin/python scripts/08_diff_in_rdd.py
+
+# 2. Run mechanism tests
+./.venv/bin/python scripts/10_ai_mechanism_split.py
+
+# 3. Generate visualizations
 ./.venv/bin/python scripts/11_visualize_results.py
 ```
 

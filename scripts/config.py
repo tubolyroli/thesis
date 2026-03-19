@@ -13,6 +13,9 @@ FIGURES_DIR = RESULTS_DIR / "figures"
 WINDOW_WEEKS = 156 # Extended to 3 years to capture long horizons
 DONUT_WEEKS = list(range(-8, 1)) # July vs October (Excludes Aug & Sept: ~9 weeks)
 MIN_DOWNLOADS_52WK = 10
+MIN_SUCCESS_LOW = 500  # "Successful" threshold 1 (at 26 weeks)
+MIN_SUCCESS_HIGH = 1000 # "Successful" threshold 2 (at 26 weeks)
+SUCCESS_HORIZON = 26     # Weeks since release to measure pre-GPT success
 
 # Milestones (Monday-aligned)
 CHATGPT_RELEASE = pd.Timestamp("2022-11-28")
