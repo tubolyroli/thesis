@@ -12,6 +12,25 @@ The empirical phase of this thesis is now complete. We have established three co
 2.  **The Activation Mechanism:** This diffusion gap was **dormant** before ChatGPT. It only "activated" once the model became a mass interface (Nov 2022), confirming the gap is driven by LLM-mediated discovery.
 3.  **Vulnerability:** Suppression is concentrated in **"Low AI Exposure"** libraries. Tools that are both excluded from the model's training data and "unprotected" by AI-mediated generation suffer the most.
 
+### 📊 Core Empirical Evidence (September 2021 Cutoff)
+
+#### Table 1: PyPI Diffusion Results (Package Adoption)
+| Specification | Tier / Subsample | Outcome Variable | Estimate (Log) | P-value | N |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Diff-in-RDD** | **Successful (min 500)** | **Excess Jump (Post-AI)** | **-12.792** | **0.000\*\*\*** | **75,313** |
+| (2021 vs Placebos) | Broad (min 10) | Excess Jump (Post-AI) | -9.139 | 0.000*** | 88,001 |
+| **Main RDD (2021)** | Broad (min 10) | Post-AI Downloads | 13.103 | 0.004** | 527,361 |
+| **Mechanism Split**| Low AI Exposure | 52-week Downloads | -1.178 | 0.029* | 602 |
+
+#### Table 2: GitHub Implementation Results (Library Usage)
+| Specification | Outcome Variable | Estimate (Log) | P-value | N |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Main RDD (2021)** | **Post-AI Imports (Total)** | **26.767** | **0.014\*** | **28,243** |
+| | All-Time Imports | 27.863 | 0.005** | 28,243 |
+| | GPT-4 Era Imports | 23.256 | 0.044* | 28,243 |
+
+*Note: All outcomes are log-transformed (log(1+y)). Full results available in [results/final_results_tables.md](results/final_results_tables.md).*
+
 ---
 
 ## 📍 What to Read First
