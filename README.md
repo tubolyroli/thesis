@@ -17,8 +17,8 @@
 ## 🚀 The Big Picture in 3 Bullet Points
 
 1.  **The "Knowledge Wall" Penalty:** Large Language Models (LLMs) steer aggregate developer adoption toward established tools they "know." Libraries released *just after* a major model cutoff (e.g., September 2021) suffer a massive adoption penalty relative to their pre-cutoff peers.
-2.  **The ChatGPT Activation Mechanism:** This penalty is not an inherent quality difference. As shown above, the gap was completely dormant before ChatGPT. It only activated once the model became a mass interface, proving the gap is driven by LLM-steered code generation.
-3.  **High-Potential Libraries Suffer Most:** The cutoff penalty is not distributed evenly. High-potential, "successful" libraries suffer a **40% larger penalty** than the broad ecosystem, actively suppressing the diffusion of the highest quality new tools.
+2.  **The "Barrier to Entry" Effect:** This suppression is not just a slowdown; it is a hurdle to survival. Libraries released post-cutoff are **14.5 percentage points (p < 0.001)** less likely to even reach a basic "Success" threshold (min 500 downloads at 26 weeks) than pre-cutoff libraries, creating a significant barrier to ecosystem entry for new tools.
+3.  **The ChatGPT Activation Mechanism:** This penalty is not an inherent quality difference. As shown above, the gap was completely dormant before ChatGPT. It only activated once the model became a mass interface, proving the gap is driven by LLM-steered code generation.
 
 ---
 
@@ -70,8 +70,8 @@ To ensure the causal validity of the "Suppression Effect," we implemented rigoro
 
 ## 📍 What to Read Next
 Reviewing this project for the first time, I recommend this order:
-1.  **[memos/memo_04.md](memos/memo_04.md)**: **The Final Verdict.** Definitive summary of the "Suppression" framework, success filters, and finalized causal estimates.
-2.  **[results/final_results_tables.md](results/final_results_tables.md)**: **The Evidence.** Core tables for PyPI adoption and GitHub implementation.
+1.  **[memos/memo_05.md](memos/memo_05.md)**: **The Final Post-Audit Verdict.** Definitive summary of the "Knowledge Wall" framework, the 14.5% barrier to entry finding, and finalized causal estimates.
+2.  **[results/final_results_tables.md](results/final_results_tables.md)**: **The Evidence.** Core tables for PyPI adoption and GitHub implementation with rigorous clustered SEs.
 3.  **[memos/research_manifesto.md](memos/research_manifesto.md)**: **The High-Level Map.** Chronological evolution of the research design, from Step 1 (Scoping) to Step 8 (Relative Suppression).
 
 ---
