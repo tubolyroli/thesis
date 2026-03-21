@@ -80,6 +80,11 @@ def main():
             se = model.bse["treated:is_2021"]
             pval = model.pvalues["treated:is_2021"]
             
+            # Stability Check: Skip unidentified or exploding results
+            if np.isnan(se) or np.abs(coef) > 500:
+                print(f"  h={h}: Skipping due to numerical instability (singular matrix).")
+                continue
+
             results.append({
                 "BW": h,
                 "Excess_Jump": coef,

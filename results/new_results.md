@@ -30,10 +30,11 @@ The diffusion gap is significantly stronger in actual code usage than in general
 *   **GitHub Usage (Imports):** 26.8 (log-scale, p=0.014).
 *   **Interpretation:** The effect is **twice as large** in developer-centric GitHub usage, confirming the mechanism of AI-steered implementation described by Doshi and Hauser.
 
-### 4. Resilience & Heterogeneity: The AI Exposure "Shield"
-*   **Low AI Exposure:** Significant suppression (-1.178, p=0.029).
-*   **High AI Exposure:** No significant suppression (p=0.45).
-*   **Verdict:** Libraries that are both excluded from the model's knowledge and "unprotected" by AI-mediated discovery suffer the most. High AI exposure can "bridge" the adoption gap.
+### 4. Mechanism & Heterogeneity: The AI Exposure Shield
+*   **Analysis:** Using a formal **Interaction Model** with week-clustered standard errors to test if AI exposure (measured via commit AI scores) moderates the cutoff effect.
+*   **Finding:** Libraries with **High AI Exposure** show directionally smaller suppression than **Low AI Exposure** libraries.
+*   **Statistical Verdict:** The interaction coefficient is **0.396** (P-value = 0.179) for downloads. While suggestive of a "bridging" mechanism where AI exposure can partially offset model exclusion, the difference is **not statistically significant** at conventional levels.
+*   **Interpretation:** The "Knowledge Wall" created by the training cutoff appears to be a broad ecosystem effect that is not easily bypassed by high AI usage alone.
 
 ---
 
