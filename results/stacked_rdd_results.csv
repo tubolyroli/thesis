@@ -1,0 +1,5 @@
+Label,Outcome,Estimate,Std.Err,P-value,N,BW,Donut,Method
+Stacked Placebos (Mean),total_downloads_52wk,1.3067174024681782,0.35368750737750937,0.0002202735518489381,171795,26,Yes,WLS (cluster)
+Stacked Placebos (Median),total_downloads_52wk,3317.0250019344967,68.81706805423536,0.0,180013,26,Yes,QuantReg(0.5)
+Main 2021 (Mean),total_downloads_52wk,0.6086567138019832,0.35383920563764265,0.08540507411922554,76577,26,Yes,WLS (cluster)
+Main 2021 (Median),total_downloads_52wk,621.4999991243312,80.71943395102282,1.3813068754878981e-14,80928,26,Yes,QuantReg(0.5)

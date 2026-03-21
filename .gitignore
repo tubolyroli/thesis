@@ -28,11 +28,11 @@ data/final/
 !scripts/*.csv
 !results/estimation_results.csv # Keep main result if small
 
-# Results (Reproducible plots and summaries)
-results/figures/
-results/*.csv
-results/*.txt
-results/*.png
+# Results (Empirical plots and summary tables)
+!results/figures/
+!results/*.csv
+!results/*.md
+!results/figures/*.png
 
 # Documents and Temporary Files
 ~$*.docx

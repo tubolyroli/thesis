@@ -1,0 +1,5 @@
+Label,Outcome,Estimate,Std.Err,P-value,N,BW,Donut,Method
+Appendix: High AI Exposure,total_downloads_52wk,0.3292036006370067,0.4357064875382929,0.4499113846048325,521,26,Yes,WLS (cluster)
+Appendix: Low AI Exposure,total_downloads_52wk,-1.1781156181799073,0.5407285503900606,0.029349793061487224,602,26,Yes,WLS (cluster)
+Appendix: High AI Exposure,cum_imports_52wk,0.3253430849783788,0.2762724943230088,0.23894947520611587,521,26,Yes,WLS (cluster)
+Appendix: Low AI Exposure,cum_imports_52wk,0.3856453646214194,0.30797634282009445,0.21050008550850685,602,26,Yes,WLS (cluster)
