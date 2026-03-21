@@ -32,8 +32,9 @@ The diffusion gap is significantly stronger in actual code usage than in general
 
 ### 4. Mechanism & Heterogeneity: The AI Exposure Shield
 *   **Analysis:** Using a formal **Interaction Model** with week-clustered standard errors to test if AI exposure (measured via commit AI scores) moderates the cutoff effect.
+*   **Outcomes:** log(1 + 52-week downloads) and log(1 + 52-week imports).
 *   **Finding:** Libraries with **High AI Exposure** show directionally smaller suppression than **Low AI Exposure** libraries.
-*   **Statistical Verdict:** The interaction coefficient is **0.396** (P-value = 0.179) for downloads. While suggestive of a "bridging" mechanism where AI exposure can partially offset model exclusion, the difference is **not statistically significant** at conventional levels.
+*   **Statistical Verdict:** The interaction coefficient for 52-week downloads is **0.396** ($p = 0.179$). While suggestive of a "bridging" mechanism where AI exposure can partially offset model exclusion, the difference is **not statistically significant** at conventional levels.
 *   **Interpretation:** The "Knowledge Wall" created by the training cutoff appears to be a broad ecosystem effect that is not easily bypassed by high AI usage alone.
 
 ---

@@ -38,12 +38,15 @@ This document provides the definitive tables for the master's thesis, matching t
 ---
 
 ## 3. Mechanism Test: AI Exposure Moderation
-**Model:** Interacted WLS with Year-by-Week Clusters  
-**Outcome:** log(1 + Post-AI Downloads)
+**Model:** Interacted WLS with Week-clustered Standard Errors  
+**Outcome:** log(1 + 52-week outcome)  
+**Sample:** 2021 Cohort only (Within-bandwidth h=26)
 
 | Outcome Variable | Diff-in-Discontinuity | Robust SE | P-value | N |
 | :--- | :--- | :--- | :--- | :--- |
-| **Post-AI Downloads** | 0.396 | 0.295 | 0.179 | 1,303 |
-| **Post-AI Imports** | 0.257 | 0.292 | 0.380 | 1,303 |
+| **total_downloads_52wk** | 0.396 | 0.295 | 0.179 | 1,303 |
+| **cum_imports_52wk** | 0.257 | 0.292 | 0.380 | 1,303 |
+
+> **Note:** The interaction term `treated:high_ai` identifies whether the discontinuity at the cutoff is statistically different between the High and Low AI exposure groups. 
 
 > **Note:** While the directional effect suggests High AI exposure libraries suffer less suppression, the interaction is not statistically significant at conventional levels. This suggests the "LLM Knowledge Wall" is a systemic effect affecting most new libraries.

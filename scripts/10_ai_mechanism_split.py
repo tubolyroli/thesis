@@ -130,6 +130,11 @@ def main():
     print("=========================================\n")
     diff_df = pd.DataFrame(diff_results)
     print(diff_df.round(4).to_string(index=False))
+    
+    # Save the interaction results to CSV for reproducibility
+    interaction_out_path = RESULTS_DIR / "mechanism_interaction_results.csv"
+    diff_df.to_csv(interaction_out_path, index=False)
+    print(f"\nSaved formal interaction results to {interaction_out_path}")
 
 if __name__ == "__main__":
     main()

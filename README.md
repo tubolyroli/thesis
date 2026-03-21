@@ -45,7 +45,7 @@ Using a **Difference-in-Discontinuities (Diff-in-RDD)** design, we compare the 2
 ### 1. Mechanism Tests: Implementation vs. Discovery
 The diffusion gap is much stronger in actual code usage (GitHub) than in general package interest (PyPI).
 *   **The Implementation Gap (GitHub):** The discontinuity in GitHub usage (Estimate: 26.8) is **twice as large** as the interest gap in PyPI downloads (Estimate: 13.1).
-*   **Mechanism Moderation (Exploratory):** While libraries with **Low AI Exposure** show stronger directional suppression, a formal **Interaction Model** indicates that the difference between High and Low AI exposure groups is not yet statistically significant at conventional levels ($p \approx 0.179$). This suggests the "LLM Knowledge Wall" is a broad ecosystem effect.
+*   **Mechanism Moderation (Exploratory):** While libraries with **Low AI Exposure** show stronger directional suppression, a formal **Interaction Model** (using 52-week outcomes) indicates that the difference between High and Low AI exposure groups is not yet statistically significant at conventional levels ($p \approx 0.179$). This suggests the "LLM Knowledge Wall" is a broad ecosystem effect.
 
 ### Table 2: GitHub Implementation Results (Library Usage)
 | Specification | Outcome Variable | Robust (BC) Est. | Robust SE | Robust P-value | N |
