@@ -27,16 +27,17 @@
 Using a **Difference-in-Discontinuities (Diff-in-RDD)** design, we compare the 2021 cohort against historical seasonal norms (2018–2020) to isolate the exact causal "cutoff tax."
 
 ### Table 1: PyPI Diffusion Results (Package Adoption)
-| Specification | Tier / Subsample | Outcome Variable | Robust (BC) Est. | Robust SE | Robust P-value | N |
+| Specification | Tier / Subsample | Outcome Variable | Robust (BC) Est. | SE | P-value | N |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Main RDD (2021)** | Broad (min 10) | 52-week Downloads | **9.572** | 2.670 | 0.000*** | 527,361 |
-| | Broad (min 10) | Post-AI Downloads | **13.103** | 4.494 | 0.004** | 527,361 |
-| | Successful (min 500) | Post-AI Downloads | -0.195 | 3.125 | 0.950 | 407,110 |
-| **Diff-in-RDD** | Broad (min 10) | Excess Jump (Post-AI) | **-9.139** | 1.800 | 0.000*** | 88,001 |
-| (2021 vs Placebos) | Successful (min 500) | Excess Jump (Post-AI) | **-12.792** | 1.636 | 0.000*** | 75,313 |
-| | Superstar (min 1000) | Excess Jump (Post-AI) | **-0.553** | 0.164 | 0.001*** | 57,931 |
+| **Main RDD (2021)** | Broad (min 10) | 52-week Downloads | **9.572** | 2.670* | 0.000*** | 527,361 |
+| | Broad (min 10) | Post-AI Downloads | **13.103** | 4.494* | 0.004** | 527,361 |
+| | Successful (min 500) | Post-AI Downloads | -0.195 | 3.125* | 0.950 | 407,110 |
+| **Diff-in-RDD** | Broad (min 10) | Excess Jump (Post-AI) | **-9.139** | 1.800† | 0.000*** | 88,001 |
+| (2021 vs Placebos) | Successful (min 500) | Excess Jump (Post-AI) | **-12.792** | 1.636† | 0.000*** | 75,313 |
+| | Superstar (min 1000) | Excess Jump (Post-AI) | **-0.553** | 0.164† | 0.001*** | 57,931 |
 
-> **Key Takeaway:** The September 2021 cutoff uniquely suppressed the normal seasonal boost libraries get in autumn. For "Successful" libraries (min 500 downloads at 26 weeks pre-ChatGPT), this causal penalty is a massive **-12.79 log points (p < 0.001)** after differencing out historical norms.
+> \*) Robust SE (Bias-Corrected) via `rdrobust`.  
+> †) Cluster-Robust SE (Year-by-Week) via WLS.
 
 ---
 
@@ -48,12 +49,14 @@ The diffusion gap is much stronger in actual code usage (GitHub) than in general
 *   **Mechanism Moderation (Exploratory):** While libraries with **Low AI Exposure** show stronger directional suppression, a formal **Interaction Model** (using 52-week outcomes) indicates that the difference between High and Low AI exposure groups is not yet statistically significant at conventional levels ($p \approx 0.179$). This suggests the "LLM Knowledge Wall" is a broad ecosystem effect.
 
 ### Table 2: GitHub Implementation Results (Library Usage)
-| Specification | Outcome Variable | Robust (BC) Est. | Robust SE | Robust P-value | N |
+| Specification | Outcome Variable | Robust (BC) Est. | Robust SE* | Robust P-value | N |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | **Main RDD (2021)** | 52-week Imports | 11.554 | 10.778 | 0.284 | 28,243 |
 | | GPT-4 Era Imports | **23.256** | 11.541 | 0.044* | 28,243 |
 | | Post-AI Imports (Total) | **26.767** | 10.932 | 0.014* | 28,243 |
 | | All-Time Imports | **27.863** | 9.987 | 0.005** | 28,243 |
+
+> \*) Robust SE (Bias-Corrected) via `rdrobust`.
 
 > **Key Takeaway:** The "Activation" is clearest here. GitHub implementation results show growing causal coefficients as the AI-mediated period expands (Robust $p \approx 0.014$ for Post-AI imports).
 

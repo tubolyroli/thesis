@@ -8,7 +8,7 @@ This document provides the definitive tables for the master's thesis, matching t
 **Model:** Diff-in-RDD (2021 cohort vs. 2018-2020 placebos)  
 **Clustering:** Year-by-Week (Standardized across cohorts)
 
-| Success Tier | Outcome Variable | Excess Jump (Causal) | Robust SE | Robust P-value | N |
+| Success Tier | Outcome Variable | Excess Jump (Causal) | Cluster SE | Robust P-value | N |
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | **Broad (min 10)** | Post-AI Downloads | **-9.139** | 1.800 | 0.000*** | 88,001 |
 | **Successful (min 500)** | Post-AI Downloads | **-12.792** | 1.636 | 0.000*** | 75,313 |
@@ -42,7 +42,7 @@ This document provides the definitive tables for the master's thesis, matching t
 **Outcome:** log(1 + 52-week outcome)  
 **Sample:** 2021 Cohort only (Within-bandwidth h=26)
 
-| Outcome Variable | Diff-in-Discontinuity | Robust SE | P-value | N |
+| Outcome Variable | Diff-in-Discontinuity | Cluster SE | P-value | N |
 | :--- | :--- | :--- | :--- | :--- |
 | **total_downloads_52wk** | 0.396 | 0.295 | 0.179 | 1,303 |
 | **cum_imports_52wk** | 0.257 | 0.292 | 0.380 | 1,303 |
