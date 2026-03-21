@@ -133,25 +133,36 @@ def run_rdrobust_est(df: pd.DataFrame, outcome_col: str, h: float = None, donut_
         
         bw_val = res.bws.loc['h', 'left'] if 'h' in res.bws.index else np.nan
         
+        # Primary Estimate: Robust (Bias-Corrected with Robust SE)
+        est_robust = res.coef.loc['Robust', 'Coeff']
+        se_robust = res.se.loc['Robust', 'Std. Err.']
+        pv_robust = res.pv.loc['Robust', 'P>|t|']
+
+        # Stability Check: Astronomically large coefficients usually indicate 
+        # matrix singularity or collinearity in narrow bandwidths (e.g., h < 13)
+        if np.abs(est_robust) > 500: # Log-scale 500 is physically impossible for adoption
+            print(f"WARNING: Exploding coefficient ({est_robust:.2e}) detected for {label}/{outcome_col}. Returning NaN.")
+            return {
+                "Label": label, "Outcome": outcome_col, 
+                "Estimate": np.nan, "Std.Err": np.nan, "P-value": np.nan,
+                "N": int(res.N[0] + res.N[1]), "BW": bw_val, "Donut": "Yes" if donut_weeks else "No", "Method": "rdrobust (Unstable)"
+            }
+
         return {
             "Label": label,
             "Outcome": outcome_col,
-            "Estimate": res.coef.loc['Robust', 'Coeff'], # Default "Estimate" remains Robust for backward compatibility
-            "Std.Err": res.se.loc['Robust', 'Std. Err.'],
-            "P-value": res.pv.loc['Robust', 'P>|t|'],
+            "Estimate": est_robust,
+            "Std.Err": se_robust,
+            "P-value": pv_robust,
             
             "Estimate_Conv": res.coef.loc['Conventional', 'Coeff'],
             "Std.Err_Conv": res.se.loc['Conventional', 'Std. Err.'],
             "P-value_Conv": res.pv.loc['Conventional', 'P>|t|'],
             
-            "Estimate_BC": res.coef.loc['Bias-Corrected', 'Coeff'],
-            "Std.Err_BC": res.se.loc['Bias-Corrected', 'Std. Err.'],
-            "P-value_BC": res.pv.loc['Bias-Corrected', 'P>|t|'],
-            
             "N": int(res.N[0] + res.N[1]),
             "BW": bw_val,
             "Donut": "Yes" if donut_weeks else "No",
-            "Method": "rdrobust (Robust/BC/Conv)"
+            "Method": "rdrobust (Robust/Bias-Corrected)"
         }
     except Exception as e:
         import traceback

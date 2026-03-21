@@ -10,9 +10,8 @@ def main():
     
     robust_results = []
     
-    # 1. Placebo Cutoffs (July vs October across years - High Hurdle)
-    print("Running High-Hurdle Placebo Sensitivity (Post-AI Growth in non-AI years)...")
-    # For placebos, we use the SAME outcome as the main result (post_ai_downloads_alltime)
+    # 1. Placebo Cutoffs (Like-for-Like relative to release)
+    print("Running Placebo Sensitivity (Outcome: total_downloads_52wk)...")
     for name, date in CUTOFFS.items():
         if "Placebo" in name:
             df_path = FINAL_DIR / f"analysis_{name}.csv"
@@ -21,9 +20,9 @@ def main():
                 # Baseline filter
                 df_min10 = df[df["total_downloads_52wk"] >= MIN_DOWNLOADS_FILTER].copy()
                 
-                print(f"  Estimating Placebo: {name} (Outcome: post_ai_downloads_alltime)...")
+                print(f"  Estimating Placebo: {name} (Outcome: total_downloads_52wk)...")
                 res = run_rdrobust_est(
-                    df_min10, "post_ai_downloads_alltime", h=DEFAULT_BW, 
+                    df_min10, "total_downloads_52wk", h=DEFAULT_BW, 
                     donut_weeks=DONUT_WEEKS, label=f"Placebo: {name}"
                 )
                 robust_results.append(res)

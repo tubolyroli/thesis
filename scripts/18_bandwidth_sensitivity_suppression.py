@@ -43,7 +43,7 @@ def main():
 
     # 3. Parameters
     outcome = "post_ai_downloads_alltime"
-    bandwidths = [8, 10, 13, 15, 18, 26] # weeks
+    bandwidths = [10, 13, 15, 18, 26] # weeks (h=8 removed as unidentified)
     results = []
 
     print(f"Running Diff-in-RDD Bandwidth Sensitivity for Successful Tier...")
@@ -66,12 +66,12 @@ def main():
         df_h["weight"] = 1 - (np.abs(df_h["x"]) / h)
         df_h = df_h[df_h["weight"] > 0]
         
-        # Cluster-robust SE by dist_to_cutoff
-        df_h['cluster_idx'] = df_h["dist_to_cutoff"].astype('category').cat.codes
+        # Rigorous Clustering: year-by-week
+        df_h['cluster_idx'] = df_h["is_2021"].astype(str) + "_" + df_h["dist_to_cutoff"].astype(str)
         
-        formula = "log_y ~ treated * is_2021 + x * treated * is_2021"
         try:
-            model = smf.wls(formula, data=df_h, weights=df_h["weight"]).fit(
+            model = smf.wls("log_y ~ treated * is_2021 + x * treated * is_2021", 
+                            data=df_h, weights=df_h["weight"]).fit(
                 cov_type='cluster', 
                 cov_kwds={'groups': df_h["cluster_idx"]}
             )

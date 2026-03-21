@@ -73,12 +73,20 @@ def main():
         df_tier["weight"] = 1 - (np.abs(df_tier["x"]) / h)
         df_tier = df_tier[df_tier["weight"] > 0]
         
-        # Specification
-        formula = "log_y ~ treated * is_2021 + x * treated * is_2021"
-        df_tier['cluster_idx'] = df_tier["dist_to_cutoff"].astype('category').cat.codes
+        # Specification: Fully Interacted Diff-in-RDD
+        # Y ~ treated * is_2021 + x * treated * is_2021
+        # The coefficient on 'treated:is_2021' is the Diff-in-RDD (Excess Jump)
+        
+        # Rigorous Clustering: year_by_week (not just week)
+        # Combine is_2021 (or period) with dist_to_cutoff to create unique weekly clusters per year
+        df_tier['cluster_idx'] = df_tier["is_2021"].astype(str) + "_" + df_tier["dist_to_cutoff"].astype(str)
         
         try:
-            model = smf.wls(formula, data=df_tier, weights=df_tier["weight"]).fit(
+            # We use a linear probability model/WLS with triangular weights
+            # To ensure robustness to few clusters, we use cov_type='cluster' 
+            # with year-week bins.
+            model = smf.wls("log_y ~ treated * is_2021 + x * treated * is_2021", 
+                            data=df_tier, weights=df_tier["weight"]).fit(
                 cov_type='cluster', 
                 cov_kwds={'groups': df_tier["cluster_idx"]}
             )

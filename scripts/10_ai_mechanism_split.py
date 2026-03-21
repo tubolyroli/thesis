@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+import statsmodels.formula.api as smf
 from scipy.stats import norm
 from config import MAIN_ANALYSIS_DATA, RESULTS_DIR, FIGURES_DIR, DONUT_WEEKS
 from utils import run_local_linear_rdd, setup_plotting_style
@@ -88,33 +89,45 @@ def main():
     results_df = pd.DataFrame(results)
     results_df.to_csv(RESULTS_DIR / "mechanism_split_results.csv", index=False)
 
-    # Calculate difference-in-discontinuities
+    # Calculate Rigorous Difference-in-Discontinuities (Interacted Model)
+    # Model: log_y ~ treated * high_ai + x * treated * high_ai
+    # The coefficient on 'treated:high_ai' is the formal test of mechanism moderation.
+    print("\n--- Formal Mechanism Moderation Test (Interacted Model) ---")
+    
     diff_results = []
     for out in outcomes:
-        res_high = results_df[(results_df["Outcome"] == out) & (results_df["Label"].str.contains("High"))].iloc[0]
-        res_low = results_df[(results_df["Outcome"] == out) & (results_df["Label"].str.contains("Low"))].iloc[0]
+        df_ai["log_y"] = np.log1p(df_ai[out])
+        df_ai["x"] = df_ai["dist_to_cutoff"]
+        df_ai["treated"] = (df_ai["x"] >= 0).astype(int)
         
-        diff_est = res_high["Estimate"] - res_low["Estimate"]
-        # Simplified pooled SE: sqrt(se1^2 + se2^2)
-        diff_se = np.sqrt(res_high["Std.Err"]**2 + res_low["Std.Err"]**2)
-        z_score = diff_est / diff_se if diff_se > 0 else np.nan
-        diff_p = 2 * norm.sf(np.abs(z_score)) if not np.isnan(z_score) else np.nan
+        # Triangular Weights
+        h_interact = 26
+        df_ai["weight"] = 1 - (np.abs(df_ai["x"]) / h_interact)
+        sub_interact = df_ai[df_ai["weight"] > 0].copy()
+        
+        # Interaction Model with clustered SEs
+        sub_interact['cluster_id'] = sub_interact["dist_to_cutoff"].astype('category').cat.codes
+        model = smf.wls("log_y ~ treated * high_ai + x * treated * high_ai", 
+                        data=sub_interact, weights=sub_interact["weight"]).fit(
+            cov_type='cluster', 
+            cov_kwds={'groups': sub_interact["cluster_id"]}
+        )
+        
+        coef_diff = model.params["treated:high_ai"]
+        se_diff = model.bse["treated:high_ai"]
+        pval_diff = model.pvalues["treated:high_ai"]
         
         diff_results.append({
             "Outcome": out,
-            "High_AI_Est": res_high["Estimate"],
-            "Low_AI_Est": res_low["Estimate"],
-            "Diff_in_Est": diff_est,
-            "Z_Score": z_score,
-            "P-value": diff_p
+            "Diff_in_Discontinuity": coef_diff,
+            "Std_Err": se_diff,
+            "P-value": pval_diff,
+            "N": int(model.nobs)
         })
 
     print("\n=========================================")
-    print("      MECHANISM SPLIT RESULTS (EXPLORATORY)")
+    print("      MECHANISM MODERATION RESULTS       ")
     print("=========================================\n")
-    print(results_df[["Label", "Outcome", "Estimate", "Std.Err", "P-value", "N"]].round(4).to_string(index=False))
-    
-    print("\n--- Difference-in-Discontinuities Check ---")
     diff_df = pd.DataFrame(diff_results)
     print(diff_df.round(4).to_string(index=False))
 
