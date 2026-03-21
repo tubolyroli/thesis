@@ -19,22 +19,20 @@
 ✦ The mystery is solved! The difference is entirely in the perspective (the
   denominator).
 
-  1. The GitHub Perspective (The 33.1% result)
+  1. The GitHub Perspective
   When you ask, "What percentage of libraries mentioned on GitHub are on PyPI?",
-  you get 33.1%.
-   * Total unique GitHub library names: 163,083
-   * Unique matches to PyPI: 53,972
+  you get about 30.2%.
+   * Total unique GitHub library names: ~163,000
+   * Unique matches to PyPI: 49,318
    * Conclusion: GitHub is full of "noise" like standard library modules,
-     internal project imports, and non-PyPI dependencies. Only about 1 in 3
-     unique library names found in GitHub code actually comes from a PyPI
-     package.
+     internal project imports, and non-PyPI dependencies.
 
-  2. The PyPI Perspective (The 6.2% result)
+  2. The PyPI Perspective
   When you ask, "What percentage of PyPI packages ever appear on GitHub?", you
-  get 6.2%.
+  get 5.7%.
    * Total unique PyPI packages: 871,133
-   * Unique matches to GitHub: 53,972
-   * Conclusion: Most PyPI packages (93.8%) are "ghost packages"—they are
+   * Unique matches to GitHub: 49,318
+   * Conclusion: Most PyPI packages (94.3%) are "ghost packages"—they are
      released but never gain enough adoption to show up in our GitHub data
      panel.
      
