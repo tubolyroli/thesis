@@ -27,16 +27,16 @@
 Using a **Difference-in-Discontinuities (Diff-in-RDD)** design, we compare the 2021 cohort against historical seasonal norms (2018–2020) to isolate the exact causal "cutoff tax."
 
 ### Table 1: PyPI Diffusion Results (Package Adoption)
-| Specification | Tier / Subsample | Outcome Variable | Robust (BC) | Conv. | Std. Err (Conv) | P-value (Conv) | N |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Main RDD (2021)** | Broad (min 10) | 52-week Downloads | **9.571** | 1.985 | 0.224 | 0.000*** | 527,361 |
-| | Broad (min 10) | Post-AI Downloads | **13.103** | 1.980 | 0.352 | 0.000*** | 527,361 |
-| | Successful (min 500) | Post-AI Downloads | -0.195 | -0.120 | 0.271 | 0.658 | 407,110 |
-| **Diff-in-RDD** | Broad (min 10) | Excess Jump (Post-AI) | **-9.139** | -- | 2.542 | 0.000*** | 88,001 |
-| (2021 vs Placebos) | Successful (min 500) | Excess Jump (Post-AI) | **-12.792** | -- | 1.775 | 0.000*** | 75,313 |
-| | Superstar (min 1000) | Excess Jump (Post-AI) | **-0.553** | -- | 0.092 | 0.000*** | 57,931 |
+| Specification | Tier / Subsample | Outcome Variable | Robust (BC) Est. | Robust SE | Robust P-value | N |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **Main RDD (2021)** | Broad (min 10) | 52-week Downloads | **9.572** | 2.659 | 0.000*** | 527,361 |
+| | Broad (min 10) | Post-AI Downloads | **13.103** | 4.494 | 0.004** | 527,361 |
+| | Successful (min 500) | Post-AI Downloads | -0.195 | 3.124 | 0.950 | 407,110 |
+| **Diff-in-RDD** | Broad (min 10) | Excess Jump (Post-AI) | **-9.139** | 1.800 | 0.000*** | 88,001 |
+| (2021 vs Placebos) | Successful (min 500) | Excess Jump (Post-AI) | **-12.792** | 1.636 | 0.000*** | 75,313 |
+| | Superstar (min 1000) | Excess Jump (Post-AI) | **-0.553** | 0.164 | 0.001*** | 57,931 |
 
-> **Key Takeaway:** The September 2021 cutoff uniquely suppressed the normal seasonal boost libraries get in autumn. For "Successful" libraries (min 500 downloads at 26 weeks pre-ChatGPT), this causal penalty is a massive **-12.79 log points (p < 0.001)**.
+> **Key Takeaway:** The September 2021 cutoff uniquely suppressed the normal seasonal boost libraries get in autumn. For "Successful" libraries (min 500 downloads at 26 weeks pre-ChatGPT), this causal penalty is a massive **-12.79 log points (p < 0.001)** after differencing out historical norms.
 
 ---
 
@@ -45,15 +45,15 @@ Using a **Difference-in-Discontinuities (Diff-in-RDD)** design, we compare the 2
 ### 1. Mechanism Tests: Implementation vs. Discovery
 The diffusion gap is much stronger in actual code usage (GitHub) than in general package interest (PyPI).
 *   **The Implementation Gap (GitHub):** The discontinuity in GitHub usage (Estimate: 26.8) is **twice as large** as the interest gap in PyPI downloads (Estimate: 13.1).
-*   **The AI Exposure Shield:** Suppression is concentrated in libraries with **Low AI Exposure** (proxied by the average AI-score of GitHub commits). Libraries "excluded" from LLM knowledge but also "unprotected" by AI-mediated discovery suffer the most.
+*   **Mechanism Moderation (Exploratory):** While libraries with **Low AI Exposure** show stronger directional suppression, a formal **Interaction Model** indicates that the difference between High and Low AI exposure groups is not yet statistically significant at conventional levels ($p=0.178$). This suggests the "LLM Knowledge Wall" is a broad ecosystem effect.
 
 ### Table 2: GitHub Implementation Results (Library Usage)
-| Specification | Outcome Variable | Robust (BC) | Conv. | Std. Err (Conv) | P-value (Conv) | N |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Main RDD (2021)** | 52-week Imports | 11.554 | 0.328 | 0.897 | 0.715 | 28,243 |
-| | GPT-4 Era Imports | **23.256** | 0.791 | 0.936 | 0.399 | 28,243 |
-| | Post-AI Imports (Total) | **26.767** | 1.158 | 0.873 | 0.185 | 28,243 |
-| | All-Time Imports | **27.863** | 1.456 | 0.804 | 0.070 | 28,243 |
+| Specification | Outcome Variable | Robust (BC) Est. | Robust SE | Robust P-value | N |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Main RDD (2021)** | 52-week Imports | 11.554 | 10.776 | 0.284 | 28,243 |
+| | GPT-4 Era Imports | **23.256** | 11.543 | 0.044* | 28,243 |
+| | Post-AI Imports (Total) | **26.767** | 10.932 | 0.014* | 28,243 |
+| | All-Time Imports | **27.863** | 10.005 | 0.005** | 28,243 |
 
 > **Key Takeaway:** The "Activation" is clearest here. GitHub implementation results are statistically insignificant before ChatGPT (52-week horizon: Conventional p=0.72, Robust p=0.28) but show growing coefficients as the AI-mediated period expands.
 
@@ -86,7 +86,7 @@ The entire analysis suite (from 159M rows of raw data to finalized tables and ch
 # Ensure you are in the project root
 python run_pipeline.py
 ```
-This executes all 17 scripts in order, handling data aggregation, merging, RDD estimation, mechanism tests, and visualization generation.
+This executes all 18 scripts in order, handling data aggregation, merging, RDD estimation, mechanism tests, and visualization generation.
 
 ---
 
