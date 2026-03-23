@@ -3,3 +3,7 @@ Appendix: High AI Exposure,total_downloads_52wk,0.3292036006370067,0.43570648753
 Appendix: Low AI Exposure,total_downloads_52wk,-1.1781156181799073,0.5407285503900606,0.029349793061487224,602,26,Yes,WLS (cluster)
 Appendix: High AI Exposure,cum_imports_52wk,0.3253430849783788,0.2762724943230088,0.23894947520611587,521,26,Yes,WLS (cluster)
 Appendix: Low AI Exposure,cum_imports_52wk,0.3856453646214194,0.30797634282009445,0.21050008550850685,602,26,Yes,WLS (cluster)
+Appendix: High AI Exposure,post_ai_downloads_alltime,0.022075292462378104,0.797928872963861,0.9779287490329602,521,26,Yes,WLS (cluster)
+Appendix: Low AI Exposure,post_ai_downloads_alltime,-2.4706466035421575,1.2158875438391075,0.04215672716007998,602,26,Yes,WLS (cluster)
+Appendix: High AI Exposure,post_ai_imports_alltime,0.4126716645628407,0.4056275355169998,0.30897934855851894,521,26,Yes,WLS (cluster)
+Appendix: Low AI Exposure,post_ai_imports_alltime,0.19957787761203125,0.597626320491796,0.7384165718566503,602,26,Yes,WLS (cluster)

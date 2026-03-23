@@ -73,7 +73,7 @@ def main():
     labels = {1: "High AI Exposure", 0: "Low AI Exposure"}
     
     # Outcomes: downloads and imports
-    outcomes = ["total_downloads_52wk", "cum_imports_52wk"]
+    outcomes = ["total_downloads_52wk", "cum_imports_52wk", "post_ai_downloads_alltime", "post_ai_imports_alltime"]
     
     for out in outcomes:
         for group_val, label in labels.items():

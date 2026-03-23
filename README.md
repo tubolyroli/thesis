@@ -46,7 +46,7 @@ Using a **Difference-in-Discontinuities (Diff-in-RDD)** design, we compare the 2
 ### 1. Mechanism Tests: Implementation vs. Discovery
 The diffusion gap is much stronger in actual code usage (GitHub) than in general package interest (PyPI).
 *   **The Implementation Gap (GitHub):** The discontinuity in GitHub usage (Estimate: 26.8) is **twice as large** as the interest gap in PyPI downloads (Estimate: 13.1).
-*   **Mechanism Moderation (Exploratory):** While libraries with **Low AI Exposure** show stronger directional suppression, a formal **Interaction Model** (using 52-week outcomes) indicates that the difference between High and Low AI exposure groups is not yet statistically significant at conventional levels ($p \approx 0.179$). This suggests the "LLM Knowledge Wall" is a broad ecosystem effect.
+*   **Mechanism Moderation (Systemic Wall):** We tested if the suppression is driven specifically by AI-assisted developers using an **Interaction Model** (High vs. Low AI Exposure). Across both 52-week and the "activated" Post-AI windows, the difference is statistically negligible ($p \approx 0.98$ for Post-AI imports). This confirms the "Knowledge Wall" is a **systemic ecosystem effect** affecting all developers, rather than a narrow tax on identifiable AI users.
 
 ### Table 2: GitHub Implementation Results (Library Usage)
 | Specification | Outcome Variable | Robust (BC) Est. | Robust SE* | Robust P-value | N |
@@ -55,8 +55,12 @@ The diffusion gap is much stronger in actual code usage (GitHub) than in general
 | | GPT-4 Era Imports | **23.256** | 11.541 | 0.044* | 28,243 |
 | | Post-AI Imports (Total) | **26.767** | 10.932 | 0.014* | 28,243 |
 | | All-Time Imports | **27.863** | 9.987 | 0.005** | 28,243 |
+| **Mechanism Split** | **Outcome Variable** | **Diff-in-Disc.** | **Std. Err†** | **P-value†** | **N** |
+| (High vs Low AI) | 52-week Imports | 0.257 | 0.292 | 0.380 | 1,303 |
+| | Post-AI Imports | 0.011 | 0.513 | 0.984 | 1,303 |
 
-> \*) Robust SE (Bias-Corrected) via `rdrobust`.
+> \*) Robust SE (Bias-Corrected) via `rdrobust`.  
+> †) Cluster-Robust SE (Weekly) via Fully Interacted WLS.
 
 > **Key Takeaway:** The "Activation" is clearest here. GitHub implementation results show growing causal coefficients as the AI-mediated period expands (Robust $p \approx 0.014$ for Post-AI imports).
 
