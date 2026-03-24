@@ -48,9 +48,9 @@ Does the "static" nature of LLM training data (fixed cutoffs) create an adoption
 *   **Action:** Compared PyPI downloads (interest) against GitHub imports (usage).
 *   **Finding:** The suppression is **twice as large** in actual code implementation (26.7 log points) as in general interest (13.1 log points).
 
-### Step 8: Refined Heterogeneity (The Systemic Wall)
+### Step 8: Exploratory Heterogeneity (AI Exposure Moderation)
 *   **Action:** Used a formal **Interacted WLS Model** to test if AI exposure moderates the effect.
-*   **Finding:** The "AI Shield" effect is directional but **not statistically significant** ($p=0.179$), suggesting the Knowledge Wall is a systemic ecosystem-wide barrier.
+*   **Finding:** The interaction is directional but **not statistically significant** ($p=0.179$, N=1,303). This is *consistent with* the Knowledge Wall operating broadly, but the test is exploratory — the AI-exposure moderator is post-treatment and the sample is likely underpowered. Cannot rule out meaningful moderation.
 
 ---
 

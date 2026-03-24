@@ -42,6 +42,22 @@ def main():
         )
         robust_results.append(res_median)
 
+    # 3. Symmetric Donut Sensitivity (±4 weeks)
+    # The primary design is asymmetric (excl. Aug-Sept).
+    # This robustness test uses a standard symmetric donut.
+    print("\nRunning Main 2021 with Symmetric Donut (±4 weeks)...")
+    if main_df_path.exists():
+        df_main = pd.read_csv(main_df_path)
+        df_min10 = df_main[df_main["total_downloads_52wk"] >= MIN_DOWNLOADS_FILTER].copy()
+        
+        SYMMETRIC_DONUT = list(range(-4, 5)) # Weeks -4 to +4
+        print(f"  Estimating Main (h={DEFAULT_BW}, Symmetric Donut: ±4w)...")
+        res_sym = run_rdrobust_est(
+            df_min10, "post_ai_downloads_alltime", h=DEFAULT_BW, 
+            donut_weeks=SYMMETRIC_DONUT, label="Main: Symmetric Donut (±4w)"
+        )
+        robust_results.append(res_sym)
+
     # Compile and Save
     robust_df = pd.DataFrame(robust_results)
     out_path = RESULTS_DIR / "robustness_placebo_median_summary.csv"

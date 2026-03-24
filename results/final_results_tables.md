@@ -10,9 +10,9 @@ This document provides the definitive tables for the master's thesis, matching t
 
 | Success Tier | Outcome Variable | Excess Jump (Causal) | Cluster SE | Robust P-value | N |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Broad (min 10)** | Post-AI Downloads | **-9.139** | 1.800 | 0.000*** | 88,001 |
-| **Successful (min 500)** | Post-AI Downloads | **-12.792** | 1.636 | 0.000*** | 75,313 |
-| **Superstar (min 1000)** | Post-AI Downloads | **-0.553** | 0.164 | 0.001*** | 57,931 |
+| **Broad (min 10)** | Post-AI Downloads | **-9.139** | 4.425 | 0.039* | 88,001 |
+| **Successful (min 500)** | Post-AI Downloads | **-12.792** | 4.827 | 0.008** | 75,313 |
+| **Superstar (min 1000)** | Post-AI Downloads | **-0.553** | 0.492 | 0.261 | 57,931 |
 
 ---
 
@@ -37,9 +37,9 @@ This document provides the definitive tables for the master's thesis, matching t
 
 ---
 
-## 3. Mechanism Test: AI Exposure Moderation
-**Model:** Interacted WLS with Week-clustered Standard Errors  
-**Outcome:** log(1 + 52-week outcome)  
+## 3. Mechanism Test: AI Exposure Moderation (Exploratory)
+**Model:** Interacted WLS with Week-clustered Standard Errors
+**Outcome:** log(1 + 52-week outcome)
 **Sample:** 2021 Cohort only (Within-bandwidth h=26)
 
 | Outcome Variable | Diff-in-Discontinuity | Cluster SE | P-value | N |
@@ -47,6 +47,6 @@ This document provides the definitive tables for the master's thesis, matching t
 | **total_downloads_52wk** | 0.396 | 0.295 | 0.179 | 1,303 |
 | **cum_imports_52wk** | 0.257 | 0.292 | 0.380 | 1,303 |
 
-> **Note:** The interaction term `treated:high_ai` identifies whether the discontinuity at the cutoff is statistically different between the High and Low AI exposure groups. 
+> **Note:** The interaction term `treated:high_ai` identifies whether the discontinuity at the cutoff is statistically different between the High and Low AI exposure groups.
 
-> **Note:** While the directional effect suggests High AI exposure libraries suffer less suppression, the interaction is not statistically significant at conventional levels. This suggests the "LLM Knowledge Wall" is a systemic effect affecting most new libraries.
+> **Caveat:** This test is exploratory. The AI-exposure moderator (`avg_ai_score_52wk`) is measured post-treatment and may be endogenous to the suppression itself. Additionally, N=1,303 likely provides insufficient power to detect meaningful moderation. The null result is *consistent with* a broad ecosystem effect but cannot confirm it.

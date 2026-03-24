@@ -32,9 +32,9 @@ Using a **Difference-in-Discontinuities (Diff-in-RDD)** design, we compare the 2
 | **Main RDD (2021)** | Broad (min 10) | 52-week Downloads | **9.572** | 2.670* | 0.000*** | 527,361 |
 | | Broad (min 10) | Post-AI Downloads | **13.103** | 4.494* | 0.004** | 527,361 |
 | | Successful (min 500) | Post-AI Downloads | -0.195 | 3.125* | 0.950 | 407,110 |
-| **Diff-in-RDD** | Broad (min 10) | Excess Jump (Post-AI) | **-9.139** | 1.800† | 0.000*** | 88,001 |
-| (2021 vs Placebos) | Successful (min 500) | Excess Jump (Post-AI) | **-12.792** | 1.636† | 0.000*** | 75,313 |
-| | Superstar (min 1000) | Excess Jump (Post-AI) | **-0.553** | 0.164† | 0.001*** | 57,931 |
+| **Diff-in-RDD** | Broad (min 10) | Excess Jump (Post-AI) | **-9.139** | 4.425† | 0.039* | 88,001 |
+| (2021 vs Placebos) | Successful (min 500) | Excess Jump (Post-AI) | **-12.792** | 4.827† | 0.008** | 75,313 |
+| | Superstar (min 1000) | Excess Jump (Post-AI) | **-0.553** | 0.492† | 0.261 | 57,931 |
 
 > \*) Robust SE (Bias-Corrected) via `rdrobust`.  
 > †) Cluster-Robust SE (Year-by-Week) via WLS.
@@ -46,7 +46,7 @@ Using a **Difference-in-Discontinuities (Diff-in-RDD)** design, we compare the 2
 ### 1. Mechanism Tests: Implementation vs. Discovery
 The diffusion gap is much stronger in actual code usage (GitHub) than in general package interest (PyPI).
 *   **The Implementation Gap (GitHub):** The discontinuity in GitHub usage (Estimate: 26.8) is **twice as large** as the interest gap in PyPI downloads (Estimate: 13.1).
-*   **Mechanism Moderation (Systemic Wall):** We tested if the suppression is driven specifically by AI-assisted developers using an **Interaction Model** (High vs. Low AI Exposure). Across both 52-week and the "activated" Post-AI windows, the difference is statistically negligible ($p \approx 0.98$ for Post-AI imports). This confirms the "Knowledge Wall" is a **systemic ecosystem effect** affecting all developers, rather than a narrow tax on identifiable AI users.
+*   **Mechanism Moderation (Exploratory):** We tested if the suppression is driven specifically by AI-assisted developers using an **Interaction Model** (High vs. Low AI Exposure). Across both 52-week and the "activated" Post-AI windows, the difference is not statistically significant ($p \approx 0.98$ for Post-AI imports). This is *consistent with* the "Knowledge Wall" operating as a broad ecosystem effect, though the test is exploratory: the AI-exposure moderator is measured post-treatment (via 52-week commit AI scores) and the sample (N=1,303) is likely underpowered to detect meaningful moderation.
 
 ### Table 2: GitHub Implementation Results (Library Usage)
 | Specification | Outcome Variable | Robust (BC) Est. | Robust SE* | Robust P-value | N |
