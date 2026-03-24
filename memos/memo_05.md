@@ -23,23 +23,28 @@ The following estimates employ **Robust Bias-Corrected (BC)** coefficients and *
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | **Main RDD (2021)** | 52-week Downloads | 9.572* | 2.670 | 0.000*** | 527,361 |
 | **Main RDD (2021)** | Post-AI Downloads | 13.103* | 4.494 | 0.004** | 527,361 |
-| **Diff-in-RDD** | Excess Jump (Broad) | -9.139† | 1.800 | 0.000*** | 88,001 |
-| **Diff-in-RDD** | Excess Jump (Successful) | -12.792† | 1.636 | 0.000*** | 75,313 |
+| **Diff-in-RDD** | Excess Jump (Broad) | -9.139† | 4.425 | 0.039* | 88,001 |
+| **Diff-in-RDD** | Excess Jump (Successful) | -12.792† | 4.827 | 0.008** | 75,313 |
 
 *\*) Robust SE (Bias-Corrected). †) Cluster-Robust SE (Year-by-Week).*
 
 **Interpretation:** After differencing out historical seasonal norms, the September 2021 cutoff uniquely suppressed the adoption of "Successful" libraries by **12.79 log points**. This effect is remarkably stable across bandwidths ($h \ge 13$).
 
-## 4. Refined Mechanism: The Systemic Knowledge Wall
+## 4. Exploratory Mechanism Test: AI Exposure Moderation
 The final audit replaced approximate Z-tests with a formal **Fully Interacted WLS Model** to test if AI exposure (measured via commit AI scores) moderates the suppression effect.
 
-*   **Interaction Coefficient:** 0.396  
-*   **Standard Error:** 0.295  
-*   **P-value:** 0.179  
-*   **N:** 1,303  
+*   **Interaction Coefficient:** 0.396
+*   **Standard Error:** 0.295
+*   **P-value:** 0.179
+*   **N:** 1,303
 
-**Revised Narrative:**  
-While directionally suggesting that High AI exposure libraries suffer less suppression, the interaction is **not statistically significant** at conventional levels. This is a crucial pivot for the Discussion chapter: the "LLM Knowledge Wall" appears to be a **systemic ecosystem effect** rather than one that can be easily bypassed by individual library discovery mechanisms. The exclusion of a library from the model's training set creates a "blind spot" in the developer interface that persists even when developers are using AI-assisted workflows.
+**Interpretation (with caveats):**
+While directionally suggesting that High AI exposure libraries suffer less suppression, the interaction is **not statistically significant** at conventional levels. This result is *consistent with* the Knowledge Wall operating as a broad ecosystem effect, but two important caveats prevent a stronger claim:
+
+1.  **Post-treatment moderator:** The AI exposure variable (`avg_ai_score_52wk`) is measured in the 52 weeks after release and is therefore potentially endogenous to treatment. A library that was suppressed will have fewer AI-generated commits importing it — the moderator may partly reflect the treatment itself rather than serving as an independent channel.
+2.  **Low statistical power:** With N=1,303 (the GitHub-matched subsample), the test is likely underpowered to detect meaningful moderation even if it exists.
+
+The null result cannot establish that the effect is systemic; it can only fail to reject that interpretation. The Discussion chapter should present this as exploratory evidence rather than a confirmed mechanism.
 
 ## 5. Transition to Thesis Writing: Chapter 4 (Results) Template
 When drafting Chapter 4, the evidence should be sequenced as follows:

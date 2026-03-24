@@ -31,7 +31,10 @@ def main():
         print(f"Running analysis for tier: {tier_label} (N={len(df_tier)})...")
         for outcome in PRIMARY_OUTCOMES:
             if outcome in df_tier.columns:
-                results.append(run_rdrobust_est(df_tier, outcome, h=DEFAULT_BW, donut_weeks=DONUT_WEEKS, label=f"{tier_label}: {outcome}"))
+                # Primary: Data-driven bandwidth (h=None)
+                results.append(run_rdrobust_est(df_tier, outcome, h=None, donut_weeks=DONUT_WEEKS, label=f"{tier_label}: {outcome} (MSE-Opt)"))
+                # Robustness: Fixed bandwidth (h=13)
+                results.append(run_rdrobust_est(df_tier, outcome, h=DEFAULT_BW, donut_weeks=DONUT_WEEKS, label=f"{tier_label}: {outcome} (Fixed h=13)"))
 
     # 3. Mechanism Analysis (GitHub)
 
@@ -46,12 +49,16 @@ def main():
     ]
     for outcome in gh_outcomes:
         if outcome in df_gh.columns:
-            results.append(run_rdrobust_est(df_gh, outcome, h=DEFAULT_BW, donut_weeks=DONUT_WEEKS, label=f"GitHub: {outcome}"))
+            # Primary: Data-driven bandwidth (h=None)
+            results.append(run_rdrobust_est(df_gh, outcome, h=None, donut_weeks=DONUT_WEEKS, label=f"GitHub: {outcome} (MSE-Opt)"))
+            # Robustness: Fixed bandwidth (h=13)
+            results.append(run_rdrobust_est(df_gh, outcome, h=DEFAULT_BW, donut_weeks=DONUT_WEEKS, label=f"GitHub: {outcome} (Fixed h=13)"))
 
     # 3. AI Intensity Split (Direct Mechanism Test)
     # We will run this in script 10, but let's add a basic check here for the AI score itself
     if "avg_ai_score_52wk" in df_gh.columns:
-        results.append(run_rdrobust_est(df_gh, "avg_ai_score_52wk", h=DEFAULT_BW, donut_weeks=DONUT_WEEKS, label="GitHub: AI Score intensity"))
+        results.append(run_rdrobust_est(df_gh, "avg_ai_score_52wk", h=None, donut_weeks=DONUT_WEEKS, label="GitHub: AI Score intensity (MSE-Opt)"))
+        results.append(run_rdrobust_est(df_gh, "avg_ai_score_52wk", h=DEFAULT_BW, donut_weeks=DONUT_WEEKS, label="GitHub: AI Score intensity (Fixed h=13)"))
 
     # Compile and Save
     results_df = pd.DataFrame(results)
@@ -61,7 +68,7 @@ def main():
     print("      FINAL RDD ESTIMATION RESULTS       ")
     print("=========================================\n")
     # Display both Robust and Conventional results
-    display_cols = ["Label", "Outcome", "Estimate", "P-value", "Estimate_Conv", "P-value_Conv", "N"]
+    display_cols = ["Label", "Outcome", "Estimate", "P-value", "BW", "N"]
     print(results_df[display_cols].round(4).to_string(index=False))
     print(f"\nSaved final results to: {RESULTS_DIR / 'estimation_results_final.csv'}")
 
