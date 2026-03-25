@@ -58,3 +58,5 @@ data/final/
 ~$*.docx
 *.pdf
 !SDS_Thesis_Proposal_Roland_Tuboly.pdf # Keep proposal
+memos/*.ipynb
+archive/
