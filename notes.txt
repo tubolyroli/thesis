@@ -1,0 +1,156 @@
+-in the dependent variable, log first, then taking average
+--> no outlier domination in the average, but transformation is needed 
+    because of the right-skewed nature of the downloads data
+
+-which TDK section?
+--> 14: Hálózat- és adattudomány, 36: Statisztika és ökonometria,
+    16: Innováció- és technológiamenedzsment, 26: MI és információmenedzsment
+    esetleg 42: Üzleti adattudomány
+
+-refactor the code: main + appendix scripts
+--> TODO!
+
+-README big picture bulletpoint 2: say it in a more dry way
+--> TODO!
+
+-there is the implementation gap between pypi and github - abstract numbers
+    extend it with how many libraries make it to 500 downloads...
+--> TODO!
+
+-LITERATURE
+--> TODO!
+
+-anticipating the question that LLMs can search the web now
+    it is costly, they do not usually search - there are papers about this
+--> TODO!
+
+Here is a comprehensive risk assessment organized by category.
+
+  ---
+  Risk Assessment: Findings and Methodology
+
+  ---
+  1. Identification Risks (Most Serious)
+
+  1.2 GitHub Copilot is a near-simultaneous confounder
+  Copilot launched June 29, 2021 — three months before the Sept 2021 cutoff.
+  Copilot's training data has its own cutoff, may prefer pre-June 2021 packages, and
+  started steering code generation before ChatGPT existed. The thesis attributes the
+  effect to GPT-3.5/4's Sept 2021 cutoff, but Copilot's effects are nearly impossible
+   to separate from this. This is currently unaddressed.
+
+  1.4 The GPT training cutoff date is imprecise
+  The Sept 27, 2021 cutoff is taken from public OpenAI disclosures. The actual data
+  collection timeline is unknown, crawling was not instantaneous, and GPT-4 may have
+  had a different or later knowledge cutoff. The running variable (weeks relative to
+  a date that isn't precisely documented) has non-classical measurement error, which
+  in RDD biases estimates toward zero.
+
+  ---
+  2. Design / Specification Risks
+
+  2.4 The Diff-in-RDD outcome (post_ai_downloads_alltime) is not horizon-normalized
+  post_ai_downloads_alltime = all downloads since Nov 28, 2022. This is an
+  ever-growing window — as of March 2026, it covers ~3.3 years of data. It will give
+  different estimates if run six months from now. More importantly, it is measured in
+   absolute calendar time, not weeks-since-release. This is appropriate for asking
+  "how much has each library accumulated since AI became mass-market?" but it
+  conflates the treatment effect with the length of the post-AI window, which is not
+  the same for libraries released at different calendar times.
+
+  ---
+  3. Mechanism Test Risks
+
+  3.2 The mechanism test is severely underpowered
+  The mechanism interaction model runs on N=1,303, the GitHub-matched sample. With
+  only ~650 observations per group (high/low AI) and a split-sample RDD, the test is
+  almost certainly underpowered to detect meaningful moderation. A p=0.179 with
+  N=1,303 should be framed primarily as "insufficient power to detect" rather than
+  "evidence of a systemic effect." The two interpretations have very different policy
+   implications.
+
+  3.3 GitHub implementation gap (26.8 vs 13.1) conflates different samples
+  The PyPI result (13.1) uses the broad ecosystem sample. The GitHub result (26.8)
+  uses the 6%-match subsample of libraries that appear in both PyPI and GitHub. These
+   are not comparable populations. The "GitHub suppression is 2× PyPI suppression"
+  claim likely reflects that the GitHub-matched sample consists of more prominent,
+  widely-used libraries — not that implementation is more suppressed than discovery
+  per se.
+
+  ---
+  4. Sample and Measurement Risks
+
+  4.1 PyPI downloads are a very noisy adoption proxy
+  PyPI downloads include automated CI/CD system downloads, mirror traffic, bot and
+  crawler downloads, and repeated installs. There is no way to distinguish a single
+  developer installing a package from a CI pipeline re-installing it 500 times per
+  week. The download count is therefore a proxy for ecosystem attention, not human
+  adoption. The log(1+y) transformation mitigates outlier dominance but does not
+  address what the variable measures.
+
+  4.2 The GitHub-matched sample is highly selected (6.2% match rate)
+  Only 53,972 of 871,133 PyPI packages match to a GitHub import. The matched sample
+  consists of libraries that are (a) used in open-source code, (b) indexed by the
+  GitHub data provider, and (c) named consistently enough to survive the
+  normalization. This is a very specific population — typically well-maintained,
+  popular, domain-relevant libraries. Conclusions about GitHub implementation effects
+   apply to this subpopulation, not to the broader PyPI universe.
+
+  4.3 Release date proxy is noisy for the running variable
+  Using the first observed positive download week as the release date introduces
+  measurement error in the running variable. Some packages are "silent" for weeks
+  after upload (no downloads until they're discovered). A package uploaded in August
+  2021 but first downloaded in October 2021 would be coded as an October package —
+  potentially misassigned to the treatment group. This classical measurement error in
+   the running variable attenuates RDD estimates.
+
+  ---
+  5. Multiple Testing / Inference Risks
+
+  5.1 No multiple testing correction across outcomes
+  The thesis reports RDD estimates across 5+ primary outcomes (52-week downloads,
+  post-AI downloads, GitHub imports, GPT-4 era imports, all-time imports) × 3 tiers ×
+   2 designs (main RDD + Diff-in-RDD) = many simultaneous tests. No Bonferroni,
+  Benjamini-Hochberg, or family-wise correction is applied. The probability of
+  finding at least one significant result by chance across this many tests is
+  non-trivial.
+
+  5.2 The primary result is the "Suppression Fact" (-12.79), not the main RDD (13.1)
+  The main RDD estimate for the 2021 cohort is positive (+13.1 for post-AI
+  downloads), meaning pre-cutoff libraries have more post-AI downloads. The
+  Diff-in-RDD then subtracts the historical baseline to get the "excess jump" of
+  -12.79. These two numbers together form the causal claim, but their combination
+  means the finding's direction depends entirely on what the historical baseline is.
+  If the 2018–2020 placebos are themselves affected by any trend (e.g., growing
+  Python adoption), the baseline is biased.
+
+  ---
+  6. External Validity Risks
+
+  6.1 Generalizability beyond Python / beyond this period
+  Results apply to the Python ecosystem in 2021. Python is one of the most popular
+  languages for AI/ML, so LLM bias toward Python libraries may be stronger here than
+  in other ecosystems. The effect may not replicate in R, JavaScript, or other
+  languages where developers rely on LLMs differently.
+
+  6.2 Only one well-documented cutoff
+  The Sept 2021 cutoff is identified post-hoc from OpenAI disclosures. A researcher
+  wishing to replicate or challenge the finding would need a second natural
+  experiment with a documented cutoff, which is hard to construct cleanly given web
+  retrieval and multiple competing models that followed.
+
+
+That's the full draft. A few points for your review:
+                                                                                
+  1. Section 3.9 (mechanism test) — I used "average AI-commit score" as the
+  proxy. Verify the exact variable definition matches what                      
+  10_ai_mechanism_split.py actually computes, specifically whether
+  avg_ai_score_52wk is the right description.                                   
+  2. Citations — I flagged Calonico et al. (2014), McCrary (2008), Gelman &
+  Imbens (2019), and Grembi et al. (2016). These are standard references that   
+  you should verify are in your reference list.
+  3. Section 3.4 (donut) — The ±4-week symmetric donut described as robustness  
+  matches the CLAUDE.md. Confirm the exact week numbers in config.py if this    
+  chapter goes to your supervisor.
+  4. Length — This draft is approximately 12,000–13,000 characters without      
+  spaces. Adjust depth at Section 3.10 if the chapter needs trimming.   
