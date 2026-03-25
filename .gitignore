@@ -1,5 +1,9 @@
-# Claude Code memory (local only)
+# Local-only working files
 .claude/
+CLAUDE.md
+GEMINI.md
+limitations.md
+notes.txt
 
 # LaTeX build artifacts
 *.aux
