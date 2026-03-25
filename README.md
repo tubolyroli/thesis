@@ -3,7 +3,8 @@
 ### Training Cutoffs and Adoption Dynamics in the Python Ecosystem
 
 **Author:** Roland Tuboly | **Supervisor:** Johannes Wachs
-**Institution:** Corvinus University of Budapest, MSc in Data Science
+
+**Institution:** Corvinus University of Budapest, MSc in Social Data Science
 
 ---
 
@@ -17,7 +18,7 @@
 
 ## Summary
 
-This thesis investigates whether large language models with dated training cutoffs shape the diffusion of newly released Python libraries. Using a Regression Discontinuity Design around the documented September 2021 GPT-3.5/GPT-4 knowledge cutoff, it estimates the causal effect of training data inclusion on subsequent library adoption. A Difference-in-Discontinuities design using 2018--2020 placebo cohorts isolates the cutoff-specific effect from seasonal confounding.
+This thesis investigates whether large language models with dated training cutoffs shape the diffusion of newly released Python libraries. Using a Regression Discontinuity Design around the documented September 2021 GPT-3.5/GPT-4 knowledge cutoff, it estimates the causal effect of training data inclusion on subsequent library adoption. A Difference-in-Discontinuities design using 2018-2020 placebo cohorts isolates the cutoff-specific effect from seasonal confounding.
 
 The main finding is a statistically significant suppression of post-cutoff library adoption: the 2021 cohort shows a -12.8 log point excess penalty in post-AI downloads relative to historical seasonal norms (p = 0.008). The effect is approximately twice as large in GitHub code imports as in PyPI downloads, consistent with LLM-steered code generation as the operative channel. As of January 2026, the gap shows no evidence of catch-up.
 
