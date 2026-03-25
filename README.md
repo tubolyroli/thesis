@@ -20,15 +20,15 @@
 
 This thesis investigates whether large language models with dated training cutoffs shape the diffusion of newly released Python libraries. Using a Regression Discontinuity Design around the documented September 2021 GPT-3.5/GPT-4 knowledge cutoff, it estimates the causal effect of training data inclusion on subsequent library adoption. A Difference-in-Discontinuities design using 2018-2020 placebo cohorts isolates the cutoff-specific effect from seasonal confounding.
 
-The main finding is a statistically significant suppression of post-cutoff library adoption: the 2021 cohort shows a -12.8 log point excess penalty in post-AI downloads relative to historical seasonal norms (p = 0.008). The effect is approximately twice as large in GitHub code imports as in PyPI downloads, consistent with LLM-steered code generation as the operative channel. As of January 2026, the gap shows no evidence of catch-up.
+The main finding is a statistically significant suppression of post-cutoff library adoption: the 2021 cohort shows a -12.8 log point excess penalty in post-AI downloads relative to historical seasonal norms (p = 0.008). The effect is approximately twice as large in a GitHub-matched subsample of code imports as in PyPI downloads, consistent with LLM-steered code generation as the operative channel, though sample composition differences may partly account for the magnitude difference. As of January 2026, the gap shows no evidence of catch-up.
 
 ## Key Results
 
 - **Diff-in-RDD suppression:** -12.8 log points for Successful libraries (min 500 downloads at 26 weeks), p = 0.008, with year-by-week clustered standard errors.
-- **Implementation gap:** The discontinuity in GitHub imports (+26.8 log points) is roughly double the PyPI download discontinuity (+13.1 log points), pointing to code generation as the channel.
+- **Implementation gap:** The discontinuity in GitHub imports (+26.8 log points) is roughly double the PyPI download discontinuity (+13.1 log points), though the comparison is between different samples (5.3% GitHub-matched subsample vs. full PyPI universe).
 - **Activation pattern:** The gap is absent at release and emerges only after November 2022 (ChatGPT), consistent with the proposed mechanism.
 - **Persistence:** No catch-up through January 2026 across any outcome measure.
-- **AI exposure moderation (exploratory):** Not statistically significant (p = 0.179, N = 1,303). Consistent with a broad ecosystem effect, but the test is underpowered and the moderator is post-treatment.
+- **AI exposure moderation (exploratory):** Not statistically significant (p = 0.179, N = 1,303). The test is likely underpowered to detect meaningful moderation; the moderator is post-treatment.
 
 ## Repository Structure
 
