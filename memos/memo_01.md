@@ -1,8 +1,8 @@
 # Comprehensive Project History & Results Memo: LLM Cutoffs and Library Diffusion
 
-**Date:** March 10, 2026  
-**Subject:** Technical Evolution and Final Empirical Findings of the Master’s Thesis  
-**Status:** Finalized Baseline Analysis
+**Date:** March 10, 2026
+**Subject:** Technical Evolution and Final Empirical Findings of the Master’s Thesis
+**Status:** SUPERSEDED — This memo reflects an early-phase analysis before the long-horizon pivot, Diff-in-RDD implementation, and methodological audit. Its conclusions (no robust Knowledge Wall, null permutation test, catch-up) are contradicted by the finalized results in memos 05–07. Retained for historical record only.
 
 ---
 

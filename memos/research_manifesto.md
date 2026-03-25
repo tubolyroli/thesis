@@ -35,10 +35,10 @@ Does the "static" nature of LLM training data (fixed cutoffs) create an adoption
 *   **Action:** Observed that libraries released post-cutoff suffered a significant adoption penalty.
 *   **Result:** Diff-in-RDD estimates revealed a **-12.79 log point "Excess Jump"** for successful libraries relative to historical seasonal norms.
 
-### Step 5: The Discovery of the "Barrier to Entry" (Success Filter)
+### Step 5: Pre-AI Covariate Balance (Success Filter)
 *   **Action:** Audited the "Success Filter" (min 500 downloads @ 26w) for selection bias.
-*   **Finding:** Libraries released post-cutoff are **14.5 percentage points (p < 0.0001)** less likely to even reach the successful tier.
-*   **Logic:** The "Knowledge Wall" doesn't just slow growth; it fundamentally reduces the probability of ecosystem survival.
+*   **Finding:** Libraries released post-cutoff are actually **14.5 percentage points (p < 0.0001)** *more* likely to reach the successful tier in their first 26 weeks (entirely pre-ChatGPT). *(Note: an earlier version of this memo reported the sign backwards.)*
+*   **Logic:** The pre-AI advantage for post-cutoff libraries likely reflects seasonality. It makes the post-AI Diff-in-RDD suppression finding more conservative — libraries that were doing *better* pre-ChatGPT ended up doing *worse* once LLMs became the mass interface.
 
 ### Step 6: The "Activation" Smoking Gun
 *   **Action:** Visualized trajectories through Jan 2026.
@@ -73,7 +73,7 @@ The Local Average Treatment Effect (LATE) of being released *after* a documented
 
 ## 4. Final Findings Summary
 1.  **The Suppression Fact:** Post-cutoff libraries suffer a **-12.8 log point penalty** in diffusion.
-2.  **The Barrier Fact:** Post-cutoff libraries are **14.5% less likely to succeed** at all.
+2.  **Pre-AI Covariate Balance:** Post-cutoff libraries are **14.5pp more likely to succeed** in their first 26 weeks (pre-ChatGPT), reflecting seasonality — making the post-AI suppression more conservative.
 3.  **The Implementation Gap:** LLMs steer actual usage twice as much as general interest.
 4.  **The Persistence Fact:** No evidence of catch-up as of early 2026.
 

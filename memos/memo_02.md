@@ -1,8 +1,8 @@
 # Memo 02: Advanced RDD Results - Catch-up, Median, and Relative Suppression
 
-**Date:** March 11, 2026  
-**Subject:** Empirical Results from Distributional and Longitudinal Analysis  
-**Status:** Phase 2 Results (Responding to Faculty Feedback)
+**Date:** March 11, 2026
+**Subject:** Empirical Results from Distributional and Longitudinal Analysis
+**Status:** SUPERSEDED — This memo documents an intermediate analysis phase. The "catch-up" narrative, "Freshness Premium," and Quantile RDD results were superseded by the long-horizon analysis (memo 03) and Diff-in-RDD (memos 04–06), which show persistent suppression with no catch-up. Retained for historical record only.
 
 ---
 

@@ -55,14 +55,17 @@ Long-run estimates for the 2021 cohort confirm that the implementation gap is an
 *Note: The insignificant direct RDD for the successful subsample, combined with the highly significant Diff-in-RDD, implies that while 2021 success tiers look flat on their own, they represent a significant "downward shift" relative to the historical growth boost.*
 
 ## 5. Mechanism Split: AI Exposure as a "Protective" Factor
-We tested whether the "Suppression" effect varies by a library's propensity to be used in AI-generated code (proxied by the average AI-score of GitHub commits importing the library). 
+
+**NOTE (SUPERSEDED):** The split-sample approach below was replaced by a formal Interacted WLS Model in memos 05–06. The interacted model yields p=0.179 (N=1,303) — directional but not significant. The confident causal interpretation below is no longer supported. See memo 05 Section 4 and memo 06 Section 3 (Fix 2) for the corrected framing. The AI-exposure moderator is post-treatment and the sample is underpowered.
+
+We tested whether the "Suppression" effect varies by a library's propensity to be used in AI-generated code (proxied by the average AI-score of GitHub commits importing the library).
 
 | Subsample | Outcome | Estimate (Log) | P-value | N |
 | :--- | :--- | :--- | :--- | :--- |
 | **Low AI Exposure** | Downloads | **-1.178** | **0.029** | 602 |
 | **High AI Exposure** | Downloads | **0.329** | 0.450 | 521 |
 
-*   **Interpretation:** Suppression is concentrated in libraries with **Low AI Exposure**. This suggests that libraries "excluded" from LLM knowledge (post-cutoff) but also "unprotected" by AI-mediated discovery/generation suffer the most. In contrast, "High AI Exposure" libraries appear to bridge the adoption gap, possibly through LLM-steered implementation.
+*   ~~**Interpretation:** Suppression is concentrated in libraries with **Low AI Exposure**. This suggests that libraries "excluded" from LLM knowledge (post-cutoff) but also "unprotected" by AI-mediated discovery/generation suffer the most. In contrast, "High AI Exposure" libraries appear to bridge the adoption gap, possibly through LLM-steered implementation.~~
 
 ## 6. Visual Evidence of Suppression & Persistence
 
