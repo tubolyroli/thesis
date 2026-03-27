@@ -53,7 +53,7 @@ data/final/
 !results/figures/*.png
 
 # Documents and Temporary Files
-docs/
+docs/*.pdf
 ~$*.docx
 *.pdf
 !docs/*.pdf
