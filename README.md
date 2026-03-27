@@ -18,7 +18,7 @@
 
 ## Summary
 
-This thesis investigates whether large language models with dated training cutoffs shape the diffusion of newly released Python libraries. Using a Regression Discontinuity Design around the documented September 2021 GPT-3.5/GPT-4 knowledge cutoff, it estimates the causal effect of training data inclusion on subsequent library adoption. A Difference-in-Discontinuities design using 2018-2020 placebo cohorts isolates the cutoff-specific effect from seasonal confounding.
+This paper investigates whether large language models with dated training cutoffs shape the diffusion of newly released Python libraries. Using a Regression Discontinuity Design around the documented September 2021 GPT-3.5/GPT-4 knowledge cutoff, it estimates the causal effect of training data inclusion on subsequent library adoption. A Difference-in-Discontinuities design using 2018-2020 placebo cohorts isolates the cutoff-specific effect from seasonal confounding.
 
 The main finding is a statistically significant suppression of post-cutoff library adoption: the 2021 cohort shows a -12.8 log point excess penalty in post-AI downloads relative to historical seasonal norms (p = 0.008). The effect is approximately twice as large in a GitHub-matched subsample of code imports as in PyPI downloads, consistent with LLM-steered code generation as the operative channel, though sample composition differences may partly account for the magnitude difference. As of January 2026, the gap shows no evidence of catch-up.
 
@@ -34,13 +34,12 @@ The main finding is a statistically significant suppression of post-cutoff libra
 
 ```
 thesis/
-├── thesis.tex                  # Main thesis document (LaTeX)
+├── thesis.tex                  # Main paper (LaTeX)
 ├── references.bib              # Bibliography (natbib)
-├── scripts/                    # Ordered pipeline (01-18)
-│   ├── 01-04                   # Data building, aggregation, merging
-│   ├── 05-08                   # RDD and Diff-in-RDD estimation
-│   ├── 09-10                   # Permutation inference, AI mechanism test
-│   ├── 11-18                   # Visualization and sensitivity analysis
+├── scripts/
+│   ├── pipeline/               # Data construction (01-03)
+│   ├── main/                   # Core results in paper body (04-05, 08, 10-11, 14)
+│   ├── appendix/               # Robustness and sensitivity checks (06-07, 09, 12-13, 15-18)
 │   ├── config.py               # Shared constants
 │   └── utils.py                # Shared helpers
 ├── data/
@@ -48,11 +47,13 @@ thesis/
 │   ├── intermediate/           # Processed aggregates (not tracked)
 │   └── final/                  # Analysis-ready CSVs per cohort (not tracked)
 ├── results/
-│   ├── figures/                # Thesis-ready visualizations
+│   ├── figures/                # Publication-ready visualizations
 │   ├── final_results_tables.md # Definitive empirical tables
+│   ├── archive/                # Superseded outputs
 │   └── *.csv                   # Estimation outputs per script
+├── docs/                       # Reference documents (proposal, TDK call, abstract)
 ├── memos/                      # Research memos and design evolution
-├── run_pipeline.py             # Orchestrates all 18 scripts
+├── run_pipeline.py             # Orchestrates all scripts (--skip-pipeline, --appendix)
 └── requirements.txt
 ```
 
@@ -60,7 +61,15 @@ thesis/
 
 ```bash
 pip install -r requirements.txt
-python run_pipeline.py
+
+# Full pipeline (data construction + main analysis + appendix)
+python run_pipeline.py --appendix
+
+# Main analysis only, using existing processed data
+python run_pipeline.py --skip-pipeline
+
+# Appendix/robustness only
+python run_pipeline.py --appendix-only
 ```
 
-This executes all 18 scripts in order, from raw data aggregation through final visualizations. Requires access to the source data files in `data/raw/`.
+Requires access to the source data files in `data/raw/`. Scripts 11 and 14 load the full raw PyPI parquet and require sufficient RAM (>8GB).
