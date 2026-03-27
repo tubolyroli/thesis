@@ -2,9 +2,7 @@
 .claude/
 CLAUDE.md
 GEMINI.md
-limitations.md
 notes.txt
-tdk_abstract.txt
 
 # LaTeX build artifacts
 *.aux
@@ -47,7 +45,6 @@ data/final/
 *.parquet
 *.csv
 !scripts/*.csv
-!results/estimation_results.csv # Keep main result if small
 
 # Results (Empirical plots and summary tables)
 !results/figures/
@@ -58,6 +55,6 @@ data/final/
 # Documents and Temporary Files
 ~$*.docx
 *.pdf
-!SDS_Thesis_Proposal_Roland_Tuboly.pdf # Keep proposal
+!docs/*.pdf
 memos/*.ipynb
 archive/
