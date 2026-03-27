@@ -53,9 +53,8 @@ data/final/
 !results/figures/*.png
 
 # Documents and Temporary Files
-docs/*.pdf
+docs/
 ~$*.docx
 *.pdf
-!docs/*.pdf
 memos/*.ipynb
 archive/
