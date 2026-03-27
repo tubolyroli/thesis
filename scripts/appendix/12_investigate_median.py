@@ -1,3 +1,7 @@
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
 import pandas as pd
 from config import MAIN_ANALYSIS_DATA, RESULTS_DIR, DONUT_WEEKS, MIN_DOWNLOADS_FILTER, EXTENDED_BW
 from utils import run_quantile_rdd

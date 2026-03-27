@@ -1,3 +1,7 @@
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
 import pandas as pd
 import numpy as np
 from config import RAW_DIR, INTERM_DIR, AI_SCORE_COLS, AI_WEIGHT_COLS, CHATGPT_RELEASE, GPT4_RELEASE, GPT4_TURBO_RELEASE
