@@ -25,14 +25,16 @@ def main():
     if main_path.exists():
         df_main = pd.read_csv(main_path)
         df_main["is_2021"] = 1
+        df_main["cutoff_year"] = 2021
         dfs.append(df_main)
-    
+
     # Load Placebos
     for p in placebos:
         p_path = FINAL_DIR / f"analysis_{p}.csv"
         if p_path.exists():
             df_p = pd.read_csv(p_path)
             df_p["is_2021"] = 0
+            df_p["cutoff_year"] = int(p.split("_")[1])
             dfs.append(df_p)
             
     if len(dfs) < 2:
@@ -70,8 +72,8 @@ def main():
         df_h["weight"] = 1 - (np.abs(df_h["x"]) / h)
         df_h = df_h[df_h["weight"] > 0]
         
-        # Rigorous Clustering: year-by-week
-        df_h['cluster_idx'] = df_h["is_2021"].astype(str) + "_" + df_h["dist_to_cutoff"].astype(str)
+        # Rigorous Clustering: year-by-week (4 cohort years × running variable bins)
+        df_h['cluster_idx'] = df_h["cutoff_year"].astype(str) + "_" + df_h["dist_to_cutoff"].astype(str)
         
         try:
             model = smf.wls("log_y ~ treated * is_2021 + x * treated * is_2021", 
