@@ -1,3 +1,7 @@
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+
 import pandas as pd
 from config import FINAL_DIR, RESULTS_DIR, CUTOFFS, DONUT_WEEKS
 from utils import run_local_linear_rdd
