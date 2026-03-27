@@ -533,12 +533,18 @@ Successful (min 500) & Post-AI Downloads & $-0.195$ & 3.125 & 0.950 & 407,110 \\
 
 A statistically significant positive discontinuity is visible in the Broad tier: post-cutoff libraries acquire more downloads than pre-cutoff libraries at the boundary, both at the 52-week horizon (+9.6 log points, $p < 0.001$) and in the post-AI activation window (+13.1 log points, $p = 0.004$). The positive sign reflects the direction of the raw jump: post-cutoff libraries, released in autumn and winter 2021, record higher unadjusted download totals than libraries released in the preceding summer months.
 
-The positive raw jump is consistent with a well-documented seasonal pattern in developer software adoption. Second, the positive discontinuity in the Broad tier disappears entirely in the Successful subsample ($-0.195$, $p = 0.950$). This is the first signal of the barrier-to-entry mechanism.
+Figure~\ref{fig:binscatter-pypi} visualizes this pattern: the positive raw jump is visible at both the 26-week and 52-week horizons, consistent with a well-documented seasonal pattern in developer software adoption. The positive discontinuity in the Broad tier disappears entirely in the Successful subsample ($-0.195$, $p = 0.950$). This is the first signal of the barrier-to-entry mechanism.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.95\textwidth]{results/figures/rdd_horizon_binscatters.png}
+\caption{Binned scatterplots of $\log(1 + \text{downloads})$ by release week relative to the September 2021 cutoff, for 26-week (left) and 52-week (right) cumulative PyPI downloads. Each point represents a weekly bin average; fitted lines show local linear estimates on each side of the cutoff. The upward trend reflects the secular growth of the Python ecosystem; the positive discontinuity at the cutoff captures the raw seasonal jump, which the Diff-in-RDD design subsequently nets out.}\label{fig:binscatter-pypi}
+\end{figure}
 
 \begin{figure}[ht]
 \centering
 \includegraphics[width=0.85\textwidth]{results/figures/binscatter_log_imports.png}
-\caption{Binned scatterplot of $\log(1 + \text{52-week imports})$ by release week relative to the September 2021 cutoff. Each point represents a weekly bin average. The upward trend reflects the secular growth of the Python ecosystem; the discontinuity at the cutoff captures the raw RDD effect, which mixes the Knowledge Wall penalty with the seasonal baseline.}\label{fig:binscatter-imports}
+\caption{Binned scatterplot of $\log(1 + \text{52-week imports})$ by release week relative to the September 2021 cutoff (GitHub-matched subsample). Each point represents a weekly bin average. The upward trend reflects the secular growth of the Python ecosystem; the discontinuity at the cutoff captures the raw RDD effect, which mixes the Knowledge Wall penalty with the seasonal baseline.}\label{fig:binscatter-imports}
 \end{figure}
 
 \section{Causal Identification: Difference-in-Discontinuities}\label{sec:results-diffrdd}
@@ -697,7 +703,13 @@ This framing has three implications:
     \item The effects are expected to be persistent. As of early 2026, no catch-up is observed (Figure~\ref{fig:cumulative-gap}). The all-time implementation gap (+27.9 log points) suggests the divergence has accumulated rather than narrowed.
 \end{enumerate}
 
-The absence of a significant effect for the Superstar tier (at least 1,000 pre-ChatGPT downloads, $p = 0.261$) is consistent with this framing. Libraries that achieved the highest early visibility before ChatGPT are more likely to have accumulated organic adoption through channels largely independent of LLM recommendation: conference presentations, influential blog posts, direct dependency chains, and word-of-mouth within specialist communities. The Knowledge Wall operates most forcefully at the margin of entry, where LLM-mediated discovery is most consequential; it does not appear to override momentum already built through high-visibility human adoption.
+The absence of a significant effect for the Superstar tier (at least 1,000 pre-ChatGPT downloads, $p = 0.261$) is consistent with this framing. Libraries that achieved the highest early visibility before ChatGPT are more likely to have accumulated organic adoption through channels largely independent of LLM recommendation: conference presentations, influential blog posts, direct dependency chains, and word-of-mouth within specialist communities. The Knowledge Wall operates most forcefully at the margin of entry, where LLM-mediated discovery is most consequential; it does not appear to override momentum already built through high-visibility human adoption. Figure~\ref{fig:tier-comparison} summarizes this gradient across the three success tiers.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.65\textwidth]{results/figures/suppression_visual_success_tiers.png}
+\caption{Diff-in-RDD excess jump (log points, relative to 2018--2020 placebo average) by success tier. The suppression is concentrated in the Broad and Successful tiers; the Superstar tier shows no significant penalty, consistent with high-visibility libraries maintaining adoption through channels independent of LLM recommendation.}\label{fig:tier-comparison}
+\end{figure}
 
 \begin{figure}[ht]
 \centering
