@@ -1,4 +1,4 @@
-Summary Table for Thesis (Section 4.2: Limitations)
+Summary Table for Thesis (Chapter 6, Section 6.6: Limitations)
 
 
   ┌───────────┬───────────────────────┬───────────────────┬───────────────────┐
