@@ -20,15 +20,15 @@
 
 This paper investigates whether large language models with dated training cutoffs shape the diffusion of newly released Python libraries. Using a Regression Discontinuity Design around the documented September 2021 GPT-3.5/GPT-4 knowledge cutoff, it estimates the causal effect of training data inclusion on subsequent library adoption. A Difference-in-Discontinuities design using 2018-2020 placebo cohorts isolates the cutoff-specific effect from seasonal confounding.
 
-The main finding is a statistically significant suppression of post-cutoff library adoption: the 2021 cohort shows a -12.8 log point excess penalty in post-AI downloads relative to historical seasonal norms (p = 0.008). The effect is approximately twice as large in a GitHub-matched subsample of code imports as in PyPI downloads, consistent with LLM-steered code generation as the operative channel, though sample composition differences may partly account for the magnitude difference. As of January 2026, the gap shows no evidence of catch-up.
+The main finding is a statistically significant suppression of post-cutoff library adoption (p = 0.008). Before ChatGPT, libraries on either side of the cutoff differed by roughly 28% in weekly downloads; by early 2026, pre-cutoff libraries average approximately five times more weekly downloads, and the gap continues to widen. The suppression is roughly twice as large in GitHub code imports as in PyPI downloads, consistent with LLM-steered code generation as the operative channel. As of January 2026, the gap shows no evidence of catch-up.
 
 ## Key Results
 
-- **Diff-in-RDD suppression:** -12.8 log points for Successful libraries (min 500 downloads at 26 weeks), p = 0.008, with year-by-week clustered standard errors.
-- **Implementation gap:** The discontinuity in GitHub imports (+26.8 log points) is roughly double the PyPI download discontinuity (+13.1 log points), though the comparison is between different samples (5.3% GitHub-matched subsample vs. full PyPI universe).
-- **Activation pattern:** The gap is absent at release and emerges only after November 2022 (ChatGPT), consistent with the proposed mechanism.
+- **Diff-in-RDD suppression:** Statistically significant for Successful libraries (min 500 downloads at 26 weeks), p = 0.008, with year-by-week clustered standard errors. Pre-cutoff libraries average roughly five times more weekly downloads by early 2026.
+- **Implementation gap:** The discontinuity in GitHub code imports is roughly double the PyPI download discontinuity. The comparison is between different samples (5.3% GitHub-matched subsample vs. full PyPI universe).
+- **Activation pattern:** The gap is absent at release and emerges only after November 2022 (ChatGPT launch).
 - **Persistence:** No catch-up through January 2026 across any outcome measure.
-- **AI exposure moderation (exploratory):** Not statistically significant (p = 0.179, N = 1,303). The test is likely underpowered to detect meaningful moderation; the moderator is post-treatment.
+- **AI exposure moderation (exploratory):** Not statistically significant (p = 0.179, N = 1,303). Likely underpowered; the moderator is post-treatment.
 
 ## Repository Structure
 
@@ -38,7 +38,7 @@ thesis/
 ├── references.bib              # Bibliography (natbib)
 ├── scripts/
 │   ├── pipeline/               # Data construction (01-03)
-│   ├── main/                   # Core results in paper body (04-05, 08, 10-11, 14)
+│   ├── main/                   # Core results in paper body (04-05, 08, 10-11, 14, 19)
 │   ├── appendix/               # Robustness and sensitivity checks (06-07, 09, 12-13, 15-18)
 │   ├── config.py               # Shared constants
 │   └── utils.py                # Shared helpers
@@ -51,7 +51,7 @@ thesis/
 │   ├── final_results_tables.md # Definitive empirical tables
 │   ├── archive/                # Superseded outputs
 │   └── *.csv                   # Estimation outputs per script
-├── docs/                       # Reference documents (proposal, TDK call, abstract)
+├── docs/                       # Reference documents, limitations, TDK abstract
 ├── memos/                      # Research memos and design evolution
 ├── run_pipeline.py             # Orchestrates all scripts (--skip-pipeline, --appendix)
 └── requirements.txt
