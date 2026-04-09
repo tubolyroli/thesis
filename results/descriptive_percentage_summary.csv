@@ -1,0 +1,10 @@
+Source,Period,Pre-cutoff mean,Post-cutoff mean,Pct difference,Log ratio
+PyPI,ChatGPT + 6 months,1467.2,630.2,132.8%,0.844
+GitHub,ChatGPT + 6 months,5.0,9.3,-45.9%,-0.535
+PyPI,ChatGPT + 12 months,2559.1,1085.1,135.8%,0.857
+GitHub,ChatGPT + 12 months,9.2,13.8,-33.0%,-0.367
+PyPI,ChatGPT + 24 months,8218.1,2124.4,286.9%,1.353
+GitHub,ChatGPT + 24 months,2.9,177.4,-98.4%,-3.819
+PyPI,January 2026,18084.6,3410.1,430.3%,1.668
+GitHub,January 2026,3.7,16.0,-77.1%,-1.293
+PyPI,Post-ChatGPT average,6538.5,1703.2,283.9%,1.345
