@@ -20,11 +20,11 @@
 
 This paper investigates whether large language models with dated training cutoffs shape the diffusion of newly released Python libraries. Using a Regression Discontinuity Design around the documented September 2021 GPT-3.5/GPT-4 knowledge cutoff, it estimates the causal effect of training data inclusion on subsequent library adoption. A Difference-in-Discontinuities design using 2018-2020 placebo cohorts isolates the cutoff-specific effect from seasonal confounding.
 
-The main finding is a statistically significant suppression of post-cutoff library adoption (p = 0.008). Before ChatGPT, libraries on either side of the cutoff differed by roughly 28% in weekly downloads; by early 2026, pre-cutoff libraries average approximately five times more weekly downloads, and the gap continues to widen. The suppression is roughly twice as large in GitHub code imports as in PyPI downloads, consistent with LLM-steered code generation as the operative channel. As of January 2026, the gap shows no evidence of catch-up.
+The main finding is a statistically significant suppression of post-cutoff library adoption (baseline-adjusted Diff-in-RDD, p = 0.002). Before ChatGPT, libraries on either side of the cutoff differed by roughly 28% in weekly downloads; by early 2026, pre-cutoff libraries average approximately five times more weekly downloads, and the gap continues to widen. The suppression is roughly twice as large in GitHub code imports as in PyPI downloads, consistent with LLM-steered code generation as the operative channel. As of January 2026, the gap shows no evidence of catch-up.
 
 ## Key Results
 
-- **Diff-in-RDD suppression:** Statistically significant for Successful libraries (min 500 downloads at 26 weeks), p = 0.008, with year-by-week clustered standard errors. Pre-cutoff libraries average roughly five times more weekly downloads by early 2026.
+- **Diff-in-RDD suppression:** Statistically significant for Successful libraries (min 500 downloads at 26 weeks), baseline-adjusted p = 0.002, with year-by-week clustered standard errors. Pre-cutoff libraries average roughly five times more weekly downloads by early 2026.
 - **Implementation gap:** The discontinuity in GitHub code imports is roughly double the PyPI download discontinuity. The comparison is between different samples (5.3% GitHub-matched subsample vs. full PyPI universe).
 - **Activation pattern:** The gap is absent at release and emerges only after November 2022 (ChatGPT launch).
 - **Persistence:** No catch-up through January 2026 across any outcome measure.

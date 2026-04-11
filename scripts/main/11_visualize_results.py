@@ -64,14 +64,19 @@ def plot_suppression_visual():
         print(f"Skipping suppression visual: {results_path} not found.")
         return
     
-    # Plotting the 'Excess Jump' coefficients across tiers
+    # Plotting the 'Excess Jump' coefficients across tiers (adjusted = primary)
     df = pd.read_csv(results_path)
+    if "Baseline_Adjusted" in df.columns:
+        # Prefer adjusted; fall back to unadjusted for outcomes where adjusted is unavailable
+        adj = df[df["Baseline_Adjusted"] == "Yes"]
+        unadj_only = df[(df["Baseline_Adjusted"] == "No") & (~df["Outcome"].isin(adj["Outcome"].values))]
+        df = pd.concat([adj, unadj_only])
     setup_plotting_style()
     plt.figure(figsize=(8, 6))
     sns.barplot(data=df, x="Tier", y="Excess_Jump", palette="RdYlGn_r", hue="Tier", legend=False)
     plt.axhline(0, color='black', linewidth=1)
     plt.title("The 'Cutoff Tax': Seasonal Suppression by Success Tier", fontsize=14)
-    plt.ylabel("Excess Jump (Log Points relative to Placebos)", fontsize=12)
+    plt.ylabel("Excess Jump (relative to placebo average)", fontsize=12)
     plt.xticks(rotation=15)
     plt.savefig(FIGURES_DIR / "suppression_visual_success_tiers.png", dpi=300, bbox_inches='tight')
     plt.close()
@@ -82,9 +87,14 @@ def plot_horizon_coefficients():
     if not results_path.exists(): return
     df = pd.read_csv(results_path)
     
-    # Filter for Broad tier and specific PyPI outcomes
+    # Filter for Broad tier, Fixed h=13, and specific PyPI outcomes
     horizons = ["total_downloads_52wk", "cum_downloads_gpt4", "cum_downloads_gpt4turbo", "cum_downloads_alltime"]
-    h_df = df[(df["Label"].str.contains("Broad")) & (df["Outcome"].isin(horizons))].copy()
+    h_df = df[(df["Label"].str.contains("Broad")) & (df["Label"].str.contains("Fixed")) & (df["Outcome"].isin(horizons))].copy()
+    # If Baseline_Adjusted column exists, keep adjusted where available, unadjusted otherwise
+    if "Baseline_Adjusted" in h_df.columns:
+        adj = h_df[h_df["Baseline_Adjusted"] == "Yes"]
+        unadj_only = h_df[(h_df["Baseline_Adjusted"] == "No") & (~h_df["Outcome"].isin(adj["Outcome"].values))]
+        h_df = pd.concat([adj, unadj_only]).sort_values("Outcome")
     
     if h_df.empty: return
     

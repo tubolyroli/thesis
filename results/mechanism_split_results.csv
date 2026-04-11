@@ -1,9 +1,15 @@
-Label,Outcome,Estimate,Std.Err,P-value,N,BW,Donut,Method
-Appendix: High AI Exposure,total_downloads_52wk,0.3292036006370067,0.4357064875382929,0.4499113846048325,521,26,Yes,WLS (cluster)
-Appendix: Low AI Exposure,total_downloads_52wk,-1.1781156181799073,0.5407285503900606,0.029349793061487224,602,26,Yes,WLS (cluster)
-Appendix: High AI Exposure,cum_imports_52wk,0.3253430849783788,0.2762724943230088,0.23894947520611587,521,26,Yes,WLS (cluster)
-Appendix: Low AI Exposure,cum_imports_52wk,0.3856453646214194,0.30797634282009445,0.21050008550850685,602,26,Yes,WLS (cluster)
-Appendix: High AI Exposure,post_ai_downloads_alltime,0.022075292462378104,0.797928872963861,0.9779287490329602,521,26,Yes,WLS (cluster)
-Appendix: Low AI Exposure,post_ai_downloads_alltime,-2.4706466035421575,1.2158875438391075,0.04215672716007998,602,26,Yes,WLS (cluster)
-Appendix: High AI Exposure,post_ai_imports_alltime,0.4126716645628407,0.4056275355169998,0.30897934855851894,521,26,Yes,WLS (cluster)
-Appendix: Low AI Exposure,post_ai_imports_alltime,0.19957787761203125,0.597626320491796,0.7384165718566503,602,26,Yes,WLS (cluster)
+Label,Outcome,Estimate,Std.Err,P-value,N,BW,Donut,Method,Baseline_Adjusted
+Appendix: High AI Exposure,total_downloads_52wk,0.3292036006370067,0.4357064875382929,0.4499113846048325,521,26,Yes,WLS (cluster),No
+Appendix: Low AI Exposure,total_downloads_52wk,-1.1781156181799073,0.5407285503900606,0.029349793061487224,602,26,Yes,WLS (cluster),No
+Appendix: High AI Exposure,cum_imports_52wk,0.3253430849783788,0.2762724943230088,0.23894947520611587,521,26,Yes,WLS (cluster),No
+Appendix: High AI Exposure (Adj),cum_imports_52wk,0.23506939378396186,0.27557281761134717,0.393647672146897,521,26,Yes,WLS (cluster),Yes
+Appendix: Low AI Exposure,cum_imports_52wk,0.3856453646214194,0.30797634282009445,0.21050008550850685,602,26,Yes,WLS (cluster),No
+Appendix: Low AI Exposure (Adj),cum_imports_52wk,0.5330721652073322,0.31418372933529726,0.08975542063535207,602,26,Yes,WLS (cluster),Yes
+Appendix: High AI Exposure,post_ai_downloads_alltime,0.022075292462378104,0.797928872963861,0.9779287490329602,521,26,Yes,WLS (cluster),No
+Appendix: High AI Exposure (Adj),post_ai_downloads_alltime,-0.4409154875146363,0.45307598419772704,0.3304737187367629,521,26,Yes,WLS (cluster),Yes
+Appendix: Low AI Exposure,post_ai_downloads_alltime,-2.4706466035421575,1.2158875438391075,0.04215672716007998,602,26,Yes,WLS (cluster),No
+Appendix: Low AI Exposure (Adj),post_ai_downloads_alltime,-0.6799194353292338,0.68007270065665,0.3174195841461258,602,26,Yes,WLS (cluster),Yes
+Appendix: High AI Exposure,post_ai_imports_alltime,0.4126716645628407,0.4056275355169998,0.30897934855851894,521,26,Yes,WLS (cluster),No
+Appendix: High AI Exposure (Adj),post_ai_imports_alltime,0.2950135533849806,0.42571320910720456,0.488317954908317,521,26,Yes,WLS (cluster),Yes
+Appendix: Low AI Exposure,post_ai_imports_alltime,0.19957787761203125,0.597626320491796,0.7384165718566503,602,26,Yes,WLS (cluster),No
+Appendix: Low AI Exposure (Adj),post_ai_imports_alltime,0.3678642150375242,0.6338123073166668,0.5616453818243263,602,26,Yes,WLS (cluster),Yes

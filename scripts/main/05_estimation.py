@@ -34,11 +34,19 @@ def main():
     for df_tier, tier_label in tiers:
         print(f"Running analysis for tier: {tier_label} (N={len(df_tier)})...")
         for outcome in PRIMARY_OUTCOMES:
-            if outcome in df_tier.columns:
-                # Primary: Data-driven bandwidth (h=None)
-                results.append(run_rdrobust_est(df_tier, outcome, h=None, donut_weeks=DONUT_WEEKS, label=f"{tier_label}: {outcome} (MSE-Opt)"))
-                # Robustness: Fixed bandwidth (h=13)
-                results.append(run_rdrobust_est(df_tier, outcome, h=DEFAULT_BW, donut_weeks=DONUT_WEEKS, label=f"{tier_label}: {outcome} (Fixed h=13)"))
+            if outcome not in df_tier.columns:
+                continue
+            # Baseline covariate: log1p(52wk downloads), skip when outcome is the baseline itself
+            cov = ["total_downloads_52wk"] if outcome != "total_downloads_52wk" else None
+
+            # Unadjusted
+            results.append(run_rdrobust_est(df_tier, outcome, h=None, donut_weeks=DONUT_WEEKS, label=f"{tier_label}: {outcome} (MSE-Opt)"))
+            results.append(run_rdrobust_est(df_tier, outcome, h=DEFAULT_BW, donut_weeks=DONUT_WEEKS, label=f"{tier_label}: {outcome} (Fixed h=13)"))
+
+            # Baseline-adjusted
+            if cov:
+                results.append(run_rdrobust_est(df_tier, outcome, h=None, donut_weeks=DONUT_WEEKS, label=f"{tier_label}: {outcome} (MSE-Opt, Adj)", covs_cols=cov))
+                results.append(run_rdrobust_est(df_tier, outcome, h=DEFAULT_BW, donut_weeks=DONUT_WEEKS, label=f"{tier_label}: {outcome} (Fixed h=13, Adj)", covs_cols=cov))
 
     # 3. Mechanism Analysis (GitHub)
 
@@ -52,11 +60,17 @@ def main():
         "post_ai_imports_alltime"
     ]
     for outcome in gh_outcomes:
-        if outcome in df_gh.columns:
-            # Primary: Data-driven bandwidth (h=None)
-            results.append(run_rdrobust_est(df_gh, outcome, h=None, donut_weeks=DONUT_WEEKS, label=f"GitHub: {outcome} (MSE-Opt)"))
-            # Robustness: Fixed bandwidth (h=13)
-            results.append(run_rdrobust_est(df_gh, outcome, h=DEFAULT_BW, donut_weeks=DONUT_WEEKS, label=f"GitHub: {outcome} (Fixed h=13)"))
+        if outcome not in df_gh.columns:
+            continue
+        cov = ["total_downloads_52wk"]  # Cross-platform baseline
+
+        # Unadjusted
+        results.append(run_rdrobust_est(df_gh, outcome, h=None, donut_weeks=DONUT_WEEKS, label=f"GitHub: {outcome} (MSE-Opt)"))
+        results.append(run_rdrobust_est(df_gh, outcome, h=DEFAULT_BW, donut_weeks=DONUT_WEEKS, label=f"GitHub: {outcome} (Fixed h=13)"))
+
+        # Baseline-adjusted
+        results.append(run_rdrobust_est(df_gh, outcome, h=None, donut_weeks=DONUT_WEEKS, label=f"GitHub: {outcome} (MSE-Opt, Adj)", covs_cols=cov))
+        results.append(run_rdrobust_est(df_gh, outcome, h=DEFAULT_BW, donut_weeks=DONUT_WEEKS, label=f"GitHub: {outcome} (Fixed h=13, Adj)", covs_cols=cov))
 
     # 3. AI Intensity Split (Direct Mechanism Test)
     # We will run this in script 10, but let's add a basic check here for the AI score itself

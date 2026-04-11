@@ -39,25 +39,25 @@ def setup_plotting_style():
 
 import rdrobust
 
-def run_local_linear_rdd(df: pd.DataFrame, outcome_col: str, h: float = None, donut_weeks: list = None, label: str = "", cluster_col: str = None):
+def run_local_linear_rdd(df: pd.DataFrame, outcome_col: str, h: float = None, donut_weeks: list = None, label: str = "", cluster_col: str = None, covs_cols: list = None):
     """
     Implements a Local Linear RDD using Weighted Least Squares (WLS) with a triangular kernel.
-    Specification: log(1+Y) ~ alpha + beta*Pre + gamma1*Dist + gamma2*Dist*Pre
+    Specification: log(1+Y) ~ alpha + beta*Pre + gamma1*Dist + gamma2*Dist*Pre [+ covariates]
     """
     sub = df.copy()
-    
+
     # 1. Apply Donut
     if donut_weeks:
         sub = sub[~sub["dist_to_cutoff"].isin(donut_weeks)]
-    
+
     # 2. Restrict to bandwidth h
     sub = sub[(sub["dist_to_cutoff"] >= -h) & (sub["dist_to_cutoff"] <= h)].copy()
-    
+
     # Drop NAs in outcome
     sub = sub.dropna(subset=[outcome_col])
-    
+
     if len(sub) < 10:
-        return {"Label": label, "Outcome": outcome_col, "Estimate": np.nan, "Std.Err": np.nan, "P-value": np.nan, "N": len(sub), "BW": h, "Donut": "Yes" if donut_weeks else "No", "Method": "WLS"}
+        return {"Label": label, "Outcome": outcome_col, "Estimate": np.nan, "Std.Err": np.nan, "P-value": np.nan, "N": len(sub), "BW": h, "Donut": "Yes" if donut_weeks else "No", "Method": "WLS", "Baseline_Adjusted": "Yes" if covs_cols else "No"}
 
     # 3. Construct variables
     # Log transform for count-based outcomes
@@ -69,12 +69,24 @@ def run_local_linear_rdd(df: pd.DataFrame, outcome_col: str, h: float = None, do
     sub["x"] = sub["dist_to_cutoff"]
     sub["treated"] = (sub["x"] >= 0).astype(int)
     sub["x_treated"] = sub["x"] * sub["treated"]
-    
-    # 4. Triangular weights: w = 1 - |x/h|
+
+    # 4. Build formula with optional covariates
+    formula = "y ~ treated + x + x_treated"
+    if covs_cols:
+        for c in covs_cols:
+            cov_name = f"cov_{c}"
+            if any(k in c for k in ["downloads", "imports", "cum"]):
+                sub[cov_name] = np.log1p(sub[c])
+            else:
+                sub[cov_name] = sub[c]
+            formula += f" + {cov_name}"
+        sub = sub.dropna(subset=[f"cov_{c}" for c in covs_cols])
+
+    # 5. Triangular weights: w = 1 - |x/h|
     sub["weight"] = 1 - (np.abs(sub["x"]) / h)
     sub = sub[sub["weight"] > 0]
-    
-    # 5. Estimation
+
+    # 6. Estimation
     try:
         cov_type = 'HC1'
         fit_kwargs = {'cov_type': cov_type}
@@ -83,7 +95,7 @@ def run_local_linear_rdd(df: pd.DataFrame, outcome_col: str, h: float = None, do
             fit_kwargs['cov_type'] = 'cluster'
             fit_kwargs['cov_kwds'] = {'groups': sub['cluster_idx']}
 
-        model = smf.wls("y ~ treated + x + x_treated", data=sub, weights=sub["weight"]).fit(**fit_kwargs)
+        model = smf.wls(formula, data=sub, weights=sub["weight"]).fit(**fit_kwargs)
         return {
             "Label": label,
             "Outcome": outcome_col,
@@ -93,13 +105,14 @@ def run_local_linear_rdd(df: pd.DataFrame, outcome_col: str, h: float = None, do
             "N": int(model.nobs),
             "BW": h,
             "Donut": "Yes" if donut_weeks else "No",
-            "Method": f"WLS ({fit_kwargs['cov_type']})"
+            "Method": f"WLS ({fit_kwargs['cov_type']})",
+            "Baseline_Adjusted": "Yes" if covs_cols else "No"
         }
     except Exception as e:
         print(f"CRITICAL: WLS failed for {label}/{outcome_col}: {str(e)}")
-        return {"Label": label, "Outcome": outcome_col, "Estimate": np.nan, "Std.Err": np.nan, "P-value": np.nan, "N": 0, "BW": h, "Donut": "Yes" if donut_weeks else "No", "Method": f"WLS ERROR: {type(e).__name__}"}
+        return {"Label": label, "Outcome": outcome_col, "Estimate": np.nan, "Std.Err": np.nan, "P-value": np.nan, "N": 0, "BW": h, "Donut": "Yes" if donut_weeks else "No", "Method": f"WLS ERROR: {type(e).__name__}", "Baseline_Adjusted": "Yes" if covs_cols else "No"}
 
-def run_rdrobust_est(df: pd.DataFrame, outcome_col: str, h: float = None, donut_weeks: list = None, label: str = ""):
+def run_rdrobust_est(df: pd.DataFrame, outcome_col: str, h: float = None, donut_weeks: list = None, label: str = "", covs_cols: list = None):
     """
     Wrapper for the rdrobust package providing bias-corrected RD estimates.
     Returns a dictionary containing Conventional, Bias-Corrected, and Robust estimates.
@@ -107,45 +120,60 @@ def run_rdrobust_est(df: pd.DataFrame, outcome_col: str, h: float = None, donut_
     sub = df.copy()
     if donut_weeks:
         sub = sub[~sub["dist_to_cutoff"].isin(donut_weeks)]
-    
+
     sub = sub.dropna(subset=[outcome_col])
-    
+
     if len(sub) < 10:
         return {
-            "Label": label, "Outcome": outcome_col, 
+            "Label": label, "Outcome": outcome_col,
             "Estimate": np.nan, "Std.Err": np.nan, "P-value": np.nan,
             "Estimate_Conv": np.nan, "Std.Err_Conv": np.nan, "P-value_Conv": np.nan,
             "Estimate_BC": np.nan, "Std.Err_BC": np.nan, "P-value_BC": np.nan,
-            "N": len(sub), "BW": h, "Donut": "Yes" if donut_weeks else "No", "Method": "rdrobust (insufficient N)"
+            "N": len(sub), "BW": h, "Donut": "Yes" if donut_weeks else "No",
+            "Method": "rdrobust (insufficient N)", "Baseline_Adjusted": "Yes" if covs_cols else "No"
         }
 
     if any(k in outcome_col for k in ["downloads", "imports", "cum"]):
         y = np.log1p(sub[outcome_col])
     else:
         y = sub[outcome_col]
-    
+
     x = sub["dist_to_cutoff"]
-    
+
+    # Build covariates matrix if requested
+    covs_arg = None
+    if covs_cols:
+        covs_data = {}
+        for c in covs_cols:
+            if any(k in c for k in ["downloads", "imports", "cum"]):
+                covs_data[c] = np.log1p(sub[c])
+            else:
+                covs_data[c] = sub[c]
+        covs_df = pd.DataFrame(covs_data, index=sub.index)
+        covs_df = covs_df.dropna()
+        valid_idx = covs_df.index.intersection(y.index)
+        y = y.loc[valid_idx]
+        x = x.loc[valid_idx]
+        covs_arg = covs_df.loc[valid_idx]
+
     try:
-        # rdrobust returns a class with results. 
-        # Indices in pv/coef/se are 'Conventional', 'Bias-Corrected', 'Robust'
-        res = rdrobust.rdrobust(y=y, x=x, c=0, h=h, kernel='triangular')
-        
+        res = rdrobust.rdrobust(y=y, x=x, c=0, h=h, kernel='triangular', covs=covs_arg)
+
         bw_val = res.bws.loc['h', 'left'] if 'h' in res.bws.index else np.nan
-        
+
         # Primary Estimate: Robust (Bias-Corrected with Robust SE)
         est_robust = res.coef.loc['Robust', 'Coeff']
         se_robust = res.se.loc['Robust', 'Std. Err.']
         pv_robust = res.pv.loc['Robust', 'P>|t|']
 
-        # Stability Check: Astronomically large coefficients usually indicate 
-        # matrix singularity or collinearity in narrow bandwidths (e.g., h < 13)
-        if np.abs(est_robust) > 500: # Log-scale 500 is physically impossible for adoption
+        # Stability Check
+        if np.abs(est_robust) > 500:
             print(f"WARNING: Exploding coefficient ({est_robust:.2e}) detected for {label}/{outcome_col}. Returning NaN.")
             return {
-                "Label": label, "Outcome": outcome_col, 
+                "Label": label, "Outcome": outcome_col,
                 "Estimate": np.nan, "Std.Err": np.nan, "P-value": np.nan,
-                "N": int(res.N[0] + res.N[1]), "BW": bw_val, "Donut": "Yes" if donut_weeks else "No", "Method": "rdrobust (Unstable)"
+                "N": int(res.N[0] + res.N[1]), "BW": bw_val, "Donut": "Yes" if donut_weeks else "No",
+                "Method": "rdrobust (Unstable)", "Baseline_Adjusted": "Yes" if covs_cols else "No"
             }
 
         return {
@@ -154,26 +182,27 @@ def run_rdrobust_est(df: pd.DataFrame, outcome_col: str, h: float = None, donut_
             "Estimate": est_robust,
             "Std.Err": se_robust,
             "P-value": pv_robust,
-            
+
             "Estimate_Conv": res.coef.loc['Conventional', 'Coeff'],
             "Std.Err_Conv": res.se.loc['Conventional', 'Std. Err.'],
             "P-value_Conv": res.pv.loc['Conventional', 'P>|t|'],
-            
+
             "N": int(res.N[0] + res.N[1]),
             "BW": bw_val,
             "Donut": "Yes" if donut_weeks else "No",
-            "Method": "rdrobust (Robust/Bias-Corrected)"
+            "Method": "rdrobust (Robust/Bias-Corrected)",
+            "Baseline_Adjusted": "Yes" if covs_cols else "No"
         }
     except Exception as e:
         import traceback
         print(f"CRITICAL: rdrobust failed for {label}/{outcome_col}: {str(e)}")
-        # traceback.print_exc()
         return {
-            "Label": label, "Outcome": outcome_col, 
+            "Label": label, "Outcome": outcome_col,
             "Estimate": np.nan, "Std.Err": np.nan, "P-value": np.nan,
             "Estimate_Conv": np.nan, "Std.Err_Conv": np.nan, "P-value_Conv": np.nan,
             "Estimate_BC": np.nan, "Std.Err_BC": np.nan, "P-value_BC": np.nan,
-            "N": 0, "BW": h, "Donut": "Yes" if donut_weeks else "No", "Method": f"rdrobust ERROR: {type(e).__name__}"
+            "N": 0, "BW": h, "Donut": "Yes" if donut_weeks else "No",
+            "Method": f"rdrobust ERROR: {type(e).__name__}", "Baseline_Adjusted": "Yes" if covs_cols else "No"
         }
 
 def run_quantile_rdd(df: pd.DataFrame, outcome_col: str, q: float = 0.5, h: float = None, donut_weeks: list = None, label: str = ""):

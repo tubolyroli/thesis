@@ -65,7 +65,7 @@ def main():
     plt.errorbar(res_df["Label"], res_df["Estimate"], yerr=res_df["Std.Err"]*1.96, fmt='o', capsize=5)
     plt.axhline(0, color='red', linestyle='--')
     plt.title("Stacked Placebo Jump vs. 2021 Main Jump")
-    plt.ylabel("Estimate (Log Points or Levels)")
+    plt.ylabel("Estimate")
     plt.xticks(rotation=15)
     plt.savefig(RESULTS_DIR / "figures" / "stacked_rdd_comparison.png")
     
