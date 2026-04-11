@@ -51,7 +51,7 @@ def main():
     ax.axhline(0, color='red', linestyle='--')
     ax.set_title(f"Bandwidth Sensitivity: {outcome}", fontsize=14, fontweight='bold')
     ax.set_xlabel("Bandwidth (Weeks from Cutoff)", fontsize=12)
-    ax.set_ylabel("RDD Estimate (Jump in Log Downloads)", fontsize=12)
+    ax.set_ylabel("RDD Estimate", fontsize=12)
     ax.grid(True, alpha=0.3)
     
     plt.tight_layout()
