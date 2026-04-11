@@ -70,6 +70,16 @@ def main():
                 print(f"Estimating Diff-in-RDD: tier={tier_label}, outcome={outcome}, adjusted={adjusted} (N={len(df_tier)})...")
                 if len(df_tier) < 50:
                     print(f"  Skipping {tier_label} due to insufficient data.")
+                    results.append({
+                        "Tier": tier_label,
+                        "Outcome": outcome,
+                        "Excess_Jump": np.nan,
+                        "Std_Err": np.nan,
+                        "P_value": np.nan,
+                        "N": int(len(df_tier)),
+                        "Baseline_Adjusted": adjusted,
+                        "Note": "skipped: N<50"
+                    })
                     continue
 
                 df_work = df_tier.copy()
