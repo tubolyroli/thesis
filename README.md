@@ -73,3 +73,5 @@ python run_pipeline.py --appendix-only
 ```
 
 Requires access to the source data files in `data/raw/`. Scripts 11 and 14 load the full raw PyPI parquet and require sufficient RAM (>8GB).
+
+The pinned versions in `requirements.txt` reflect the exact environment used to produce the results in this repository (Python 3.14, pandas 3.x, numpy 2.x, statsmodels 0.14, rdrobust 1.3). Older Python environments will require relaxing the pins; the analysis itself only relies on standard pandas, numpy, statsmodels, and rdrobust APIs.

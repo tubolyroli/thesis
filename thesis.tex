@@ -35,6 +35,9 @@
 % Cross-referencing and links (load last)
 \usepackage[hidelinks]{hyperref}
 
+% Allow LaTeX a bit more flexibility at line breaks before reporting overfull boxes
+\setlength{\emergencystretch}{3em}
+
 % ------------------------------------------------------------------
 % Front matter
 % ------------------------------------------------------------------
@@ -99,7 +102,7 @@ This raises a structural question. LLMs sit between developers and the software 
 \section{The Mechanism}\label{sec:intro-mechanism}
 The mechanism runs through a property of pretrained language models that is easy to state. Their parametric knowledge is frozen at the end of training. A model whose training data runs through September 2021 knows nothing about a library first released in November 2021, regardless of that library's quality, functionality, or subsequent adoption. When a developer asks such a model to recommend a library for a task, or when the model generates code to solve one, the post-cutoff library is not part of the candidate set. The pre-cutoff library is, even if it is older and less capable.
 
-This asymmetry is not hypothetical. The GPT-3.5 and GPT-4 model families, which powered the bulk of AI coding assistant usage between 2022 and 2024, share a documented training data cutoff of September 2021 (OpenAI, 2023). A Python library released before October 2021 was a candidate for inclusion in these models' knowledge, and a library released in November 2021 probably was not. If LLM recommendations shape adoption, this discrete boundary should produce a detectable discontinuity in the diffusion trajectories of libraries released just before and just after that date.
+This asymmetry is not hypothetical. The GPT-3.5 and GPT-4 model families, which powered the bulk of AI coding assistant usage between 2022 and 2024, share a documented training data cutoff of September 2021 \citep{openai2023gpt4}. A Python library released before October 2021 was a candidate for inclusion in these models' knowledge, and a library released in November 2021 probably was not. If LLM recommendations shape adoption, this discrete boundary should produce a detectable discontinuity in the diffusion trajectories of libraries released just before and just after that date.
 
 The causal chain is plausible at each stage. Training cutoffs create differential knowledge representation, that representation feeds into recommendation frequencies, and those recommendations in turn shape developer adoption. The empirical challenge is whether the cumulative effect of these three steps is large enough to show up in observational data as a measurable population-level shift.
 
@@ -122,7 +125,7 @@ The central question is: Do Python libraries released shortly before the GPT-3.5
     \item[H1:] Pre-cutoff libraries show greater post-AI diffusion than post-cutoff libraries.
     \item[H2:] The discontinuity is larger in GitHub imports than in PyPI downloads.
     \item[H3:] The gap emerged only after the mass deployment of ChatGPT (November, 2022).
-    \item[H4:] Placebo cutoffs in 2018–2020 do not produce comparable discontinuities.
+    \item[H4:] Placebo cutoffs in 2018--2020 do not produce comparable discontinuities.
 \end{description}
 
 \section{Design Overview}\label{sec:intro-design}
@@ -132,6 +135,7 @@ The primary estimation strategy is a Difference-in-Discontinuities (Diff-in-RDD)
 
 \begin{figure}[ht]
 \centering
+\resizebox{\textwidth}{!}{%
 \begin{tikzpicture}[x=0.16cm, y=1cm]
   % Time axis
   \draw[->, thick] (0,0) -- (95,0);
@@ -171,7 +175,8 @@ The primary estimation strategy is a Difference-in-Discontinuities (Diff-in-RDD)
   % Observation window
   \draw[<->, blue!60!black] (63,1.8) -- (90,1.8);
   \node[above, blue!60!black, font=\scriptsize] at (76.5,1.8) {Post-AI observation window};
-\end{tikzpicture}
+\end{tikzpicture}%
+}
 \caption{Timeline of the natural experiment. The exogenously defined September 2021 training data cutoff assigns libraries released before the boundary to the treatment group (included in training data) and those released after to the control group (excluded), as-if randomly. The 9-week donut excludes libraries with ambiguous training inclusion. The Knowledge Wall effect activates only after November 2022, when ChatGPT provides a mass interface through which the training boundary becomes consequential for developer behavior.}\label{fig:timeline}
 \end{figure}
 
@@ -196,7 +201,7 @@ This chapter situates the paper within several distinct scholarly conversations.
 
 The central theoretical concern motivating this paper is that tools which improve individual productivity may at the same time narrow the collective variety of what they help produce. The most direct empirical grounding for this concern is \citet{doshi2024generative}. They run a preregistered online experiment in which participants write short stories with or without access to a generative AI system. Access to AI raises average story quality, which is consistent with individual productivity gains. The same access also compresses the variation across stories; AI-assisted writing turns out to be significantly more uniform than the purely human-authored work. The authors interpret this as a social dilemma. Each individual writer is better off with AI assistance, yet the aggregate range of novel content the group produces is narrower. The mechanism behind that pattern is convergence. AI suggestions push participants toward similar high-quality solutions and squeeze out the exploratory variety that human writers would otherwise produce.
 
-The analogy to software adoption is structural rather than empirical. Doshi and Hauser study creative text; this paper studies tool selection. The underlying logic is the same. When a developer queries an LLM, the model draws on its parametric knowledge to suggest options. When many developers query the same model, they receive correlated suggestions, all concentrated on libraries represented in training data. The collective effect is a quiet narrowing of the active tool set, not because post-cutoff libraries are worse, but because the information broker through which most developers now access the ecosystem cannot consider them. Doshi and Hauser (2024) serve as motivation and structural analogy here; they are not directly comparable empirical evidence.
+The analogy to software adoption is structural rather than empirical. \citet{doshi2024generative} study creative text; this paper studies tool selection. The underlying logic is the same. When a developer queries an LLM, the model draws on its parametric knowledge to suggest options. When many developers query the same model, they receive correlated suggestions, all concentrated on libraries represented in training data. The collective effect is a quiet narrowing of the active tool set, not because post-cutoff libraries are worse, but because the information broker through which most developers now access the ecosystem cannot consider them. \citet{doshi2024generative} serve as motivation and structural analogy here; they are not directly comparable empirical evidence.
 
 Related experimental work strengthens the micro-level plausibility of this mechanism. \citet{anderson2024homogenization} study creative ideation in an experiment where participants use either ChatGPT or an alternative support tool. Users of ChatGPT generate more detailed ideas, but conceptually more overlapping ones, than users of the alternative. The homogenization is group-level rather than individual. Different users receive similar suggestions from the same model and converge on similar ideas even when working independently. That kind of group-level convergence is precisely the mechanism that would, if it carried over to library discovery, produce the population-level pattern this paper identifies. A closely related phenomenon is described by \citet{wu2025generative} as `generative monoculture.' Their work shows that LLM outputs are narrower in diversity than the training sets they come from. Rather than pinning the effect on data composition, they trace it to reinforcement learning from human feedback (RLHF). The implication is that even with updated training data, the pressure toward uniformity would persist, since the alignment process itself rewards the most probable outputs.
 
@@ -226,7 +231,7 @@ The general-purpose technology framework of \citet{bresnahan1995general} charact
 
 The empirical economics of LLM adoption is a fast-moving field. \citet{eloundou2024gpts} estimate that roughly 80\% of US workers have at least 10\% of their tasks exposed to LLMs, with software development among the most heavily exposed occupations. That exposure number sets the demand-side context for the Knowledge Wall. If most developers are now LLM-assisted, then the training cutoff boundary touches a substantial share of technology adoption decisions in the population.
 
-Direct causal evidence on productivity effects comes from randomized experiments. \citet{noy2023experimental} assign college-educated professionals to writing tasks with or without ChatGPT access and find roughly a 40\% reduction in completion time and an 18\% improvement in evaluator ratings. The effects are largest for lower-ability workers, a compression pattern consistent with Doshi and Hauser (2024). \citet{brynjolfsson2023generative} study a deployed AI assistant in a customer service setting and find a 14\% average productivity gain, with a 34\% gain for novice workers. Both studies pick up the same distributional pattern. AI assistance raises the floor of performance while compressing variance, and the model effectively disseminates the practices of more capable workers to less experienced ones. For library selection, that compression dynamic implies that less experienced developers, who lean hardest on LLM recommendations, are also the ones most exposed to the Knowledge Wall.
+Direct causal evidence on productivity effects comes from randomized experiments. \citet{noy2023experimental} assign college-educated professionals to writing tasks with or without ChatGPT access and find roughly a 40\% reduction in completion time and an 18\% improvement in evaluator ratings. The effects are largest for lower-ability workers, a compression pattern consistent with \citet{doshi2024generative}. \citet{brynjolfsson2023generative} study a deployed AI assistant in a customer service setting and find a 14\% average productivity gain, with a 34\% gain for novice workers. Both studies pick up the same distributional pattern. AI assistance raises the floor of performance while compressing variance, and the model effectively disseminates the practices of more capable workers to less experienced ones. For library selection, that compression dynamic implies that less experienced developers, who lean hardest on LLM recommendations, are also the ones most exposed to the Knowledge Wall.
 
 For software development specifically, \citet{peng2023impact} run a controlled experiment in which developers with GitHub Copilot complete a programming task 55.8\% faster than those without. The gain is largest for inexperienced developers. These are exactly the developers most likely to accept LLM library suggestions without independent evaluation, and therefore the population through which the Knowledge Wall has the largest behavioral effect on adoption patterns.
 
@@ -286,7 +291,7 @@ The 26-week outcome is used exclusively for the success-tier classification (Sec
 \textbf{Raw universe.} The full PyPI panel contains 871,133 unique packages after normalization.
 
 \section{GitHub Implementation Data}\label{sec:data-github}
-\textbf{Source and coverage.} The secondary data source is a library-week panel (\texttt{github\_library\_week\_panel.csv}) recording weekly import counts per library across a sample of public GitHub repositories. The panel captures the count of distinct code files (or commits) that contain an import statement referencing a given library in a given week. Coverage extends through early 2026.
+\textbf{Source and coverage.} The secondary data source is a library-week panel (\texttt{github\_\allowbreak library\_\allowbreak week\_\allowbreak panel.csv}) recording weekly import counts per library across a sample of public GitHub repositories. The panel captures the count of distinct code files (or commits) that contain an import statement referencing a given library in a given week. Coverage extends through early 2026.
 
 \textbf{AI scoring.} Each week-library observation in the GitHub panel carries an AI commit score, a bias-corrected point estimate of the proportion of code that is AI-generated. The underlying classifier assigns a probability to each function or code block, and these raw predictions are then aggregated and adjusted for the classifier's estimated false positive and true positive rates. Because the correction subtracts an expected noise floor, the resulting score can turn slightly negative for commits or groups with very low AI adoption, when the raw prediction rate does not exceed the classifier's baseline false positive rate. The score is aggregated to the package level as a commit-weighted average AI score over the first 52 weeks post-release (\texttt{avg\_ai\_score\_52wk}). Packages above the median are classified as High AI and those below as Low AI. This variable is used only in the exploratory mechanism test (Section~\ref{sec:methods-mechanism}).
 
@@ -315,7 +320,7 @@ For each cohort year, the analysis sample is constructed through the following s
 
 \begin{itemize}
     \item \textbf{Step 1: Time window restriction.} A package is retained if its release week falls within $\pm 156$ weeks (three years) of the cohort cutoff date. Packages outside this window are dropped. The 156-week window is intentionally wide. Bandwidth selection for the RDD estimator is data-driven and will typically pick a narrower effective sample.
-    \item \textbf{Step 2: Minimum download filter.} A baseline filter requiring at least 10 cumulative downloads at 26 weeks (\texttt{MIN\_DOWNLOADS\_FILTER} = 10) defines the ``Broad'' tier. This filter is applied as a sample restriction in the Broad specifications and is varied in robustness checks.
+    \item \textbf{Step 2: Minimum download filter.} A baseline filter requiring at least 10 cumulative downloads at 52 weeks (\texttt{MIN\_DOWNLOADS\_FILTER} = 10, applied to \texttt{total\_downloads\_52wk}) defines the ``Broad'' tier. This filter is applied as a sample restriction in the Broad specifications and is varied in robustness checks.
     \item \textbf{Step 3: Donut exclusion.} Observations with running variable values in $[-8, 0]$, roughly the nine-week period from early August through September 2021, are excluded from all estimation samples. The exclusion is recorded as a flag (\texttt{in\_donut}) on the full dataset and applied at the estimation stage.
 \end{itemize}
 
@@ -423,7 +428,7 @@ Release timing is operationalized as the first calendar week in which a library 
 
 The running variable is expressed as $X_i = w_i - c$, where $w_i$ is the first observed download week of library $i$ and $c$ is the week containing September 27, 2021. By construction, $X_i < 0$ for pre-cutoff libraries and $X_i \geq 0$ for post-cutoff libraries.
 
-\subsubsection*{Measurement threats}
+\paragraph{Measurement threats.}
 Three threats to running variable validity are worth flagging.
 \begin{itemize}
     \item \textbf{Heaping.} If developers systematically time releases around calendar milestones, the density of $X_i$ may show non-smooth bunching. Density tests based on \citet{mccrary2008manipulation} are reported.
@@ -444,7 +449,7 @@ Libraries released within roughly eight weeks before the cutoff occupy an ambigu
 The donut is asymmetric because the post-cutoff boundary is definitionally clean. Any library released after September 27, 2021 is excluded from the training corpus by construction. As a robustness check, a symmetric $\pm 4$-week donut is also estimated.
 
 \section{Outcome Variables}\label{sec:methods-outcomes}
-\subsubsection*{PyPI downloads}
+\paragraph{PyPI downloads.}
 The primary outcome is the cumulative count of PyPI downloads, measured in $\log(1 + \text{downloads})$. Three horizons are used.
 \begin{itemize}
     \item \textbf{52-week cumulative downloads.} Primary long-run outcome.
@@ -454,7 +459,7 @@ The primary outcome is the cumulative count of PyPI downloads, measured in $\log
 
 The 52-week outcome is \textit{horizon-normalized}, in the sense that every library is measured over the same relative window regardless of release date. The post-AI outcome is instead anchored in \textit{calendar time}, since it captures all downloads since a fixed date, so the accumulation window grows as the data extend. This has two implications. The post-AI estimate is a snapshot, and would yield a different (likely larger) coefficient if re-estimated with data collected six months later. In addition, libraries released at different distances from the cutoff have been alive for different durations when the post-AI window opens, which introduces a smooth age gradient. The local linear specification absorbs that gradient through its slope terms, so the discontinuity estimate captures only the discrete jump at the cutoff, not the continuous age difference. The two outcome types are complementary. The horizon-normalized measure ensures comparability, and the calendar-anchored measure directly tests whether the gap activates after LLMs become widely deployed.
 
-\subsubsection*{GitHub imports}
+\paragraph{GitHub imports.}
 A secondary outcome is the cumulative count of GitHub code files importing library $i$, also transformed as $\log(1 + \text{imports})$. The implementation gap, comparing the discontinuity in GitHub imports against the discontinuity in PyPI downloads, serves as the primary mechanism test.
 
 \section{Main Estimator: Local Linear RDD}\label{sec:methods-rdd}
@@ -500,10 +505,10 @@ The coefficient of interest is $\delta$, the differential suppression effect for
 \section{Robustness Checks}\label{sec:methods-robustness}
 
 \subsection{Bandwidth Sensitivity}\label{subsec:rob-bw}
-Estimate stability is evaluated across a range of bandwidths $h \in \{10, 13, 18, 26, 39, 52\}$ weeks. The single-year 2021 RDD turned out to be sensitive to bandwidth choice, and the MSE-optimal bandwidth selector in \texttt{rdrobust} failed numerically for the large-$N$ PyPI specifications. That sensitivity is part of the empirical justification for the Diff-in-RDD strategy, which remains stable and significant across the same bandwidth choices by leveraging previous years (2018--2020) as a counterfactual for seasonal release patterns.
+Estimate stability is evaluated across a range of bandwidths $h \in \{10, 13, 18, 26, 39, 52\}$ weeks. The single-year 2021 RDD turned out to be sensitive to bandwidth choice, and the MSE-optimal bandwidth selector in \texttt{rdrobust} failed numerically for the large-$N$ PyPI specifications.\footnote{For numerical stability the estimation wrapper (\texttt{scripts/utils.py}) records any \texttt{rdrobust} robust point estimate with absolute value greater than $500$ log points as missing, on the grounds that values of that magnitude on a $\log(1+Y)$ scale reflect ill-conditioned bias correction rather than a genuine effect. No estimate reported in the thesis was discarded by this guard; it triggered only on a small number of large-$N$ specifications that also failed bandwidth selection.} That sensitivity is part of the empirical justification for the Diff-in-RDD strategy, which remains stable and significant across the same bandwidth choices by leveraging previous years (2018--2020) as a counterfactual for seasonal release patterns.
 
 \subsection{Donut Specification}\label{subsec:rob-donut}
-The primary design uses an asymmetric 9-week donut, excluding the period from early August to September 27, 2021. The motivation is substantive. There is genuine uncertainty about whether libraries released in the final weeks before the cutoff were successfully scraped and processed into the model's training set. To make sure the result is not an artifact of that specific exclusion, a standard symmetric $\pm 4$-week donut is also reported. The effect remains robust ($Estimate = -4.35$, $p < 0.001$ for the Successful tier), so the Knowledge Wall is not driven by the choice of exclusion window.
+The primary design uses an asymmetric 9-week donut, excluding the period from early August to September 27, 2021. The motivation is substantive. There is genuine uncertainty about whether libraries released in the final weeks before the cutoff were successfully scraped and processed into the model's training set. To make sure the result is not an artifact of that specific exclusion, a standard symmetric $\pm 4$-week donut is also reported. The post-AI download discontinuity for the Broad tier remains negative and highly significant (Estimate $= -4.35$, $p < 0.001$), so the Knowledge Wall is not driven by the choice of exclusion window.
 
 \subsection{Placebo Cutoffs}\label{subsec:rob-placebo}
 The RDD is replicated for the 2018, 2019, and 2020 cohorts using the same relative calendar dates. None of these placebo years contain a major LLM training cutoff. The absence of significant discontinuities in those years helps rule out alternative explanations such as annual seasonality in Python library releases, for example end-of-quarter or pre-conference release spikes, that could otherwise be mistaken for a treatment effect.
@@ -542,8 +547,8 @@ Before estimating discontinuities, it is worth characterizing the distribution o
 \quad 52-week downloads & 527{,}361 & 25{,}661 & 2{,}307 & 1{,}439{,}110 & 96 & 15{,}456 \\
 \quad Post-AI downloads  & 527{,}361 & 748{,}094 & 4{,}005 & 49{,}081{,}592 & 11 & 44{,}113 \\[4pt]
 \multicolumn{7}{l}{\textit{GitHub Imports (matched subsample)}} \\
-\quad 52-week imports     & 28{,}243 & 147.1 & 2.0 & 5{,}077.0 & 0 & 98 \\
-\quad Post-AI imports     & 28{,}243 & 318.4 & 7.0 & 6{,}721.7 & 0 & 196 \\[4pt]
+\quad 52-week imports     & 28{,}243 & 147.1 & 2 & 5{,}077.0 & 0 & 98 \\
+\quad Post-AI imports     & 28{,}243 & 318.4 & 7 & 6{,}721.7 & 0 & 196 \\[4pt]
 \multicolumn{7}{l}{\textit{AI Exposure Score (matched subsample)}} \\
 \quad avg\_ai\_score\_52wk & 8{,}566 & 0.272 & 0.232 & 0.391 & $-0.217$ & 0.878 \\
 \bottomrule
@@ -561,15 +566,15 @@ Among libraries released within $\pm 13$ weeks of the September 2021 cutoff, don
 \section{Main RDD: Raw Discontinuity at the 2021 Cutoff}\label{sec:results-mainrdd}
 Table~\ref{tab:mainrdd} reports the baseline RDD estimates for the 2021 cohort, estimated using \texttt{rdrobust} with bias-corrected local linear regression, triangular kernel, and $h = 13$ weeks. The donut exclusion (weeks $-8$ to $0$) is applied.
 
-\begin{table}[h!]
+\begin{table}[ht]
 \centering
 \caption{Main RDD Estimates, 2021 Cohort}\label{tab:mainrdd}
 \small
 \begin{tabular}{llcccc}
 \toprule
 \textbf{Tier} & \textbf{Outcome} & \textbf{Estimate} & \textbf{SE} & \textbf{p-value} & \textbf{N} \\ \midrule
-Broad (min 10) & 52-week Downloads & +9.572 & 2.670 & $<$0.001 & 527,361 \\
-Broad (min 10) & Post-AI Downloads & +13.103 & 4.494 & 0.004 & 527,361 \\
+Broad (min 10) & 52-week Downloads & $9.572$ & 2.670 & $<$0.001 & 527,361 \\
+Broad (min 10) & Post-AI Downloads & $13.103$ & 4.494 & 0.004 & 527,361 \\
 Successful (min 500) & Post-AI Downloads & $-0.195$ & 3.125 & 0.950 & 407,110 \\ \bottomrule
 \end{tabular}
 \begin{tablenotes}
@@ -585,7 +590,7 @@ Figure~\ref{fig:binscatter-pypi} makes this visible. The positive raw jump shows
 \begin{figure}[ht]
 \centering
 \includegraphics[width=0.95\textwidth]{results/figures/rdd_horizon_binscatters.png}
-\caption{Binned scatterplots of $\log(1 + \text{downloads})$ by release week relative to the September 2021 cutoff, for 26-week (left) and 52-week (right) cumulative PyPI downloads. Each point represents a weekly bin average; fitted lines show local linear estimates on each side of the cutoff. The upward trend reflects the secular growth of the Python ecosystem; the positive discontinuity at the cutoff captures the raw seasonal jump, which the Diff-in-RDD design subsequently nets out.}\label{fig:binscatter-pypi}
+\caption[Binscatter of cumulative PyPI downloads (26 and 52 weeks)]{Binned scatterplots of $\log(1 + \text{downloads})$ by release week relative to the September 2021 cutoff, for 26-week (left) and 52-week (right) cumulative PyPI downloads. Each point represents a weekly bin average; fitted lines show local linear estimates on each side of the cutoff. The upward trend reflects the secular growth of the Python ecosystem; the positive discontinuity at the cutoff captures the raw seasonal jump, which the Diff-in-RDD design subsequently nets out.}\label{fig:binscatter-pypi}
 \end{figure}
 
 \begin{figure}[ht]
@@ -597,7 +602,7 @@ Figure~\ref{fig:binscatter-pypi} makes this visible. The positive raw jump shows
 \section{Causal Identification: Difference-in-Discontinuities}\label{sec:results-diffrdd}
 The Diff-in-RDD stacks the 2021 cohort with three placebo cohorts (2018, 2019, 2020), estimates the RDD discontinuity for each year at the same calendar position, and extracts the 2021-specific excess. The excess jump is identified by the interaction term $\hat{\tau}^{2021} - \bar{\hat{\tau}}^{\text{placebo}}$, estimated via WLS.
 
-\begin{table}[h!]
+\begin{table}[ht]
 \centering
 \caption{Diff-in-RDD Estimates: 2021 Excess Jump}\label{tab:diffrdd}
 \small
@@ -654,17 +659,17 @@ Post-cutoff libraries are roughly 29 percentage points \textit{more} likely to r
 \section{The Implementation Gap: GitHub versus PyPI}\label{sec:results-github}
 A cleaner test of the LLM-mediated channel uses GitHub import counts. Table~\ref{tab:github-rdd} reports \texttt{rdrobust} estimates for the GitHub-matched subsample ($N = 28{,}243$).
 
-\begin{table}[h!]
+\begin{table}[ht]
 \centering
 \caption{Main RDD Estimates: GitHub Implementation}\label{tab:github-rdd}
 \small
 \begin{tabular}{lcccc}
 \toprule
 \textbf{Outcome} & \textbf{Estimate} & \textbf{SE} & \textbf{p-value} & \textbf{N} \\ \midrule
-52-week Imports & +11.554 & 10.778 & 0.284 & 28,243 \\
-GPT-4 Era Imports & +23.256 & 11.541 & 0.044 & 28,243 \\
-Post-AI Imports & +26.767 & 10.932 & 0.014 & 28,243 \\
-All-Time Imports & +27.863 & 9.987 & 0.005 & 28,243 \\ \bottomrule
+52-week Imports & $11.554$ & 10.778 & 0.284 & 28,243 \\
+GPT-4 Era Imports & $23.256$ & 11.541 & 0.044 & 28,243 \\
+Post-AI Imports & $26.767$ & 10.932 & 0.014 & 28,243 \\
+All-Time Imports & $27.863$ & 9.987 & 0.005 & 28,243 \\ \bottomrule
 \end{tabular}
 \begin{tablenotes}
 \small
@@ -672,7 +677,7 @@ All-Time Imports & +27.863 & 9.987 & 0.005 & 28,243 \\ \bottomrule
 \end{tablenotes}
 \end{table}
 
-The all-time estimate ($+27.9$) is roughly twice the corresponding PyPI post-AI estimate ($+13.1$). The comparison needs a caveat. The PyPI estimate uses the full Broad-tier sample ($N = 527{,}361$), while the GitHub estimate uses a 5.3\% matched subsample ($N = 28{,}243$) that over-represents prominent, widely-used libraries. The larger GitHub coefficient may partly reflect sample composition, since more visible libraries have more to lose from reduced discoverability, rather than a pure difference between the implementation and discovery channels. With that caveat in mind, the amplification is consistent with LLM-steered code generation as the operative channel. Figure~\ref{fig:horizon-coef} shows that the estimated discontinuity grows monotonically from the 52-week horizon through the all-time horizon, in line with the activation hypothesis. The gap is dormant at release and only emerges once LLMs become a mass interface.
+The all-time estimate ($27.9$) is roughly twice the corresponding PyPI post-AI estimate ($13.1$). The comparison needs a caveat. The PyPI estimate uses the full Broad-tier sample ($N = 527{,}361$), while the GitHub estimate uses a 5.3\% matched subsample ($N = 28{,}243$) that over-represents prominent, widely-used libraries. The larger GitHub coefficient may partly reflect sample composition, since more visible libraries have more to lose from reduced discoverability, rather than a pure difference between the implementation and discovery channels. With that caveat in mind, the amplification is consistent with LLM-steered code generation as the operative channel. Figure~\ref{fig:horizon-coef} shows that the estimated discontinuity grows monotonically from the 52-week horizon through the all-time horizon, in line with the activation hypothesis. The gap is dormant at release and only emerges once LLMs become a mass interface.
 
 \begin{figure}[ht]
 \centering
@@ -690,7 +695,7 @@ Figure~\ref{fig:long-horizon} gives the key visual test of the activation hypoth
 
 The selection of the GitHub-matched subsample deserves attention, because it interacts with the interpretation of the implementation gap in a substantive way. Within the near-cutoff window of libraries released within 26 weeks of the September 2021 boundary (donut excluded), the GitHub-matched sample contains 1{,}804 pre-cutoff and 2{,}341 post-cutoff libraries. Among these, 86.8\% of pre-cutoff libraries and 92.0\% of post-cutoff libraries qualify as Successful (at least 500 pre-ChatGPT downloads), a 5.2 percentage point advantage for the post-cutoff group. The GitHub-matched post-cutoff sample is therefore more selected for demonstrated pre-AI quality than its pre-cutoff counterpart. This selection works against detecting a suppression effect, since post-cutoff libraries in the matched sample are disproportionately high-quality, and their post-AI import disadvantage cannot be attributed to a quality difference between the groups. The suppression estimate from this sample is accordingly conservative.
 
-The selection pattern is also visible in implementation survival rates. Among GitHub-matched Successful-tier libraries in the near-cutoff window, 44.1\% of pre-cutoff and 42.5\% of post-cutoff libraries accumulate at least 10 post-AI all-time imports, and 14.3\% of pre-cutoff versus 12.6\% of post-cutoff libraries accumulate at least 100 imports. These raw differences are small in absolute terms and are not adjusted for running variable continuity. They are, however, directionally consistent with the RDD estimates. Post-cutoff libraries are less likely to achieve implementation traction at every threshold, despite being more selected for pre-AI quality. The RDD estimates ($+26.8$ for post-AI imports, Table~\ref{tab:github-rdd}) pick up the sharp local discontinuity at the boundary that these sample-average rates smooth over.
+The selection pattern is also visible in implementation survival rates. Among GitHub-matched Successful-tier libraries in the near-cutoff window, 44.1\% of pre-cutoff and 42.5\% of post-cutoff libraries accumulate at least 10 post-AI all-time imports, and 14.3\% of pre-cutoff versus 12.6\% of post-cutoff libraries accumulate at least 100 imports. These raw differences are small in absolute terms and are not adjusted for running variable continuity. They are, however, directionally consistent with the RDD estimates. Post-cutoff libraries are less likely to achieve implementation traction at every threshold, despite being more selected for pre-AI quality. The RDD estimates ($26.8$ for post-AI imports, Table~\ref{tab:github-rdd}) pick up the sharp local discontinuity at the boundary that these sample-average rates smooth over.
 
 \section{Mechanism Moderation Test}\label{sec:results-moderation}
 An exploratory test splits the sample by AI exposure intensity, above versus below the median of the commit-level AI score, and asks whether the Knowledge Wall penalty differs between the two groups. Neither interaction is statistically significant ($p = 0.179$ for 52-week downloads, $p = 0.505$ for baseline-adjusted post-AI downloads, $N = 1{,}303$). The test is almost certainly underpowered, with roughly 650 observations per group. The null cannot distinguish between a broad ecosystem-wide penalty and a targeted effect that the test simply lacks power to detect. Full specification and tables are reported in Appendix~\ref{app:mechanism}.
@@ -720,7 +725,7 @@ This framing has three implications:
     \item The effects are expected to be persistent. As of early 2026, no catch-up is observed (Figure~\ref{fig:cumulative-gap}). The all-time implementation gap ($+27.9$, Table~\ref{tab:github-rdd}) suggests the divergence has accumulated rather than narrowed.
 \end{enumerate}
 
-The absence of a significant effect for the Superstar tier (at least 1,000 pre-ChatGPT downloads, $p = 0.261$) is consistent with this framing. Libraries that achieved the highest early visibility before ChatGPT are more likely to have accumulated organic adoption through channels largely independent of LLM recommendation: conference presentations, influential blog posts, direct dependency chains, and word-of-mouth within specialist communities. The Knowledge Wall operates most forcefully at the margin of entry, where LLM-mediated discovery is most consequential; it does not appear to override momentum already built through high-visibility human adoption. Figure~\ref{fig:tier-comparison} summarizes this gradient across the three success tiers.
+The absence of a significant effect for the Superstar tier (at least 1,000 pre-ChatGPT downloads, $p = 0.473$, baseline-adjusted) is consistent with this framing. Libraries that achieved the highest early visibility before ChatGPT are more likely to have accumulated organic adoption through channels largely independent of LLM recommendation: conference presentations, influential blog posts, direct dependency chains, and word-of-mouth within specialist communities. The Knowledge Wall operates most forcefully at the margin of entry, where LLM-mediated discovery is most consequential; it does not appear to override momentum already built through high-visibility human adoption. Figure~\ref{fig:tier-comparison} summarizes this gradient across the three success tiers.
 
 \begin{figure}[ht]
 \centering
@@ -734,7 +739,7 @@ The absence of a significant effect for the Superstar tier (at least 1,000 pre-C
 \caption{Cumulative average PyPI downloads for the July 2021 (pre-cutoff) and October 2021 (post-cutoff) cohorts. The vertical red line marks ChatGPT release (November 2022). The gap between cohorts widens monotonically after November 2022, with no catch-up through January 2026. By early 2026, pre-cutoff libraries have accumulated roughly five times the weekly download volume of post-cutoff libraries.}\label{fig:cumulative-gap}
 \end{figure}
 
-\section{Connection to \citet{doshi2024generative}}\label{sec:disc-doshi}
+\section{\texorpdfstring{Connection to \citet{doshi2024generative}}{Connection to Doshi and Hauser (2024)}}\label{sec:disc-doshi}
 The conceptual foundation draws on \citet{doshi2024generative}, who show that generative AI improves individual creative quality while reducing collective diversity through convergence. The parallel here is structural. AI steers developers toward convergent tool choices, specifically toward tools that were established before the knowledge cutoff. Individual developers gain productivity, the individual-enhancement side, but the aggregate effect is a concentration of adoption around the pre-cutoff library set, the collective-narrowing side.
 
 This reading is consistent with the large-scale observational evidence in \citet{daniotti2025who}, who find that AI use is associated with increased exploration of new libraries in aggregate. The two findings are not in tension. AI assistance expands the total set of libraries developers encounter and try, and the Knowledge Wall determines which subset of that expanded exploration the model can actively recommend and implement. The net result is an asymmetric boost. Pre-cutoff libraries benefit from the AI-mediated expansion in library usage, while post-cutoff libraries are excluded from the channel through which that expansion propagates. The Knowledge Wall is therefore best understood not as a suppressor of aggregate experimentation but as a distributional filter on its direction.
@@ -820,7 +825,7 @@ The two-sided empirical $p$-value is 0.344 for the raw RDD estimate at the Septe
 \begin{figure}[ht]
 \centering
 \includegraphics[width=0.85\textwidth]{results/figures/permutation_distribution.png}
-\caption{Distribution of RDD coefficients across 157 placebo Monday cutoff dates (2017--2024). The dashed red line marks the true September 2021 cutoff estimate ($+0.559$). The true estimate falls within the body of the placebo distribution ($p = 0.344$), confirming that the raw RDD is not informative in isolation.}\label{fig:permutation}
+\caption[RDD coefficient distribution across 157 placebo cutoff dates]{Distribution of RDD coefficients across 157 placebo Monday cutoff dates (2017--2024). The dashed red line marks the true September 2021 cutoff estimate ($+0.559$). The true estimate falls within the body of the placebo distribution ($p = 0.344$), confirming that the raw RDD is not informative in isolation.}\label{fig:permutation}
 \end{figure}
 
 This result is expected. The raw RDD captures a composite of the Knowledge Wall effect and a seasonal pattern common to all September release windows. The permutation test cannot isolate the cutoff-specific component, which is exactly why the Diff-in-RDD, not the raw RDD, serves as the primary causal specification.
@@ -885,7 +890,7 @@ A direct mechanism test asks whether suppression is heterogeneous in AI exposure
 $$Y_i = \alpha + \tau D_i + \gamma \cdot \text{HighAI}_i + \delta \cdot (D_i \times \text{HighAI}_i) + f(X_i) + \varepsilon_i,$$
 where $\text{HighAI}_i$ indicates libraries above the median of the commit-level AI score (\texttt{avg\_ai\_score\_52wk}) within the GitHub-matched subsample. The coefficient of interest is $\delta$, the differential suppression for libraries that show up more often in AI-generated code.
 
-\begin{table}[h!]
+\begin{table}[ht]
 \centering
 \caption{AI Exposure Moderation (Exploratory)}\label{tab:mechanism-app}
 \small
@@ -893,12 +898,12 @@ where $\text{HighAI}_i$ indicates libraries above the median of the commit-level
 \begin{tabular}{llcccc}
 \toprule
 \textbf{Outcome} & \textbf{Adjusted} & \textbf{Interaction ($\delta$)} & \textbf{SE} & \textbf{p-value} & \textbf{N} \\ \midrule
-52-week Downloads & No & +0.396 & 0.295 & 0.179 & 1,303 \\
-52-week Imports & No & +0.257 & 0.292 & 0.380 & 1,303 \\
-52-week Imports & Yes & +0.165 & 0.273 & 0.546 & 1,303 \\
-Post-AI Downloads & No & +0.245 & 0.598 & 0.683 & 1,303 \\
+52-week Downloads & No & $0.396$ & 0.295 & 0.179 & 1,303 \\
+52-week Imports & No & $0.257$ & 0.292 & 0.380 & 1,303 \\
+52-week Imports & Yes & $0.165$ & 0.273 & 0.546 & 1,303 \\
+Post-AI Downloads & No & $0.245$ & 0.598 & 0.683 & 1,303 \\
 Post-AI Downloads & Yes & $-0.312$ & 0.469 & 0.505 & 1,303 \\
-Post-AI Imports & No & +0.011 & 0.513 & 0.984 & 1,303 \\
+Post-AI Imports & No & $0.011$ & 0.513 & 0.984 & 1,303 \\
 Post-AI Imports & Yes & $-0.110$ & 0.490 & 0.822 & 1,303 \\ \bottomrule
 \end{tabular}
 \begin{tablenotes}
@@ -920,7 +925,7 @@ Figure~\ref{fig:raw-trajectory} plots the raw (unnormalized) weekly average PyPI
 \begin{figure}[ht]
 \centering
 \includegraphics[width=0.85\textwidth]{results/figures/long_horizon_trajectory_pypi.png}
-\caption{Weekly average PyPI downloads for the July 2021 (pre-cutoff) and October 2021 (post-cutoff) cohorts, from release through January 2026 (log scale). Dashed vertical lines mark the release of ChatGPT (November 2022) and GPT-4 (March 2023). The gap between cohorts opens after ChatGPT and persists through the end of the observation window, with no sign of catch-up.}\label{fig:raw-trajectory}
+\caption[Weekly PyPI downloads, July vs October 2021 cohorts (log scale)]{Weekly average PyPI downloads for the July 2021 (pre-cutoff) and October 2021 (post-cutoff) cohorts, from release through January 2026 (log scale). Dashed vertical lines mark the release of ChatGPT (November 2022) and GPT-4 (March 2023). The gap between cohorts opens after ChatGPT and persists through the end of the observation window, with no sign of catch-up.}\label{fig:raw-trajectory}
 \end{figure}
 
 \end{document}
