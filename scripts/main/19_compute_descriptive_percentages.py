@@ -250,11 +250,11 @@ def plot_normalized_timeseries(wide_pypi, ci_lower, ci_upper):
     ax.axvline(CHATGPT_RELEASE, color="red", linestyle="-", alpha=0.8, linewidth=1.5, label="ChatGPT release")
     ax.axvline(GPT4_RELEASE, color="darkred", linestyle=":", alpha=0.8, linewidth=1.5, label="GPT-4 release")
 
-    ax.set_xlabel("Calendar Date", fontsize=12)
-    ax.set_ylabel("Log ratio: Pre-cutoff / Post-cutoff\n(positive = pre-cutoff advantage)", fontsize=11)
-    ax.set_title("Normalized Diffusion Gap: Pre- vs Post-Cutoff Libraries (PyPI)", fontsize=13, fontweight="bold")
+    ax.set_xlabel("Calendar Date")
+    ax.set_ylabel("Log ratio: Pre-cutoff / Post-cutoff\n(positive = pre-cutoff advantage)")
+    ax.set_title("Normalized Diffusion Gap: Pre- vs Post-Cutoff Libraries (PyPI)", fontweight="bold")
 
-    ax.legend(loc="upper left", fontsize=10)
+    ax.legend(loc="upper left")
     ax.xaxis.set_major_formatter(mdates.DateFormatter("%b %Y"))
     ax.xaxis.set_major_locator(mdates.MonthLocator(interval=6))
     fig.autofmt_xdate()

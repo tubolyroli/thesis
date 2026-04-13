@@ -166,9 +166,9 @@ def main():
                         scatter=False, ax=ax, color=colors[side],
                         line_kws={"linewidth": 2})
         ax.axvline(0, color="black", linestyle="--", alpha=0.5)
-        ax.set_xlabel("Weeks from Cutoff", fontsize=11)
-        ax.set_ylabel(label, fontsize=11)
-        ax.set_title(label.replace("Log Cumulative Downloads ", "").strip("()") + " Downloads", fontsize=12)
+        ax.set_xlabel("Weeks from Cutoff")
+        ax.set_ylabel(label)
+        ax.set_title(label.replace("Log Cumulative Downloads ", "").strip("()") + " Downloads")
     plt.tight_layout()
     plt.savefig(FIGURES_DIR / "rdd_horizon_binscatters.png", dpi=300)
     plt.close()

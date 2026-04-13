@@ -49,9 +49,9 @@ def main():
                 fmt='o-', capsize=5, label="Estimate (95% CI)")
     
     ax.axhline(0, color='red', linestyle='--')
-    ax.set_title(f"Bandwidth Sensitivity: {outcome}", fontsize=14, fontweight='bold')
-    ax.set_xlabel("Bandwidth (Weeks from Cutoff)", fontsize=12)
-    ax.set_ylabel("RDD Estimate", fontsize=12)
+    ax.set_title(f"Bandwidth Sensitivity: {outcome}", fontweight='bold')
+    ax.set_xlabel("Bandwidth (Weeks from Cutoff)")
+    ax.set_ylabel("RDD Estimate")
     ax.grid(True, alpha=0.3)
     
     plt.tight_layout()
