@@ -145,6 +145,34 @@ def main():
     plt.savefig(FIGURES_DIR / "binscatter_log_imports.png", dpi=300)
     plt.close()
     
+    # RDD Horizon Binscatters (26-week and 52-week downloads)
+    df["log_cum_downloads_26wk"] = np.log1p(df["cum_downloads_26wk"])
+    df["log_cum_downloads_52wk"] = np.log1p(df["cum_downloads_52wk"])
+    df["side"] = np.where(df["is_pre_cutoff"] == 1, "Pre-Cutoff", "Post-Cutoff")
+
+    fig, axes = plt.subplots(1, 2, figsize=(14, 5), sharey=False)
+    for ax, col, label in zip(
+        axes,
+        ["log_cum_downloads_26wk", "log_cum_downloads_52wk"],
+        ["Log Cumulative Downloads (26 Weeks)", "Log Cumulative Downloads (52 Weeks)"],
+    ):
+        bins = df.groupby("dist_to_cutoff")[col].mean().reset_index()
+        colors = {"Pre-Cutoff": "royalblue", "Post-Cutoff": "orange"}
+        for side, grp in df.groupby("side"):
+            b = grp.groupby("dist_to_cutoff")[col].mean().reset_index()
+            ax.scatter(b["dist_to_cutoff"], b[col], color=colors[side], s=18, alpha=0.6, label=side)
+        for side, grp in df.groupby("side"):
+            sns.regplot(data=grp, x="dist_to_cutoff", y=col,
+                        scatter=False, ax=ax, color=colors[side],
+                        line_kws={"linewidth": 2})
+        ax.axvline(0, color="black", linestyle="--", alpha=0.5)
+        ax.set_xlabel("Weeks from Cutoff", fontsize=11)
+        ax.set_ylabel(label, fontsize=11)
+        ax.set_title(label.replace("Log Cumulative Downloads ", "").strip("()") + " Downloads", fontsize=12)
+    plt.tight_layout()
+    plt.savefig(FIGURES_DIR / "rdd_horizon_binscatters.png", dpi=300)
+    plt.close()
+
     print(f"Figures saved to {FIGURES_DIR}")
 
 if __name__ == "__main__":
