@@ -110,11 +110,18 @@ def bootstrap_ci_pypi(pkg_week, n_boot=N_BOOTSTRAP, seed=RNG_SEED):
         pre_sample = rng.choice(pre_pkgs, size=n_pre, replace=True)
         post_sample = rng.choice(post_pkgs, size=n_post, replace=True)
 
-        # Compute weekly means for resampled packages
-        pre_dl = (pkg_week[pkg_week["package"].isin(set(pre_sample))]
-                  .groupby("week_start")["downloads"].mean())
-        post_dl = (pkg_week[pkg_week["package"].isin(set(post_sample))]
-                   .groupby("week_start")["downloads"].mean())
+        # Compute weighted weekly means (packages drawn multiple times count multiple times)
+        pre_weights = pd.Series(pre_sample).value_counts()
+        pre_sub = pkg_week[pkg_week["package"].isin(pre_weights.index)].copy()
+        pre_sub["_w"] = pre_sub["package"].map(pre_weights)
+        pre_dl = pre_sub.groupby("week_start").apply(
+            lambda g: np.average(g["downloads"], weights=g["_w"]))
+
+        post_weights = pd.Series(post_sample).value_counts()
+        post_sub = pkg_week[pkg_week["package"].isin(post_weights.index)].copy()
+        post_sub["_w"] = post_sub["package"].map(post_weights)
+        post_dl = post_sub.groupby("week_start").apply(
+            lambda g: np.average(g["downloads"], weights=g["_w"]))
 
         common_weeks = pre_dl.index.intersection(post_dl.index)
         ratio = np.log(pre_dl[common_weeks] + 1) - np.log(post_dl[common_weeks] + 1)

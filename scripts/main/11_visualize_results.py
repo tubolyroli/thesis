@@ -6,56 +6,8 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-from config import MAIN_ANALYSIS_DATA, FINAL_DIR, RESULTS_DIR, FIGURES_DIR, DONUT_WEEKS, CHATGPT_RELEASE, RAW_DIR, CUTOFFS, MAIN_CUTOFF_NAME
-from utils import setup_plotting_style, normalize_name
-
-def plot_long_horizon_trajectory():
-    """Visualizes the 2021 cohort divergence using raw panel data (Activation Plot)."""
-    if not MAIN_ANALYSIS_DATA.exists(): 
-        print(f"Skipping trajectory plot: {MAIN_ANALYSIS_DATA} not found.")
-        return
-    
-    # 1. Load the cross-sectional analysis file for cohort assignment
-    df_meta = pd.read_csv(MAIN_ANALYSIS_DATA, usecols=["package", "dist_to_cutoff"])
-    
-    # Define July vs October cohorts based on dist_to_cutoff (h=13 window)
-    df_meta["cohort"] = "Other"
-    df_meta.loc[(df_meta["dist_to_cutoff"] >= -12) & (df_meta["dist_to_cutoff"] <= -9), "cohort"] = "July 2021 (Pre-Cutoff)"
-    df_meta.loc[(df_meta["dist_to_cutoff"] >= 1) & (df_meta["dist_to_cutoff"] <= 4), "cohort"] = "October 2021 (Post-Cutoff)"
-    
-    df_meta = df_meta[df_meta["cohort"] != "Other"].copy()
-    
-    # 2. Load the raw PyPI weekly panel
-    pypi_path = RAW_DIR / "pypi_downloads.parquet"
-    if not pypi_path.exists():
-        print(f"Skipping trajectory plot: {pypi_path} not found.")
-        return
-        
-    df_panel = pd.read_parquet(pypi_path, columns=["project", "week_start", "downloads"])
-    df_panel["package"] = normalize_name(df_panel["project"])
-    df_panel["week_start"] = pd.to_datetime(df_panel["week_start"])
-
-    # 3. Merge and Aggregate
-    df_plot = df_panel.merge(df_meta[["package", "cohort"]], on="package", how="inner")
-    agg = df_plot.groupby(["week_start", "cohort"])["downloads"].mean().reset_index()
-    
-    # 4. Plotting
-    setup_plotting_style()
-    plt.figure(figsize=(10, 6))
-    sns.lineplot(data=agg, x="week_start", y="downloads", hue="cohort", linewidth=2)
-    
-    # Add Milestones
-    plt.axvline(CUTOFFS[MAIN_CUTOFF_NAME], color="grey", linestyle="--", alpha=0.7, label="Knowledge Cutoff")
-    plt.axvline(CHATGPT_RELEASE, color="red", linestyle="-", alpha=0.8, label="ChatGPT Release")
-    
-    plt.title("Long-Horizon Adoption Trajectory: July vs. October 2021 Cohorts", fontsize=14)
-    plt.xlabel("Calendar Date", fontsize=12)
-    plt.ylabel("Average Weekly Downloads (Log Scale)", fontsize=12)
-    plt.yscale("log")
-    plt.legend(title="Library Cohort", loc="upper left")
-    
-    plt.savefig(FIGURES_DIR / "long_horizon_trajectory_pypi.png", dpi=300, bbox_inches='tight')
-    plt.close()
+from config import RESULTS_DIR, FIGURES_DIR
+from utils import setup_plotting_style
 
 def plot_suppression_visual():
     """Visualizes the 'Missing Boost' by comparing 2021 against historical placebos."""
@@ -68,8 +20,8 @@ def plot_suppression_visual():
     df = pd.read_csv(results_path)
     if "Baseline_Adjusted" in df.columns:
         # Prefer adjusted; fall back to unadjusted for outcomes where adjusted is unavailable
-        adj = df[df["Baseline_Adjusted"] == "Yes"]
-        unadj_only = df[(df["Baseline_Adjusted"] == "No") & (~df["Outcome"].isin(adj["Outcome"].values))]
+        adj = df[df["Baseline_Adjusted"] == True]
+        unadj_only = df[(df["Baseline_Adjusted"] == False) & (~df["Outcome"].isin(adj["Outcome"].values))]
         df = pd.concat([adj, unadj_only])
     setup_plotting_style()
     plt.figure(figsize=(8, 6))
@@ -109,7 +61,6 @@ def plot_horizon_coefficients():
 if __name__ == "__main__":
     FIGURES_DIR.mkdir(parents=True, exist_ok=True)
     setup_plotting_style()
-    plot_long_horizon_trajectory()
     plot_suppression_visual()
     plot_horizon_coefficients()
     print(f"Finalized visualizations saved to {FIGURES_DIR}")

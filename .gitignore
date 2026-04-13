@@ -56,5 +56,6 @@ data/final/
 docs/
 ~$*.docx
 *.pdf
+!thesis.pdf
 memos/*.ipynb
 archive/

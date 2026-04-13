@@ -22,6 +22,7 @@ MAIN_SCRIPTS = [
     ("main", "10_ai_mechanism_split.py"),
     ("main", "11_visualize_results.py"),
     ("main", "14_visualize_long_horizon_trajectories.py"),
+    ("main", "19_compute_descriptive_percentages.py"),
 ]
 
 # Robustness checks and supplementary material
