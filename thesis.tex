@@ -93,7 +93,7 @@ I interpret these results as evidence consistent with a Knowledge Wall, a struct
 It is important to note that this paper has limitations. The running variable is a noisy proxy for true release timing, the mechanism moderation test is underpowered and relies on a post-treatment moderator, and the estimates are local to one cutoff in one ecosystem.
 
 \vspace{0.5cm}
-\noindent \textit{Keywords -} Regression Discontinuity Design, Large Language Models, Training Data Cutoff, Software Adoption, Python Ecosystem, Knowledge Diffusion.
+\noindent \textbf{Keywords:} Regression Discontinuity Design, Large Language Models, Training Data Cutoff, Software Adoption, Python Ecosystem, Knowledge Diffusion.
 \end{abstract}
 \newpage
 
@@ -302,10 +302,7 @@ Five cumulative download outcomes are constructed for each package.
 \par\smallskip\noindent\textit{Source:} Author's compilation based on PyPI data. All calendar dates are Monday-aligned to match the weekly panel structure. The GPT-4 and ChatGPT dates used here (March 13, 2023 and November 28, 2022) are the Mondays of the respective release weeks, not the official announcement dates.\footnote{Official release dates are March 14, 2023 for GPT-4 \citep{openai2023gpt4} and November 30, 2022 for ChatGPT \citep{openai2022chatgpt}. Monday alignment ensures that outcome windows coincide with the weekly download bins in the panel.}
 \end{table}
 
-The 26-week outcome is used exclusively for the success-tier classification (Section~\ref{sec:data-tiers}). The 52-week and post-AI outcomes are the primary estimands.
-
-\subsection{Raw Universe}
-The full PyPI panel contains 871,133 unique packages after normalization.
+The 26-week outcome is used exclusively for the success-tier classification (Section~\ref{sec:data-tiers}). The 52-week and post-AI outcomes are the primary estimands. The full PyPI panel contains 871,133 unique packages after normalization.
 
 \section{GitHub Implementation Data}\label{sec:data-github}
 \subsection{Source and Coverage}
@@ -858,27 +855,9 @@ The broader implication is that LLMs, by fixing a temporal boundary in their tra
 
 \chapter{Declaration of AI Tool Usage}\label{app:ai-declaration}
 
-In accordance with the BCE TDK competition rules (Section IV.1.b), the following declaration describes all uses of artificial intelligence tools during the preparation of this paper. Three AI tools were used, each restricted to minor subtasks as defined by the competition rules. \textit{Claude} (Anthropic) was used for literature search and orientation (identifying potentially relevant papers for manual verification), language and grammar checking of English-language prose, and LaTeX formatting assistance (table layout, equation typesetting, document structure). \textit{Gemini CLI} (Google) was used for brainstorming research design alternatives, exploring the structure of robustness checks, and debugging Python scripts during data pipeline development. \textit{GitHub Copilot} (Microsoft) was used for code autocompletion during the development of data processing and estimation scripts in Python.
+In accordance with the BCE TDK competition rules (Section IV.1.b), the following declaration describes all uses of artificial intelligence tools during the preparation of this paper. Three AI tools were used, each restricted to minor subtasks as defined by the competition rules. \textit{Claude} (Anthropic) was used for literature search and orientation (identifying potentially relevant papers for manual verification), language and grammar checking of English-language prose, and LaTeX formatting assistance (table layout, equation typesetting, document structure). \textit{Gemini} (Google) was used for brainstorming research design alternatives, exploring the structure of robustness checks, and debugging Python scripts during data pipeline development. \textit{GitHub Copilot} (Microsoft) was used for code autocompletion during the development of data processing and estimation scripts in Python.
 
 During the research process, Claude and Gemini were used interactively to explore ideas, outline arguments, and produce preliminary drafts that served as working material. The final text was written by the author. All empirical results were produced by the author's own code executing established statistical packages (\texttt{rdrobust}, \texttt{statsmodels}, \texttt{pandas}). The research question, identification strategy, variable definitions, specification choices, and interpretation of findings are the author's own work, developed in consultation with the supervisor. No AI tool autonomously generated empirical results, made research design decisions, or produced text that appears in the submitted version without having been rewritten by the author.
-
-% ------------------------------------------------------------------
-\chapter{Permutation Inference}\label{app:permutation}
-
-A non-parametric permutation test offers a distribution-free assessment of whether the discontinuity at the September 2021 cutoff is unusual relative to what would be observed at arbitrary dates. Following the moving-cutoff logic common in the causal inference literature \citep{dell2010persistent}, the primary RDD model is re-estimated at 157 alternative placebo Mondays between January 2019 and January 2022.
-
-For each iteration, a hypothetical treatment is defined relative to a pseudo-cutoff date ($c'$), the running variable is recomputed, and the local linear discontinuity is estimated for the primary outcome, cumulative 52-week downloads. The procedure yields an empirical null distribution of RDD coefficients. The empirical $p$-value is
-$$p_{perm} = \frac{1}{N} \sum_{i=1}^{N} \mathbb{I}(|\hat{\beta}_{placebo, i}| \geq |\hat{\beta}_{true}|).$$
-
-The two-sided $p$-value is 0.344 for the raw RDD estimate at the September 2021 cutoff. This means the raw 52-week download discontinuity at the true cutoff is therefore not unusual compared with discontinuities observed at arbitrary placebo dates. Figure~\ref{fig:permutation} shows the distribution of placebo RDD coefficients with the true estimate marked.
-
-\begin{figure}[ht]
-\centering
-\includegraphics[width=0.85\textwidth]{results/figures/permutation_distribution.png}
-\caption[RDD coefficient distribution across 157 placebo cutoff dates]{Distribution of RDD coefficients across 157 placebo Monday cutoff dates (2017--2024). The dashed red line marks the true September 2021 cutoff estimate ($+0.559$). The true estimate falls within the body of the placebo distribution ($p = 0.344$), confirming that the raw RDD is not informative in isolation. \textit{Source:} Author's calculations based on PyPI data.}\label{fig:permutation}
-\end{figure}
-
-This result is expected. The raw RDD captures a composite of the Knowledge Wall effect and a seasonal pattern common to all September release windows. The permutation test cannot isolate the cutoff-specific component, which is exactly why the Diff-in-RDD, not the raw RDD, serves as the primary causal specification.
 
 % ------------------------------------------------------------------
 \chapter{Alternative Mechanisms (Extended)}\label{app:threats}
@@ -932,6 +911,24 @@ The main Diff-in-RDD estimates are stable across $h \in \{13, 15, 18, 26\}$ week
 The single-year GitHub \texttt{rdrobust} estimates are substantially more sensitive to bandwidth than the PyPI estimates. At $h = 13$ weeks the post-AI import discontinuity is $26.8$ ($p = 0.014$); at $h = 18$ it falls to $2.9$ ($p = 0.129$). This instability motivated the GitHub Diff-in-RDD reported in Table~\ref{tab:github-diffrdd}, which nets out seasonal baselines and yields more stable but smaller estimates (all-time excess jump $= 2.1$, $p = 0.060$). The properly identified GitHub estimates point in the same direction with the explanation, but do not reach conventional significance, reflecting the limited size of the matched subsample.
 
 Replacing the asymmetric 9-week donut with a symmetric $\pm 4$-week exclusion gives qualitatively similar results. The post-AI download discontinuity for the Broad tier remains negative and highly significant (Estimate $= -4.35$, $p < 0.001$), so the Knowledge Wall does not appear to be an artifact of the particular exclusion window.
+
+% ------------------------------------------------------------------
+\chapter{Permutation Inference}\label{app:permutation}
+
+A non-parametric permutation test offers a distribution-free assessment of whether the discontinuity at the September 2021 cutoff is unusual relative to what would be observed at arbitrary dates. Following the moving-cutoff logic common in the causal inference literature \citep{dell2010persistent}, the primary RDD model is re-estimated at 157 alternative placebo Mondays between January 2019 and January 2022.
+
+For each iteration, a hypothetical treatment is defined relative to a pseudo-cutoff date ($c'$), the running variable is recomputed, and the local linear discontinuity is estimated for the primary outcome, cumulative 52-week downloads. The procedure yields an empirical null distribution of RDD coefficients. The empirical $p$-value is
+$$p_{perm} = \frac{1}{N} \sum_{i=1}^{N} \mathbb{I}(|\hat{\beta}_{placebo, i}| \geq |\hat{\beta}_{true}|).$$
+
+The two-sided $p$-value is 0.344 for the raw RDD estimate at the September 2021 cutoff. This means the raw 52-week download discontinuity at the true cutoff is therefore not unusual compared with discontinuities observed at arbitrary placebo dates. Figure~\ref{fig:permutation} shows the distribution of placebo RDD coefficients with the true estimate marked.
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.85\textwidth]{results/figures/permutation_distribution.png}
+\caption[RDD coefficient distribution across 157 placebo cutoff dates]{Distribution of RDD coefficients across 157 placebo Monday cutoff dates (2017--2024). The dashed red line marks the true September 2021 cutoff estimate ($+0.559$). The true estimate falls within the body of the placebo distribution ($p = 0.344$), confirming that the raw RDD is not informative in isolation. \textit{Source:} Author's calculations based on PyPI data.}\label{fig:permutation}
+\end{figure}
+
+This result is expected. The raw RDD captures a composite of the Knowledge Wall effect and a seasonal pattern common to all September release windows. The permutation test cannot isolate the cutoff-specific component, which is exactly why the Diff-in-RDD, not the raw RDD, serves as the primary causal specification.
 
 % ------------------------------------------------------------------
 \chapter{Mechanism Moderation Test}\label{app:mechanism}
