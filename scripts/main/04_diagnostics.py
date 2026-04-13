@@ -6,7 +6,8 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-from config import MAIN_ANALYSIS_DATA, FIGURES_DIR, DONUT_WEEKS
+import statsmodels.api as sm
+from config import MAIN_ANALYSIS_DATA, RESULTS_DIR, FIGURES_DIR, DONUT_WEEKS
 from utils import setup_plotting_style, check_monday_alignment
 
 def main():
@@ -89,6 +90,26 @@ def main():
     plt.ylabel("Number of Libraries")
     plt.savefig(FIGURES_DIR / "density_dist_to_cutoff.png", dpi=300)
     plt.close()
+
+    # McCrary-style density test (local linear with separate slopes each side)
+    print("\n--- 6. McCrary-Style Density Test ---")
+    density_results = []
+    for h_test in [13, 26]:
+        bin_counts = df.groupby("dist_to_cutoff").size().reset_index(name="count")
+        bin_counts = bin_counts[(bin_counts["dist_to_cutoff"] >= -h_test) &
+                                (bin_counts["dist_to_cutoff"] <= h_test)].copy()
+        bin_counts["log_count"] = np.log(bin_counts["count"])
+        bin_counts["post"] = (bin_counts["dist_to_cutoff"] >= 0).astype(int)
+        bin_counts["x_post"] = bin_counts["dist_to_cutoff"] * bin_counts["post"]
+        X = sm.add_constant(bin_counts[["dist_to_cutoff", "post", "x_post"]])
+        model = sm.OLS(bin_counts["log_count"], X).fit()
+        theta = model.params["post"]
+        se = model.bse["post"]
+        pval = model.pvalues["post"]
+        print(f"  h={h_test}: theta={theta:+.3f}, SE={se:.3f}, p={pval:.3f}")
+        density_results.append({"bandwidth": h_test, "theta": theta, "se": se, "p_value": pval})
+    pd.DataFrame(density_results).to_csv(RESULTS_DIR / "density_test_results.csv", index=False)
+    print(f"  Saved to {RESULTS_DIR / 'density_test_results.csv'}")
 
     # Outcome Dist
     plt.figure()
