@@ -61,9 +61,9 @@ def main():
     ax.axvline(CHATGPT_RELEASE, color="red", linestyle="-", alpha=0.8, label="ChatGPT Release (Nov 2022)")
     ax.axvline(GPT4_RELEASE, color="darkred", linestyle=":", alpha=0.8, label="GPT-4 Release (March 2023)")
 
-    ax.set_title("The Long-Horizon Diffusion Gap: July vs. October 2021 Cohorts", fontsize=14, fontweight='bold')
-    ax.set_ylabel("Average Weekly Downloads (Log Scale)", fontsize=12)
-    ax.set_xlabel("Calendar Date", fontsize=12)
+    ax.set_title("The Long-Horizon Diffusion Gap: July vs. October 2021 Cohorts", fontweight='bold')
+    ax.set_ylabel("Average Weekly Downloads (Log Scale)")
+    ax.set_xlabel("Calendar Date")
     ax.set_yscale("log")
     
     ax.legend(title="Library Cohort", loc="upper left")
@@ -84,9 +84,9 @@ def main():
     ax2.axvline(cutoff_date, color="grey", linestyle="--", alpha=0.7)
     ax2.axvline(CHATGPT_RELEASE, color="red", linestyle="-", alpha=0.8, label="ChatGPT Release")
     
-    ax2.set_title("Cumulative Diffusion Advantage (All-Time)", fontsize=14, fontweight='bold')
-    ax2.set_ylabel("Cumulative Average Downloads", fontsize=12)
-    ax2.set_xlabel("Calendar Date", fontsize=12)
+    ax2.set_title("Cumulative Diffusion Advantage (All-Time)", fontweight='bold')
+    ax2.set_ylabel("Cumulative Average Downloads")
+    ax2.set_xlabel("Calendar Date")
     ax2.set_yscale("log")
     
     plt.tight_layout()

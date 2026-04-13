@@ -35,7 +35,16 @@ def get_weeks_since(start_col: pd.Series, end_col: pd.Series) -> pd.Series:
 def setup_plotting_style():
     """Configure consistent seaborn/matplotlib style for the project."""
     sns.set_theme(style="whitegrid")
-    plt.rcParams["figure.figsize"] = (10, 6)
+    plt.rcParams.update({
+        "figure.figsize": (10, 6),
+        "font.size": 16,
+        "axes.labelsize": 16,
+        "axes.titlesize": 18,
+        "xtick.labelsize": 14,
+        "ytick.labelsize": 14,
+        "legend.fontsize": 14,
+        "legend.title_fontsize": 16
+    })
 
 import rdrobust
 

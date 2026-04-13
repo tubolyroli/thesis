@@ -48,9 +48,9 @@ def main():
                 fmt='o-', capsize=5, label="GitHub Estimate (95% CI)")
     
     ax.axhline(0, color='red', linestyle='--')
-    ax.set_title(f"GitHub Bandwidth Sensitivity: {outcome}", fontsize=14, fontweight='bold')
-    ax.set_xlabel("Bandwidth (Weeks from Cutoff)", fontsize=12)
-    ax.set_ylabel("RDD Estimate (Jump in Log Imports)", fontsize=12)
+    ax.set_title(f"GitHub Bandwidth Sensitivity: {outcome}", fontweight='bold')
+    ax.set_xlabel("Bandwidth (Weeks from Cutoff)")
+    ax.set_ylabel("RDD Estimate (Jump in Log Imports)")
     ax.grid(True, alpha=0.3)
     
     plt.tight_layout()

@@ -122,10 +122,10 @@ def main():
                         fmt='o-', color=color, capsize=5, linewidth=2, label=lbl)
 
     ax.axhline(0, color='black', linestyle='--', alpha=0.5)
-    ax.set_title(f"Bandwidth Sensitivity: Diff-in-RDD Excess Jump\n(Successful tier, min {MIN_SUCCESS_LOW} @ 26w)", fontsize=13, fontweight='bold')
-    ax.set_xlabel("Bandwidth (Weeks from Cutoff)", fontsize=12)
-    ax.set_ylabel("Diff-in-RDD Estimate", fontsize=12)
-    ax.legend(fontsize=10)
+    ax.set_title(f"Bandwidth Sensitivity: Diff-in-RDD Excess Jump\n(Successful tier, min {MIN_SUCCESS_LOW} @ 26w)", fontweight='bold')
+    ax.set_xlabel("Bandwidth (Weeks from Cutoff)")
+    ax.set_ylabel("Diff-in-RDD Estimate")
+    ax.legend()
     ax.grid(True, linestyle=':', alpha=0.6)
 
     plt.tight_layout()
