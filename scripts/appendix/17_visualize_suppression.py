@@ -77,7 +77,7 @@ def main():
     ax.axvline(0, color="black", linestyle=":", alpha=0.5)
     ax.set_title(f"Visualizing the 'Suppression' Effect: 2021 vs Historical Norms\n(Subsample: Successful Libraries, min {MIN_SUCCESS_LOW} downloads @ 26w)", fontsize=13, fontweight='bold')
     ax.set_xlabel("Weeks since Cutoff (Sept 2021 vs. Sept Placebos)", fontsize=11)
-    ax.set_ylabel(f"log(1 + {outcome})", fontsize=11)
+    ax.set_ylabel("Log Post-AI Cumulative Downloads", fontsize=11)
     
     # Custom Legend
     handles, labels = ax.get_legend_handles_labels()

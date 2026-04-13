@@ -23,6 +23,12 @@ def plot_suppression_visual():
         adj = df[df["Baseline_Adjusted"] == True]
         unadj_only = df[(df["Baseline_Adjusted"] == False) & (~df["Outcome"].isin(adj["Outcome"].values))]
         df = pd.concat([adj, unadj_only])
+    # Clean up tick labels: replace shorthand with human-readable text
+    tier_map = {
+        "Successful (min500@26w)": "Successful (min 500 at 26w)",
+        "Superstar (min1000@26w)": "Superstar (min 1000 at 26w)",
+    }
+    df["Tier"] = df["Tier"].replace(tier_map)
     setup_plotting_style()
     plt.figure(figsize=(8, 6))
     sns.barplot(data=df, x="Tier", y="Excess_Jump", palette="RdYlGn_r", hue="Tier", legend=False)
