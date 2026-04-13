@@ -162,5 +162,96 @@ def main():
     print("=========================================\n")
     print(dv_stats_df.round(4).to_string(index=False))
 
+    # --- GitHub-Matched Subsample Diff-in-RDD ---
+    print("\n=========================================")
+    print("   GITHUB-MATCHED DIFF-IN-RDD RESULTS    ")
+    print("=========================================\n")
+
+    df_gh = df[df["matched_to_github"] == 1].copy()
+
+    gh_outcomes = [
+        ("cum_imports_52wk", "GitHub"),
+        ("post_ai_imports_alltime", "GitHub"),
+        ("cum_imports_alltime", "GitHub"),
+        ("total_downloads_52wk", "PyPI"),
+        ("post_ai_downloads_alltime", "PyPI"),
+    ]
+
+    # Tier definitions on GitHub-matched subsample
+    df_gh_min10 = df_gh[df_gh["total_downloads_52wk"] >= MIN_DOWNLOADS_FILTER].copy()
+    df_gh_success_low = df_gh[df_gh["cum_downloads_26wk"] >= MIN_SUCCESS_LOW].copy()
+    df_gh_success_high = df_gh[df_gh["cum_downloads_26wk"] >= MIN_SUCCESS_HIGH].copy()
+
+    gh_tiers = [
+        (df_gh_min10, "Broad"),
+        (df_gh_success_low, "Successful"),
+        (df_gh_success_high, "Superstar"),
+    ]
+
+    gh_results = []
+    for df_gh_tier, tier_label in gh_tiers:
+        for outcome, outcome_type in gh_outcomes:
+            if outcome not in df_gh_tier.columns:
+                continue
+            for adjusted in [False, True]:
+                # Skip circular baseline adjustment
+                if adjusted and outcome == "total_downloads_52wk":
+                    continue
+                if adjusted and outcome == "cum_imports_52wk":
+                    continue
+
+                print(f"GitHub Diff-in-RDD: tier={tier_label}, outcome={outcome}, type={outcome_type}, adjusted={adjusted} (N={len(df_gh_tier)})...")
+                if len(df_gh_tier) < 50:
+                    print(f"  Skipping {tier_label} due to insufficient data.")
+                    gh_results.append({
+                        "Tier": tier_label, "Outcome": outcome, "Type": outcome_type,
+                        "Excess_Jump": np.nan, "Std_Err": np.nan, "P_value": np.nan,
+                        "N": int(len(df_gh_tier)), "Adjusted": adjusted
+                    })
+                    continue
+
+                df_work = df_gh_tier.copy()
+                df_work["log_y"] = np.log1p(df_work[outcome])
+                df_work["x"] = df_work["dist_to_cutoff"]
+                df_work["treated"] = (df_work["x"] >= 0).astype(int)
+
+                # Triangular Weights
+                df_work["weight"] = 1 - (np.abs(df_work["x"]) / h)
+                df_work = df_work[df_work["weight"] > 0]
+
+                # Clustering: year-by-week
+                df_work['cluster_idx'] = df_work["cutoff_year"].astype(str) + "_" + df_work["dist_to_cutoff"].astype(str)
+
+                # Build formula
+                if adjusted:
+                    df_work["log_baseline"] = np.log1p(df_work["total_downloads_52wk"])
+                    formula = "log_y ~ log_baseline + treated * is_2021 + x * treated * is_2021"
+                else:
+                    formula = "log_y ~ treated * is_2021 + x * treated * is_2021"
+
+                try:
+                    model = smf.wls(formula, data=df_work, weights=df_work["weight"]).fit(
+                        cov_type='cluster',
+                        cov_kwds={'groups': df_work["cluster_idx"]}
+                    )
+
+                    coef = model.params["treated:is_2021"]
+                    se = model.bse["treated:is_2021"]
+                    pval = model.pvalues["treated:is_2021"]
+
+                    gh_results.append({
+                        "Tier": tier_label, "Outcome": outcome, "Type": outcome_type,
+                        "Excess_Jump": coef, "Std_Err": se, "P_value": pval,
+                        "N": int(model.nobs), "Adjusted": adjusted
+                    })
+                except Exception as e:
+                    print(f"  Error in {tier_label} GitHub Diff-in-RDD: {e}")
+
+    gh_results_df = pd.DataFrame(gh_results)
+    gh_results_df.to_csv(RESULTS_DIR / "github_diff_in_rdd.csv", index=False)
+
+    print("\n--- GitHub Diff-in-RDD Results ---")
+    print(gh_results_df[["Tier", "Outcome", "Type", "Excess_Jump", "Std_Err", "P_value", "N", "Adjusted"]].round(4).to_string(index=False))
+
 if __name__ == "__main__":
     main()

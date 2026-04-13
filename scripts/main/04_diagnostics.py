@@ -7,8 +7,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import statsmodels.api as sm
-from config import MAIN_ANALYSIS_DATA, RESULTS_DIR, FIGURES_DIR, DONUT_WEEKS
-from utils import setup_plotting_style, check_monday_alignment
+from config import MAIN_ANALYSIS_DATA, RESULTS_DIR, FIGURES_DIR, DONUT_WEEKS, MIN_SUCCESS_LOW
+from utils import setup_plotting_style, check_monday_alignment, run_rdrobust_est
 
 def main():
     setup_plotting_style()
@@ -110,6 +110,20 @@ def main():
         density_results.append({"bandwidth": h_test, "theta": theta, "se": se, "p_value": pval})
     pd.DataFrame(density_results).to_csv(RESULTS_DIR / "density_test_results.csv", index=False)
     print(f"  Saved to {RESULTS_DIR / 'density_test_results.csv'}")
+
+    # Pre-AI Covariate Balance: Pr(Successful) RDD
+    print("\n--- 7. Pre-AI Covariate Balance RDD ---")
+    df["is_successful"] = (df["cum_downloads_26wk"] >= MIN_SUCCESS_LOW).astype(int)
+    cov_result = run_rdrobust_est(
+        df, "is_successful", h=26, donut_weeks=DONUT_WEEKS,
+        label="Covariate Balance: Pr(Successful)"
+    )
+    cov_df = pd.DataFrame([cov_result])
+    cov_df.to_csv(RESULTS_DIR / "covariate_balance_rdd.csv", index=False)
+    print(f"  Estimate: {cov_result.get('Estimate', 'N/A')}")
+    print(f"  P-value:  {cov_result.get('P-value', 'N/A')}")
+    print(f"  N:        {cov_result.get('N', 'N/A')}")
+    print(f"  Saved to {RESULTS_DIR / 'covariate_balance_rdd.csv'}")
 
     # Outcome Dist
     plt.figure()

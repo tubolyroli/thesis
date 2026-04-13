@@ -1,0 +1,2 @@
+Label,Outcome,Estimate,Std.Err,P-value,Estimate_Conv,Std.Err_Conv,P-value_Conv,N,BW,Donut,Method,Baseline_Adjusted
+Covariate Balance: Pr(Successful),is_successful,0.2999892013247949,0.03945516502542404,2.8868765716237445e-14,0.1738655495759862,0.011829729320173494,6.704229444630597e-49,529358,26,Yes,rdrobust (Robust/Bias-Corrected),No
