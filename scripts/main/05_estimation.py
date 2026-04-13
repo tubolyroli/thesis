@@ -39,13 +39,11 @@ def main():
             # Baseline covariate: log1p(52wk downloads), skip when outcome is the baseline itself
             cov = ["total_downloads_52wk"] if outcome != "total_downloads_52wk" else None
 
-            # Unadjusted
-            results.append(run_rdrobust_est(df_tier, outcome, h=None, donut_weeks=DONUT_WEEKS, label=f"{tier_label}: {outcome} (MSE-Opt)"))
+            # Fixed bandwidth only for PyPI (MSE-optimal stalls at large N)
             results.append(run_rdrobust_est(df_tier, outcome, h=DEFAULT_BW, donut_weeks=DONUT_WEEKS, label=f"{tier_label}: {outcome} (Fixed h=13)"))
 
             # Baseline-adjusted
             if cov:
-                results.append(run_rdrobust_est(df_tier, outcome, h=None, donut_weeks=DONUT_WEEKS, label=f"{tier_label}: {outcome} (MSE-Opt, Adj)", covs_cols=cov))
                 results.append(run_rdrobust_est(df_tier, outcome, h=DEFAULT_BW, donut_weeks=DONUT_WEEKS, label=f"{tier_label}: {outcome} (Fixed h=13, Adj)", covs_cols=cov))
 
     # 3. Mechanism Analysis (GitHub)
