@@ -3,6 +3,7 @@ import numpy as np
 import statsmodels.formula.api as smf
 import matplotlib.pyplot as plt
 import seaborn as sns
+import rdrobust
 
 def normalize_name(s: pd.Series) -> pd.Series:
     """Normalize package/library names for consistent merging."""
@@ -46,7 +47,6 @@ def setup_plotting_style():
         "legend.title_fontsize": 16
     })
 
-import rdrobust
 
 def run_local_linear_rdd(df: pd.DataFrame, outcome_col: str, h: float = None, donut_weeks: list = None, label: str = "", cluster_col: str = None, covs_cols: list = None):
     """

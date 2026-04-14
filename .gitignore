@@ -58,4 +58,5 @@ docs/
 *.pdf
 !thesis.pdf
 memos/*.ipynb
+memos/tdk_defense_prep.md
 archive/

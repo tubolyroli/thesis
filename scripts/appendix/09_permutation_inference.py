@@ -6,7 +6,6 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-from pathlib import Path
 from config import INTERM_DIR, RESULTS_DIR, FIGURES_DIR, DONUT_WEEKS, WINDOW_WEEKS, HORIZON_WEEKS
 from utils import get_weeks_since, run_local_linear_rdd, setup_plotting_style
 

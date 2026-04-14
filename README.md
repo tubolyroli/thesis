@@ -6,12 +6,14 @@
 
 **Institution:** Corvinus University of Budapest, MSc in Social Data Science
 
+**Full paper:** [`thesis.pdf`](thesis.pdf)
+
 ---
 
 <p align="center">
-  <img src="results/figures/long_horizon_trajectory_pypi.png" alt="Long Horizon Trajectory of 2021 Cohorts" width="800">
+  <img src="results/figures/normalized_diffusion_gap_pypi.png" alt="Normalized Diffusion Gap (Pre- vs Post-Cutoff Libraries)" width="800">
   <br>
-  <em>Average weekly PyPI downloads for libraries released just before (July 2021) and just after (October 2021) the GPT-3.5/GPT-4 training cutoff. The gap is dormant at release and opens only after ChatGPT launches in November 2022.</em>
+  <em>Log ratio of pre- vs post-cutoff cumulative PyPI downloads (positive = pre-cutoff advantage), with 95% bootstrap confidence interval. The gap is absent at release and emerges only after ChatGPT launches (November 2022), then widens persistently through early 2026.</em>
 </p>
 
 ---
@@ -25,7 +27,7 @@ The main finding is a statistically significant suppression of post-cutoff libra
 ## Key Results
 
 - **Diff-in-RDD suppression:** Statistically significant for Successful libraries (min 500 downloads at 26 weeks), baseline-adjusted p = 0.002, with year-by-week clustered standard errors. Pre-cutoff libraries average roughly five times more weekly downloads by early 2026.
-- **Implementation gap (suggestive):** The discontinuity in GitHub code imports is directionally larger than the PyPI download discontinuity, but the GitHub Diff-in-RDD does not reach conventional significance (p = 0.060, ~1,500 libraries per cohort year within bandwidth). The comparison is between different samples (5.3% GitHub-matched subsample vs. full PyPI universe).
+- **Implementation gap:** The discontinuity in GitHub code imports is directionally larger than the PyPI discontinuity, but the GitHub Diff-in-RDD is not significant at conventional levels (p = 0.060). The GitHub subsample is smaller (~1,500 libraries per cohort year within bandwidth; 5.3% of PyPI libraries are GitHub-matched).
 - **Activation pattern:** The gap is absent at release and emerges only after November 2022 (ChatGPT launch).
 - **Persistence:** No catch-up through January 2026 across any outcome measure.
 - **AI exposure moderation (exploratory):** Not statistically significant (p = 0.179, N = 1,303). Likely underpowered; the moderator is post-treatment.
