@@ -416,7 +416,7 @@ Placebo cutoff dates are chosen as the Monday-aligned week nearest to September 
 
 \begin{figure}[ht]
 \centering
-\includegraphics[width=0.85\textwidth]{results/figures/density_dist_to_cutoff.png}
+\includegraphics[width=0.85\textwidth]{results/figures/diagnostic/density_dist_to_cutoff.png}
 \caption{Density of library releases by week relative to the September 2021 cutoff. The dashed red line marks the cutoff. No systematic bunching is evident at the boundary, consistent with the assumption that release timing is not strategically manipulated around the LLM training cutoff. \textit{Source:} Author's calculations based on PyPI data.}\label{fig:density}
 \end{figure}
 
@@ -617,13 +617,13 @@ Figure~\ref{fig:binscatter-pypi} makes this visible. The positive raw jump shows
 
 \begin{figure}[ht]
 \centering
-\includegraphics[width=0.95\textwidth]{results/figures/rdd_horizon_binscatters.png}
+\includegraphics[width=0.95\textwidth]{results/figures/main/rdd_horizon_binscatters.png}
 \caption[Binscatter of cumulative PyPI downloads (26 and 52 weeks)]{Binned scatterplots of $\log(1 + \text{downloads})$ by release week relative to the September 2021 cutoff, for 26-week (left) and 52-week (right) cumulative PyPI downloads. Each point represents a weekly bin average; fitted lines show local linear estimates on each side of the cutoff. The upward trend reflects the secular growth of the Python ecosystem; the positive discontinuity at the cutoff captures the raw seasonal jump, which the Diff-in-RDD design subsequently nets out. \textit{Source:} Author's calculations based on PyPI data.}\label{fig:binscatter-pypi}
 \end{figure}
 
 \begin{figure}[ht]
 \centering
-\includegraphics[width=0.85\textwidth]{results/figures/binscatter_log_imports.png}
+\includegraphics[width=0.85\textwidth]{results/figures/main/binscatter_log_imports.png}
 \caption{Binned scatterplot of $\log(1 + \text{52-week imports})$ by release week relative to the September 2021 cutoff (GitHub-matched subsample). Each point represents a weekly bin average. The upward trend reflects the secular growth of the Python ecosystem; the discontinuity at the cutoff captures the raw RDD effect, which mixes the Knowledge Wall penalty with the seasonal baseline. \textit{Source:} Author's calculations based on GitHub data.}\label{fig:binscatter-imports}
 \end{figure}
 
@@ -661,7 +661,7 @@ The 52-week outcome provides a pre-ChatGPT baseline. For nearly all libraries wi
 
 \begin{figure}[ht]
 \centering
-\includegraphics[width=0.85\textwidth]{results/figures/suppression_visual_success_500.png}
+\includegraphics[width=0.85\textwidth]{results/figures/main/suppression_visual_success_500.png}
 \caption{Diff-in-RDD visualization for the Successful tier (min.\ 500 downloads at 26 weeks) - Blue circles: pooled 2018--2020 placebo cohorts. Orange crosses: 2021 cohort. Fitted lines show local linear estimates on each side of the cutoff. The 2021 cohort is shifted downward relative to the historical seasonal norm, identifying the Knowledge Wall penalty. \textit{Source:} Author's calculations based on PyPI data.}\label{fig:diffrdd-visual}
 \end{figure}
 
@@ -737,13 +737,13 @@ Figure~\ref{fig:horizon-coef} shows that the estimated single-year discontinuity
 
 \begin{figure}[ht]
 \centering
-\includegraphics[width=0.7\textwidth]{results/figures/rdd_horizon_coefficients.png}
+\includegraphics[width=0.7\textwidth]{results/figures/main/rdd_horizon_coefficients.png}
 \caption{RDD point estimates for PyPI downloads across adoption horizons (Broad tier). Vertical bars are 95\% robust confidence intervals. The estimate grows from the 52-week horizon (mostly pre-ChatGPT) through the all-time horizon, consistent with the activation of the Knowledge Wall after November 2022. \textit{Source:} Author's calculations based on PyPI data.}\label{fig:horizon-coef}
 \end{figure}
 
 \begin{figure}[ht]
 \centering
-\includegraphics[width=0.85\textwidth]{results/figures/normalized_diffusion_gap_pypi.png}
+\includegraphics[width=0.85\textwidth]{results/figures/main/normalized_diffusion_gap_pypi.png}
 \caption{Normalized diffusion gap between pre- and post-cutoff libraries (PyPI) - The $y$-axis plots the log ratio of mean weekly downloads for the July 2021 (pre-cutoff) cohort relative to the October 2021 (post-cutoff) cohort; values above zero indicate a pre-cutoff advantage. The shaded band shows 95\% bootstrap confidence intervals (500 replications, resampled at the library level). Before ChatGPT (November 2022), the ratio fluctuates around a modest baseline of roughly 28\%. After ChatGPT, the gap widens steadily and reaches approximately 5:1 by early 2026, with no evidence of closing. \textit{Source:} Author's calculations based on PyPI data.}\label{fig:long-horizon}
 \end{figure}
 
@@ -784,13 +784,13 @@ The absence of a significant effect for the Superstar tier (at least 1,000 pre-C
 
 \begin{figure}[ht]
 \centering
-\includegraphics[width=0.65\textwidth]{results/figures/suppression_visual_success_tiers.png}
+\includegraphics[width=0.65\textwidth]{results/figures/main/suppression_visual_success_tiers.png}
 \caption{Diff-in-RDD excess jump (relative to 2018--2020 placebo average) by success tier. All estimates on the $\log(1+Y)$ scale. The suppression is concentrated in the Broad and Successful tiers; the Superstar tier shows no significant penalty, consistent with high-visibility libraries maintaining adoption through channels independent of LLM recommendation. \textit{Source:} Author's calculations based on PyPI data.}\label{fig:tier-comparison}
 \end{figure}
 
 \begin{figure}[ht]
 \centering
-\includegraphics[width=0.85\textwidth]{results/figures/long_horizon_cumulative_pypi.png}
+\includegraphics[width=0.85\textwidth]{results/figures/main/long_horizon_cumulative_pypi.png}
 \caption{Cumulative average PyPI downloads for the July 2021 (pre-cutoff) and October 2021 (post-cutoff) cohorts. The vertical red line marks ChatGPT release (November 2022). The gap between cohorts widens monotonically after November 2022, with no catch-up through January 2026. By early 2026, pre-cutoff libraries have accumulated roughly five times the weekly download volume of post-cutoff libraries. \textit{Source:} Author's calculations based on PyPI data.}\label{fig:cumulative-gap}
 \end{figure}
 
@@ -908,7 +908,7 @@ The main Diff-in-RDD estimates are stable across $h \in \{13, 15, 18, 26\}$ week
 
 \begin{figure}[ht]
 \centering
-\includegraphics[width=0.85\textwidth]{results/figures/sensitivity_diff_in_rdd_bandwidth.png}
+\includegraphics[width=0.85\textwidth]{results/figures/robustness/sensitivity_diff_in_rdd_bandwidth.png}
 \caption{Bandwidth sensitivity of the Diff-in-RDD excess jump (Successful tier, min.\ 500 downloads at 26 weeks). Points are WLS point estimates; vertical bars are 95\% confidence intervals from year-by-week cluster-robust standard errors. The estimate is negative and stable across $h \ge 13$. \textit{Source:} Author's calculations based on PyPI data.}\label{fig:bw-sensitivity}
 \end{figure}
 
@@ -928,7 +928,7 @@ The two-sided $p$-value is 0.344 for the raw RDD estimate at the September 2021 
 
 \begin{figure}[ht]
 \centering
-\includegraphics[width=0.85\textwidth]{results/figures/permutation_distribution.png}
+\includegraphics[width=0.85\textwidth]{results/figures/robustness/permutation_distribution.png}
 \caption[RDD coefficient distribution across 157 placebo cutoff dates]{Distribution of RDD coefficients across 157 placebo Monday cutoff dates (2017--2024). The dashed red line marks the true September 2021 cutoff estimate ($+0.559$). The true estimate falls within the body of the placebo distribution ($p = 0.344$), confirming that the raw RDD is not informative in isolation. \textit{Source:} Author's calculations based on PyPI data.}\label{fig:permutation}
 \end{figure}
 
@@ -976,7 +976,7 @@ Figure~\ref{fig:raw-trajectory} plots the raw (unnormalized) weekly average PyPI
 
 \begin{figure}[ht]
 \centering
-\includegraphics[width=0.85\textwidth]{results/figures/long_horizon_trajectory_pypi.png}
+\includegraphics[width=0.85\textwidth]{results/figures/main/long_horizon_trajectory_pypi.png}
 \caption[Weekly PyPI downloads, July vs October 2021 cohorts (log scale)]{Weekly average PyPI downloads for the July 2021 (pre-cutoff) and October 2021 (post-cutoff) cohorts, from release through January 2026 (log scale). Dashed vertical lines mark the release of ChatGPT (November 2022). The gap between cohorts opens after ChatGPT and persists through the end of the observation window, with no sign of catch-up. \textit{Source:} Author's calculations based on PyPI data.}\label{fig:raw-trajectory}
 \end{figure}
 

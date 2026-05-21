@@ -20,7 +20,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-from config import RAW_DIR, FINAL_DIR, RESULTS_DIR, CHATGPT_RELEASE
+from config import RAW_DIR, FINAL_DIR, FIG_APPENDIX, CHATGPT_RELEASE
 from utils import setup_plotting_style, normalize_name
 
 
@@ -30,7 +30,7 @@ COHORT_POST = "October 2021 (Post-Cutoff)"
 
 def main():
     setup_plotting_style()
-    figures_dir = RESULTS_DIR / "figures"
+    figures_dir = FIG_APPENDIX
     figures_dir.mkdir(parents=True, exist_ok=True)
 
     print("Loading cohort metadata...")

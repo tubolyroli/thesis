@@ -7,12 +7,17 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import statsmodels.api as sm
-from config import MAIN_ANALYSIS_DATA, RESULTS_DIR, FIGURES_DIR, DONUT_WEEKS, MIN_SUCCESS_LOW
+from config import (
+    MAIN_ANALYSIS_DATA, DONUT_WEEKS, MIN_SUCCESS_LOW,
+    RESULTS_MAIN, FIG_MAIN, FIG_DIAGNOSTIC,
+)
 from utils import setup_plotting_style, check_monday_alignment, run_rdrobust_est
 
 def main():
     setup_plotting_style()
-    FIGURES_DIR.mkdir(parents=True, exist_ok=True)
+    RESULTS_MAIN.mkdir(parents=True, exist_ok=True)
+    FIG_MAIN.mkdir(parents=True, exist_ok=True)
+    FIG_DIAGNOSTIC.mkdir(parents=True, exist_ok=True)
     
     if not MAIN_ANALYSIS_DATA.exists():
         print(f"Error: {MAIN_ANALYSIS_DATA} not found. Run scripts 01-03 first.")
@@ -88,7 +93,7 @@ def main():
     plt.title("Density of Python Library Releases")
     plt.xlabel("Weeks from Cutoff")
     plt.ylabel("Number of Libraries")
-    plt.savefig(FIGURES_DIR / "density_dist_to_cutoff.png", dpi=300)
+    plt.savefig(FIG_DIAGNOSTIC / "density_dist_to_cutoff.png", dpi=300)
     plt.close()
 
     # McCrary-style density test (local linear with separate slopes each side)
@@ -108,8 +113,8 @@ def main():
         pval = model.pvalues["post"]
         print(f"  h={h_test}: theta={theta:+.3f}, SE={se:.3f}, p={pval:.3f}")
         density_results.append({"bandwidth": h_test, "theta": theta, "se": se, "p_value": pval})
-    pd.DataFrame(density_results).to_csv(RESULTS_DIR / "density_test_results.csv", index=False)
-    print(f"  Saved to {RESULTS_DIR / 'density_test_results.csv'}")
+    pd.DataFrame(density_results).to_csv(RESULTS_MAIN / "density_test_results.csv", index=False)
+    print(f"  Saved to {RESULTS_MAIN / 'density_test_results.csv'}")
 
     # Pre-AI Covariate Balance: Pr(Successful) RDD
     print("\n--- 7. Pre-AI Covariate Balance RDD ---")
@@ -119,18 +124,18 @@ def main():
         label="Covariate Balance: Pr(Successful)"
     )
     cov_df = pd.DataFrame([cov_result])
-    cov_df.to_csv(RESULTS_DIR / "covariate_balance_rdd.csv", index=False)
+    cov_df.to_csv(RESULTS_MAIN / "covariate_balance_rdd.csv", index=False)
     print(f"  Estimate: {cov_result.get('Estimate', 'N/A')}")
     print(f"  P-value:  {cov_result.get('P-value', 'N/A')}")
     print(f"  N:        {cov_result.get('N', 'N/A')}")
-    print(f"  Saved to {RESULTS_DIR / 'covariate_balance_rdd.csv'}")
+    print(f"  Saved to {RESULTS_MAIN / 'covariate_balance_rdd.csv'}")
 
     # Outcome Dist
     plt.figure()
     sns.histplot(np.log1p(df["cum_imports_52wk"]), bins=50, kde=False, color="purple")
     plt.title("Distribution of 52-Week GitHub Imports (Log Scale)")
     plt.xlabel("Log(1 + Imports)")
-    plt.savefig(FIGURES_DIR / "outcome_dist_log_imports.png", dpi=300)
+    plt.savefig(FIG_DIAGNOSTIC / "outcome_dist_log_imports.png", dpi=300)
     plt.close()
 
     # Binscatter
@@ -142,7 +147,7 @@ def main():
     plt.title("Binned Scatterplot: 52-Week Imports by Release Date")
     plt.xlabel("Weeks from Cutoff")
     plt.ylabel("Mean Log(1 + Imports)")
-    plt.savefig(FIGURES_DIR / "binscatter_log_imports.png", dpi=300)
+    plt.savefig(FIG_MAIN / "binscatter_log_imports.png", dpi=300)
     plt.close()
     
     # RDD Horizon Binscatters (26-week and 52-week downloads)
@@ -170,10 +175,10 @@ def main():
         ax.set_ylabel(label)
         ax.set_title(label.replace("Log Cumulative Downloads ", "").strip("()") + " Downloads")
     plt.tight_layout()
-    plt.savefig(FIGURES_DIR / "rdd_horizon_binscatters.png", dpi=300)
+    plt.savefig(FIG_MAIN / "rdd_horizon_binscatters.png", dpi=300)
     plt.close()
 
-    print(f"Figures saved to {FIGURES_DIR}")
+    print(f"Figures saved to {FIG_MAIN} and {FIG_DIAGNOSTIC}")
 
 if __name__ == "__main__":
     main()

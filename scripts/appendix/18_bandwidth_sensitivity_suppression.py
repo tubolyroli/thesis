@@ -6,13 +6,13 @@ import pandas as pd
 import numpy as np
 import statsmodels.formula.api as smf
 import matplotlib.pyplot as plt
-from config import FINAL_DIR, RESULTS_DIR, FIGURES_DIR, DONUT_WEEKS, MIN_SUCCESS_LOW
+from config import FINAL_DIR, RESULTS_ROBUSTNESS, FIG_ROBUSTNESS, DONUT_WEEKS, MIN_SUCCESS_LOW
 from utils import setup_plotting_style
 
 def main():
     setup_plotting_style()
-    RESULTS_DIR.mkdir(parents=True, exist_ok=True)
-    FIGURES_DIR.mkdir(parents=True, exist_ok=True)
+    RESULTS_ROBUSTNESS.mkdir(parents=True, exist_ok=True)
+    FIG_ROBUSTNESS.mkdir(parents=True, exist_ok=True)
 
     # 1. Load 2018-2020 (Placebos) and 2021 (Main)
     placebos = ["Placebo_2018", "Placebo_2019", "Placebo_2020"]
@@ -108,7 +108,7 @@ def main():
                 print(f"  Error at h={h}, adj={adjusted}: {e}")
 
     results_df = pd.DataFrame(results)
-    results_df.to_csv(RESULTS_DIR / "sensitivity_diff_in_rdd_bandwidth.csv", index=False)
+    results_df.to_csv(RESULTS_ROBUSTNESS / "sensitivity_diff_in_rdd_bandwidth.csv", index=False)
 
     # 4. Plotting (adjusted as primary, unadjusted as comparison)
     fig, ax = plt.subplots(figsize=(10, 6))
@@ -129,8 +129,8 @@ def main():
     ax.grid(True, linestyle=':', alpha=0.6)
 
     plt.tight_layout()
-    plt.savefig(FIGURES_DIR / "sensitivity_diff_in_rdd_bandwidth.png", dpi=300)
-    print(f"Saved sensitivity plot to {FIGURES_DIR / 'sensitivity_diff_in_rdd_bandwidth.png'}")
+    plt.savefig(FIG_ROBUSTNESS / "sensitivity_diff_in_rdd_bandwidth.png", dpi=300)
+    print(f"Saved sensitivity plot to {FIG_ROBUSTNESS / 'sensitivity_diff_in_rdd_bandwidth.png'}")
 
 if __name__ == "__main__":
     main()

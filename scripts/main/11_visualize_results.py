@@ -6,12 +6,12 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-from config import RESULTS_DIR, FIGURES_DIR
+from config import RESULTS_MAIN, FIG_MAIN
 from utils import setup_plotting_style
 
 def plot_suppression_visual():
     """Visualizes the 'Missing Boost' by comparing 2021 against historical placebos."""
-    results_path = RESULTS_DIR / "diff_in_rdd_tiers.csv"
+    results_path = RESULTS_MAIN / "diff_in_rdd_tiers.csv"
     if not results_path.exists(): 
         print(f"Skipping suppression visual: {results_path} not found.")
         return
@@ -36,12 +36,12 @@ def plot_suppression_visual():
     plt.title("The 'Cutoff Tax': Seasonal Suppression by Success Tier")
     plt.ylabel("Excess Jump (relative to placebo average)")
     plt.xticks(rotation=15)
-    plt.savefig(FIGURES_DIR / "suppression_visual_success_tiers.png", dpi=300, bbox_inches='tight')
+    plt.savefig(FIG_MAIN / "suppression_visual_success_tiers.png", dpi=300, bbox_inches='tight')
     plt.close()
 
 def plot_horizon_coefficients():
     """Plots RDD estimates across different time horizons."""
-    results_path = RESULTS_DIR / "estimation_results_final.csv"
+    results_path = RESULTS_MAIN / "estimation_results_final.csv"
     if not results_path.exists(): return
     df = pd.read_csv(results_path)
     
@@ -61,12 +61,12 @@ def plot_horizon_coefficients():
     plt.axhline(0, color='red', linestyle='--')
     plt.xticks(range(len(h_df)), ["52wk", "GPT-4", "Turbo", "All-Time"])
     plt.title("RDD Estimates across Adoption Horizons (Broad Tier)")
-    plt.savefig(FIGURES_DIR / "rdd_horizon_coefficients.png", dpi=300, bbox_inches='tight')
+    plt.savefig(FIG_MAIN / "rdd_horizon_coefficients.png", dpi=300, bbox_inches='tight')
     plt.close()
 
 if __name__ == "__main__":
-    FIGURES_DIR.mkdir(parents=True, exist_ok=True)
+    FIG_MAIN.mkdir(parents=True, exist_ok=True)
     setup_plotting_style()
     plot_suppression_visual()
     plot_horizon_coefficients()
-    print(f"Finalized visualizations saved to {FIGURES_DIR}")
+    print(f"Finalized visualizations saved to {FIG_MAIN}")

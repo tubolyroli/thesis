@@ -6,12 +6,12 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-from config import INTERM_DIR, RESULTS_DIR, FIGURES_DIR, DONUT_WEEKS, WINDOW_WEEKS, HORIZON_WEEKS
+from config import INTERM_DIR, RESULTS_ROBUSTNESS, FIG_ROBUSTNESS, DONUT_WEEKS, WINDOW_WEEKS, HORIZON_WEEKS
 from utils import get_weeks_since, run_local_linear_rdd, setup_plotting_style
 
 def main():
-    RESULTS_DIR.mkdir(parents=True, exist_ok=True)
-    FIGURES_DIR.mkdir(parents=True, exist_ok=True)
+    RESULTS_ROBUSTNESS.mkdir(parents=True, exist_ok=True)
+    FIG_ROBUSTNESS.mkdir(parents=True, exist_ok=True)
     setup_plotting_style()
 
     # 1. Load and Merge Data
@@ -57,7 +57,7 @@ def main():
             print(f"  Processed {i + 1}/{len(all_mondays)} Mondays...")
 
     perm_df = pd.DataFrame(results).dropna(subset=["Estimate"])
-    perm_df.to_csv(RESULTS_DIR / "permutation_results.csv", index=False)
+    perm_df.to_csv(RESULTS_ROBUSTNESS / "permutation_results.csv", index=False)
 
     # 4. Analysis of the Distribution
     true_est = perm_df.loc[perm_df["is_true_cutoff"], "Estimate"].iloc[0]
@@ -92,8 +92,8 @@ def main():
     plt.legend()
     
     plt.tight_layout()
-    plt.savefig(FIGURES_DIR / "permutation_distribution.png")
-    print(f"\nSaved distribution plot to {FIGURES_DIR / 'permutation_distribution.png'}")
+    plt.savefig(FIG_ROBUSTNESS / "permutation_distribution.png")
+    print(f"\nSaved distribution plot to {FIG_ROBUSTNESS / 'permutation_distribution.png'}")
 
 if __name__ == "__main__":
     main()

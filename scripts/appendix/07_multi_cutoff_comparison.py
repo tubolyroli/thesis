@@ -5,7 +5,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from config import FINAL_DIR, RESULTS_DIR, FIGURES_DIR, CUTOFFS, DONUT_WEEKS
+from config import FINAL_DIR, RESULTS_ROBUSTNESS, FIG_ROBUSTNESS, CUTOFFS, DONUT_WEEKS
 from utils import run_local_linear_rdd
 
 
@@ -84,11 +84,11 @@ def make_figure(res_df: pd.DataFrame) -> None:
             "* p < 0.05    † p < 0.10    n.s. = not significant",
             transform=ax.transAxes, fontsize=9, color="#666", ha="left")
     ax.text(1.0, -0.18,
-            "Source: results/multi_cutoff_comparison.csv (no-donut spec)",
+            "Source: results/robustness/multi_cutoff_comparison.csv (no-donut spec)",
             transform=ax.transAxes, fontsize=9, color="#666", ha="right")
 
     plt.tight_layout()
-    out = FIGURES_DIR / "multi_cutoff_comparison.png"
+    out = FIG_ROBUSTNESS / "multi_cutoff_comparison.png"
     out.parent.mkdir(parents=True, exist_ok=True)
     plt.savefig(out, dpi=200, bbox_inches="tight")
     plt.close()
@@ -116,7 +116,8 @@ def main():
     print("=========================================\n")
     print(res_df.round(4).to_string(index=False))
 
-    res_df.to_csv(RESULTS_DIR / "multi_cutoff_comparison.csv", index=False)
+    RESULTS_ROBUSTNESS.mkdir(parents=True, exist_ok=True)
+    res_df.to_csv(RESULTS_ROBUSTNESS / "multi_cutoff_comparison.csv", index=False)
 
     make_figure(res_df)
 

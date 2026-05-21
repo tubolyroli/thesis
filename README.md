@@ -13,7 +13,7 @@
 ---
 
 <p align="center">
-  <img src="results/figures/normalized_diffusion_gap_pypi.png" alt="Normalized Diffusion Gap (Pre- vs Post-Cutoff Libraries)" width="800">
+  <img src="results/figures/main/normalized_diffusion_gap_pypi.png" alt="Normalized Diffusion Gap (Pre- vs Post-Cutoff Libraries)" width="800">
   <br>
   <em>Log ratio of pre- vs post-cutoff cumulative PyPI downloads (positive = pre-cutoff advantage), with 95% bootstrap confidence interval. The gap is absent at release and emerges only after ChatGPT launches (November 2022), then widens persistently through early 2026.</em>
 </p>
@@ -52,12 +52,20 @@ thesis/
 │   ├── intermediate/           # Processed aggregates (not tracked)
 │   └── final/                  # Analysis-ready CSVs per cohort (not tracked)
 ├── results/
-│   ├── figures/                # Publication-ready visualizations
-│   ├── final_results_tables.md # Definitive empirical tables
-│   ├── archive/                # Superseded outputs
-│   └── *.csv                   # Estimation outputs per script
-├── docs/                       # Reference documents, limitations, TDK abstract
-├── memos/                      # Research memos and design evolution
+│   ├── final_results_tables.md # Definitive empirical tables (top-level index)
+│   ├── main/                   # Diff-in-RDD, RDD, covariate balance, density test
+│   ├── audit/                  # Post-submission matched-sample audit
+│   ├── robustness/             # Bandwidth, permutation, stacked, multi-cutoff
+│   ├── descriptive/            # Weekly ratios and percentage summaries
+│   ├── mechanism/              # AI-exposure exploratory split
+│   └── figures/
+│       ├── main/               # Paper-body figures
+│       ├── diagnostic/         # Pre-treatment design checks
+│       ├── robustness/         # Sensitivity panels
+│       ├── audit/              # Post-submission audit visuals
+│       ├── appendix/           # Common-origin trajectory etc.
+│       └── mechanism/          # Exploratory mechanism diagnostics
+├── TDK_presentation.pptx       # Defense slide deck (May 2026)
 ├── run_pipeline.py             # Orchestrates all scripts (--skip-pipeline, --appendix)
 └── requirements.txt
 ```
@@ -77,4 +85,4 @@ The pinned versions in `requirements.txt` reflect the exact environment used to 
 
 ## Caveats and post-submission audit
 
-A post-submission audit (May 2026) found that two of the reported magnitudes are sensitive to specification choices: (i) three contaminated placebo weeks load the Diff-in-RDD against the post-cutoff cohort, and (ii) the headline `rdrobust` point estimates are bias-corrected rather than conventional. The direction of the baseline-adjusted Diff-in-RDD is preserved under both corrections, but the magnitudes collapse. The +30 pp pre-AI covariate balance result, the activation pattern, and the AI-exposure null are all unaffected. The audit script is `scripts/appendix/19_audit_github_diff_in_rdd.py`; the audit output is `results/audit_matched_diff_in_rdd.csv`.
+A post-submission audit (May 2026) found that two of the reported magnitudes are sensitive to specification choices: (i) three contaminated placebo weeks load the Diff-in-RDD against the post-cutoff cohort, and (ii) the headline `rdrobust` point estimates are bias-corrected rather than conventional. The direction of the baseline-adjusted Diff-in-RDD is preserved under both corrections, but the magnitudes collapse. The +30 pp pre-AI covariate balance result, the activation pattern, and the AI-exposure null are all unaffected. The audit script is `scripts/appendix/19_audit_github_diff_in_rdd.py`; the audit output is `results/audit/audit_matched_diff_in_rdd.csv`.

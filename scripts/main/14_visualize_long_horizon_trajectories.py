@@ -7,7 +7,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-from config import RAW_DIR, FINAL_DIR, RESULTS_DIR, CHATGPT_RELEASE, GPT4_RELEASE, MAIN_CUTOFF_NAME, DONUT_WEEKS, CUTOFFS
+from config import RAW_DIR, FINAL_DIR, FIG_MAIN, CHATGPT_RELEASE, GPT4_RELEASE, MAIN_CUTOFF_NAME, DONUT_WEEKS, CUTOFFS
 from utils import setup_plotting_style, normalize_name
 
 def main():
@@ -22,8 +22,7 @@ def main():
     trim_top_pct = args.trim_top_pct
 
     setup_plotting_style()
-    FIGURES_DIR = RESULTS_DIR / "figures"
-    FIGURES_DIR.mkdir(parents=True, exist_ok=True)
+    FIG_MAIN.mkdir(parents=True, exist_ok=True)
 
     print("Loading datasets for trajectory visualization...")
     # 1. Load the cross-sectional analysis file for cohort assignment
@@ -107,7 +106,7 @@ def main():
             "Long-Horizon Diffusion: Median vs Mean for July (Pre-Cutoff) and October (Post-Cutoff) 2021 Cohorts",
             fontweight="bold", fontsize=12)
         plt.tight_layout()
-        out_path = FIGURES_DIR / "long_horizon_trajectory_pypi_median_vs_mean.png"
+        out_path = FIG_MAIN / "long_horizon_trajectory_pypi_median_vs_mean.png"
         plt.savefig(out_path, dpi=300)
         print(f"Saved side-by-side median-vs-mean plot to {out_path}")
         return
@@ -150,7 +149,7 @@ def main():
 
     plt.tight_layout()
     suffix = f"_trimmed_top{trim_top_pct:.0f}pct" if trim_top_pct is not None else ""
-    out_path = FIGURES_DIR / f"long_horizon_trajectory_pypi{suffix}.png"
+    out_path = FIG_MAIN / f"long_horizon_trajectory_pypi{suffix}.png"
     plt.savefig(out_path, dpi=300)
     print(f"Saved trajectory plot to {out_path}")
 
@@ -167,7 +166,7 @@ def main():
     ax2.set_yscale("log")
     
     plt.tight_layout()
-    out_path_cum = FIGURES_DIR / "long_horizon_cumulative_pypi.png"
+    out_path_cum = FIG_MAIN / "long_horizon_cumulative_pypi.png"
     plt.savefig(out_path_cum, dpi=300)
     print(f"Saved cumulative plot to {out_path_cum}")
 

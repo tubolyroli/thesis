@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import statsmodels.formula.api as smf
 from scipy.stats import norm
-from config import MAIN_ANALYSIS_DATA, RESULTS_DIR, FIGURES_DIR, DONUT_WEEKS
+from config import MAIN_ANALYSIS_DATA, RESULTS_MECHANISM, FIG_MECHANISM, DONUT_WEEKS
 from utils import run_local_linear_rdd, setup_plotting_style
 
 def plot_rdd_comparison(df, outcome_col, h=26, donut_weeks=None, group_col=None, labels=None):
@@ -39,12 +39,12 @@ def plot_rdd_comparison(df, outcome_col, h=26, donut_weeks=None, group_col=None,
         axes[i].set_ylabel(f"log(1 + {outcome_col})")
 
     plt.tight_layout()
-    plt.savefig(FIGURES_DIR / f"mechanism_split_{outcome_col}.png")
-    print(f"Saved mechanism plot to {FIGURES_DIR / f'mechanism_split_{outcome_col}.png'}")
+    plt.savefig(FIG_MECHANISM / f"mechanism_split_{outcome_col}.png")
+    print(f"Saved mechanism plot to {FIG_MECHANISM / f'mechanism_split_{outcome_col}.png'}")
 
 def main():
-    RESULTS_DIR.mkdir(parents=True, exist_ok=True)
-    FIGURES_DIR.mkdir(parents=True, exist_ok=True)
+    RESULTS_MECHANISM.mkdir(parents=True, exist_ok=True)
+    FIG_MECHANISM.mkdir(parents=True, exist_ok=True)
     setup_plotting_style()
 
     if not MAIN_ANALYSIS_DATA.exists():
@@ -95,7 +95,7 @@ def main():
 
     # Compile and Save
     results_df = pd.DataFrame(results)
-    results_df.to_csv(RESULTS_DIR / "mechanism_split_results.csv", index=False)
+    results_df.to_csv(RESULTS_MECHANISM / "mechanism_split_results.csv", index=False)
 
     # Calculate Rigorous Difference-in-Discontinuities (Interacted Model)
     print("\n--- Formal Mechanism Moderation Test (Interacted Model) ---")
@@ -152,7 +152,7 @@ def main():
     print(diff_df.round(4).to_string(index=False))
 
     # Save the interaction results to CSV
-    interaction_out_path = RESULTS_DIR / "mechanism_interaction_results.csv"
+    interaction_out_path = RESULTS_MECHANISM / "mechanism_interaction_results.csv"
     diff_df.to_csv(interaction_out_path, index=False)
     print(f"\nSaved formal interaction results to {interaction_out_path}")
 

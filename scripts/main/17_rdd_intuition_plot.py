@@ -11,7 +11,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.patches import FancyArrowPatch
-from config import FINAL_DIR, RESULTS_DIR, DONUT_WEEKS
+from config import FINAL_DIR, FIG_MAIN, DONUT_WEEKS
 from utils import setup_plotting_style
 
 
@@ -121,7 +121,7 @@ def real_data_panel(ax):
 
 def main():
     setup_plotting_style()
-    figures_dir = RESULTS_DIR / "figures"
+    figures_dir = FIG_MAIN
     figures_dir.mkdir(parents=True, exist_ok=True)
 
     fig, axes = plt.subplots(1, 2, figsize=(15, 5.5))

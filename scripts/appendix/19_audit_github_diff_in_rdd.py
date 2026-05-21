@@ -10,7 +10,7 @@ estimate on the full sample collapses from -7.29 to -0.65 when three contaminate
 placebo weeks are excluded. The audit did NOT re-run the matched-sample GitHub
 estimate. This script does that.
 
-Output: results/audit_matched_diff_in_rdd.csv
+Output: results/audit/audit_matched_diff_in_rdd.csv
 """
 import sys
 from pathlib import Path
@@ -19,7 +19,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import numpy as np
 import pandas as pd
 import statsmodels.formula.api as smf
-from config import FINAL_DIR, RESULTS_DIR, DONUT_WEEKS, DEFAULT_BW, MIN_DOWNLOADS_FILTER
+from config import FINAL_DIR, RESULTS_AUDIT, DONUT_WEEKS, DEFAULT_BW, MIN_DOWNLOADS_FILTER
 
 
 SPIKE_DATES = {
@@ -107,7 +107,8 @@ def main():
             print(f"  {label}: ERROR ({e})")
 
     out = pd.DataFrame(rows)
-    out_path = RESULTS_DIR / "audit_matched_diff_in_rdd.csv"
+    RESULTS_AUDIT.mkdir(parents=True, exist_ok=True)
+    out_path = RESULTS_AUDIT / "audit_matched_diff_in_rdd.csv"
     out.to_csv(out_path, index=False)
     print(f"\nWritten: {out_path}")
 

@@ -3,11 +3,11 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import pandas as pd
-from config import MAIN_ANALYSIS_DATA, RESULTS_DIR, DONUT_WEEKS, PRIMARY_OUTCOMES, MIN_DOWNLOADS_FILTER, MIN_SUCCESS_LOW, MIN_SUCCESS_HIGH, DEFAULT_BW
+from config import MAIN_ANALYSIS_DATA, RESULTS_MAIN, DONUT_WEEKS, PRIMARY_OUTCOMES, MIN_DOWNLOADS_FILTER, MIN_SUCCESS_LOW, MIN_SUCCESS_HIGH, DEFAULT_BW
 from utils import run_local_linear_rdd, run_rdrobust_est, run_quantile_rdd
 
 def main():
-    RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+    RESULTS_MAIN.mkdir(parents=True, exist_ok=True)
     if not MAIN_ANALYSIS_DATA.exists():
         print(f"Error: {MAIN_ANALYSIS_DATA} not found.")
         return
@@ -78,7 +78,7 @@ def main():
 
     # Compile and Save
     results_df = pd.DataFrame(results)
-    results_df.to_csv(RESULTS_DIR / "estimation_results_final.csv", index=False)
+    results_df.to_csv(RESULTS_MAIN / "estimation_results_final.csv", index=False)
     
     print("\n=========================================")
     print("      FINAL RDD ESTIMATION RESULTS       ")
@@ -86,7 +86,7 @@ def main():
     # Display both Robust and Conventional results
     display_cols = ["Label", "Outcome", "Estimate", "P-value", "BW", "N"]
     print(results_df[display_cols].round(4).to_string(index=False))
-    print(f"\nSaved final results to: {RESULTS_DIR / 'estimation_results_final.csv'}")
+    print(f"\nSaved final results to: {RESULTS_MAIN / 'estimation_results_final.csv'}")
 
 if __name__ == "__main__":
     main()

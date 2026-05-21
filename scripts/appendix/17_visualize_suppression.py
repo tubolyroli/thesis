@@ -6,12 +6,12 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-from config import FINAL_DIR, RESULTS_DIR, FIGURES_DIR, DONUT_WEEKS, DEFAULT_BW, MIN_SUCCESS_LOW
+from config import FINAL_DIR, FIG_MAIN, DONUT_WEEKS, DEFAULT_BW, MIN_SUCCESS_LOW
 from utils import setup_plotting_style
 
 def main():
     setup_plotting_style()
-    FIGURES_DIR.mkdir(parents=True, exist_ok=True)
+    FIG_MAIN.mkdir(parents=True, exist_ok=True)
     
     # 1. Load 2018-2020 (Placebos) and 2021 (Main)
     placebos = ["Placebo_2018", "Placebo_2019", "Placebo_2020"]
@@ -89,7 +89,7 @@ def main():
                 arrowprops=dict(facecolor='black', shrink=0.05, width=1, headwidth=8))
 
     plt.tight_layout()
-    out_path = FIGURES_DIR / f"suppression_visual_success_{MIN_SUCCESS_LOW}.png"
+    out_path = FIG_MAIN / f"suppression_visual_success_{MIN_SUCCESS_LOW}.png"
     plt.savefig(out_path, dpi=300)
     print(f"Saved suppression plot to {out_path}")
 

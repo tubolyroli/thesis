@@ -5,7 +5,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from config import FINAL_DIR, RESULTS_DIR
+from config import FINAL_DIR, FIG_AUDIT
 from utils import setup_plotting_style
 
 
@@ -23,8 +23,7 @@ def gap_pct(july, october, agg="mean"):
 
 def main():
     setup_plotting_style()
-    FIGURES_DIR = RESULTS_DIR / "figures"
-    FIGURES_DIR.mkdir(parents=True, exist_ok=True)
+    FIG_AUDIT.mkdir(parents=True, exist_ok=True)
 
     df = pd.read_csv(FINAL_DIR / "analysis_Main_2021.csv",
                      usecols=["package", "dist_to_cutoff", "post_ai_downloads_alltime"])
@@ -90,7 +89,7 @@ def main():
     ax.grid(axis="x", linestyle=":", alpha=0.5)
     plt.tight_layout()
 
-    out_path = FIGURES_DIR / "long_horizon_outlier_sensitivity_bar.png"
+    out_path = FIG_AUDIT / "long_horizon_outlier_sensitivity_bar.png"
     plt.savefig(out_path, dpi=300, bbox_inches="tight")
     print(f"\nSaved sensitivity bar to {out_path}")
 

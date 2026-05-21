@@ -5,12 +5,13 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from config import MAIN_ANALYSIS_DATA, RESULTS_DIR, DONUT_WEEKS, BW_GRID
+from config import MAIN_ANALYSIS_DATA, RESULTS_ROBUSTNESS, FIG_ROBUSTNESS, DONUT_WEEKS, BW_GRID
 from utils import run_rdrobust_est, setup_plotting_style
 
 def main():
     setup_plotting_style()
-    FIGURES_DIR = RESULTS_DIR / "figures"
+    RESULTS_ROBUSTNESS.mkdir(parents=True, exist_ok=True)
+    FIG_ROBUSTNESS.mkdir(parents=True, exist_ok=True)
     
     if not MAIN_ANALYSIS_DATA.exists():
         print(f"Error: {MAIN_ANALYSIS_DATA} not found.")
@@ -37,8 +38,8 @@ def main():
     results_df["BW"] = bandwidths
     
     # Save the table
-    results_df.to_csv(RESULTS_DIR / "sensitivity_bandwidth_post_ai_github.csv", index=False)
-    print(f"Saved sensitivity results to {RESULTS_DIR / 'sensitivity_bandwidth_post_ai_github.csv'}")
+    results_df.to_csv(RESULTS_ROBUSTNESS / "sensitivity_bandwidth_post_ai_github.csv", index=False)
+    print(f"Saved sensitivity results to {RESULTS_ROBUSTNESS / 'sensitivity_bandwidth_post_ai_github.csv'}")
 
     # Plot Sensitivity
     fig, ax = plt.subplots(figsize=(10, 6))
@@ -54,7 +55,7 @@ def main():
     ax.grid(True, alpha=0.3)
     
     plt.tight_layout()
-    plot_path = FIGURES_DIR / "sensitivity_bandwidth_post_ai_github.png"
+    plot_path = FIG_ROBUSTNESS / "sensitivity_bandwidth_post_ai_github.png"
     plt.savefig(plot_path, dpi=300)
     print(f"Saved sensitivity plot to {plot_path}")
 

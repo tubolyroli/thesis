@@ -6,11 +6,12 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-from config import FINAL_DIR, RESULTS_DIR, DONUT_WEEKS
+from config import FINAL_DIR, RESULTS_ROBUSTNESS, FIG_ROBUSTNESS, DONUT_WEEKS
 from utils import run_local_linear_rdd, run_quantile_rdd, setup_plotting_style
 
 def main():
-    RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+    RESULTS_ROBUSTNESS.mkdir(parents=True, exist_ok=True)
+    FIG_ROBUSTNESS.mkdir(parents=True, exist_ok=True)
     setup_plotting_style()
     
     # 1. Load and Pool Placebo Cutoffs (2018, 2019, 2020)
@@ -95,11 +96,11 @@ def main():
             transform=ax.transAxes, ha="center", va="top", fontsize=10, color="#555555")
 
     plt.tight_layout(rect=[0, 0.08, 1, 1])
-    plt.savefig(RESULTS_DIR / "figures" / "stacked_rdd_comparison.png", dpi=150, bbox_inches="tight")
+    plt.savefig(FIG_ROBUSTNESS / "stacked_rdd_comparison.png", dpi=150, bbox_inches="tight")
     plt.close(fig)
-    
-    res_df.to_csv(RESULTS_DIR / "stacked_rdd_results.csv", index=False)
-    print(f"\nSaved results to: {RESULTS_DIR / 'stacked_rdd_results.csv'}")
+
+    res_df.to_csv(RESULTS_ROBUSTNESS / "stacked_rdd_results.csv", index=False)
+    print(f"\nSaved results to: {RESULTS_ROBUSTNESS / 'stacked_rdd_results.csv'}")
 
 if __name__ == "__main__":
     main()

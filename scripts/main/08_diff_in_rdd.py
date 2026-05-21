@@ -5,10 +5,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import pandas as pd
 import numpy as np
 import statsmodels.formula.api as smf
-from config import FINAL_DIR, RESULTS_DIR, DONUT_WEEKS, DEFAULT_BW, MIN_DOWNLOADS_FILTER, MIN_SUCCESS_LOW, MIN_SUCCESS_HIGH
+from config import FINAL_DIR, RESULTS_MAIN, DONUT_WEEKS, DEFAULT_BW, MIN_DOWNLOADS_FILTER, MIN_SUCCESS_LOW, MIN_SUCCESS_HIGH
 
 def main():
-    RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+    RESULTS_MAIN.mkdir(parents=True, exist_ok=True)
 
     # 1. Load 2018, 2019, 2020 (Placebos) and 2021 (Main) datasets
     placebos = ["Placebo_2018", "Placebo_2019", "Placebo_2020"]
@@ -125,7 +125,7 @@ def main():
 
     # Compile and Save Results
     results_df = pd.DataFrame(results)
-    results_df.to_csv(RESULTS_DIR / "diff_in_rdd_tiers.csv", index=False)
+    results_df.to_csv(RESULTS_MAIN / "diff_in_rdd_tiers.csv", index=False)
 
     print("\n=========================================")
     print("      DIFF-IN-RDD ESTIMATION RESULTS     ")
@@ -135,7 +135,7 @@ def main():
     # Save the Broad result for final summary
     broad_res = results_df[results_df["Tier"] == "Broad"]
     if not broad_res.empty:
-        broad_res.to_csv(RESULTS_DIR / "diff_in_rdd_final.csv", index=False)
+        broad_res.to_csv(RESULTS_MAIN / "diff_in_rdd_final.csv", index=False)
 
     # --- DV Summary Statistics (for thesis table notes) ---
     # Compute mean and SD of log(1+Y) per tier/outcome for 2021 cohort only, within bandwidth
@@ -155,7 +155,7 @@ def main():
             })
 
     dv_stats_df = pd.DataFrame(dv_stats)
-    dv_stats_df.to_csv(RESULTS_DIR / "diff_in_rdd_dv_stats.csv", index=False)
+    dv_stats_df.to_csv(RESULTS_MAIN / "diff_in_rdd_dv_stats.csv", index=False)
 
     print("\n=========================================")
     print("      DV SUMMARY STATISTICS (2021)       ")
@@ -248,7 +248,7 @@ def main():
                     print(f"  Error in {tier_label} GitHub Diff-in-RDD: {e}")
 
     gh_results_df = pd.DataFrame(gh_results)
-    gh_results_df.to_csv(RESULTS_DIR / "github_diff_in_rdd.csv", index=False)
+    gh_results_df.to_csv(RESULTS_MAIN / "github_diff_in_rdd.csv", index=False)
 
     print("\n--- GitHub Diff-in-RDD Results ---")
     print(gh_results_df[["Tier", "Outcome", "Type", "Excess_Jump", "Std_Err", "P_value", "N", "Adjusted"]].round(4).to_string(index=False))

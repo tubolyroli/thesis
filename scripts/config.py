@@ -9,6 +9,20 @@ FINAL_DIR = BASE_DIR / "data" / "final"
 RESULTS_DIR = BASE_DIR / "results"
 FIGURES_DIR = RESULTS_DIR / "figures"
 
+# Organized output subdirectories
+RESULTS_MAIN = RESULTS_DIR / "main"
+RESULTS_AUDIT = RESULTS_DIR / "audit"
+RESULTS_ROBUSTNESS = RESULTS_DIR / "robustness"
+RESULTS_DESCRIPTIVE = RESULTS_DIR / "descriptive"
+RESULTS_MECHANISM = RESULTS_DIR / "mechanism"
+
+FIG_MAIN = FIGURES_DIR / "main"
+FIG_DIAGNOSTIC = FIGURES_DIR / "diagnostic"
+FIG_ROBUSTNESS = FIGURES_DIR / "robustness"
+FIG_AUDIT = FIGURES_DIR / "audit"
+FIG_APPENDIX = FIGURES_DIR / "appendix"
+FIG_MECHANISM = FIGURES_DIR / "mechanism"
+
 # Analysis Parameters
 WINDOW_WEEKS = 156 # Extended to 3 years to capture long horizons
 HORIZON_WEEKS = 52 # Standardized horizon for diffusion analysis

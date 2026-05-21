@@ -31,4 +31,4 @@ thesis:
 	latexmk -pdf -interaction=nonstopmode thesis.tex
 
 clean-figures:
-	rm -f results/figures/*.png
+	find results/figures -type f -name '*.png' -delete

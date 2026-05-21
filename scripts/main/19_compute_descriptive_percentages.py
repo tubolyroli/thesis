@@ -16,7 +16,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from config import (
-    RAW_DIR, FINAL_DIR, RESULTS_DIR, FIGURES_DIR,
+    RAW_DIR, FINAL_DIR, RESULTS_DESCRIPTIVE, FIG_MAIN,
     CHATGPT_RELEASE, GPT4_RELEASE, CUTOFFS, MAIN_CUTOFF_NAME, DONUT_WEEKS
 )
 from utils import setup_plotting_style, normalize_name
@@ -260,14 +260,15 @@ def plot_normalized_timeseries(wide_pypi, ci_lower, ci_upper):
     fig.autofmt_xdate()
 
     plt.tight_layout()
-    out_path = FIGURES_DIR / "normalized_diffusion_gap_pypi.png"
+    out_path = FIG_MAIN / "normalized_diffusion_gap_pypi.png"
     plt.savefig(out_path, dpi=300)
     print(f"Saved normalized plot to {out_path}")
     plt.close()
 
 
 def main():
-    FIGURES_DIR.mkdir(parents=True, exist_ok=True)
+    FIG_MAIN.mkdir(parents=True, exist_ok=True)
+    RESULTS_DESCRIPTIVE.mkdir(parents=True, exist_ok=True)
 
     # 1. Load cohorts
     print("Step 1: Loading cohorts...")
@@ -289,7 +290,7 @@ def main():
     # 5. Summary statistics at key time points
     print("\nStep 5: Computing summary statistics...")
     summary = compute_summary_stats(wide_pypi, wide_gh)
-    summary.to_csv(RESULTS_DIR / "descriptive_percentage_summary.csv", index=False)
+    summary.to_csv(RESULTS_DESCRIPTIVE / "descriptive_percentage_summary.csv", index=False)
     print("\n" + "=" * 60)
     print("DESCRIPTIVE PERCENTAGE DIFFERENCES AT KEY TIME POINTS")
     print("=" * 60)
@@ -300,8 +301,8 @@ def main():
     plot_normalized_timeseries(wide_pypi, ci_lower, ci_upper)
 
     # 7. Save weekly ratio data for reference
-    wide_pypi.to_csv(RESULTS_DIR / "weekly_ratio_pypi.csv")
-    wide_gh.to_csv(RESULTS_DIR / "weekly_ratio_github.csv")
+    wide_pypi.to_csv(RESULTS_DESCRIPTIVE / "weekly_ratio_pypi.csv")
+    wide_gh.to_csv(RESULTS_DESCRIPTIVE / "weekly_ratio_github.csv")
 
     print("\nDone.")
 

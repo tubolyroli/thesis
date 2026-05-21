@@ -3,7 +3,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 import pandas as pd
-from config import MAIN_ANALYSIS_DATA, RESULTS_DIR, DONUT_WEEKS, MIN_DOWNLOADS_FILTER, EXTENDED_BW
+from config import MAIN_ANALYSIS_DATA, RESULTS_ROBUSTNESS, DONUT_WEEKS, MIN_DOWNLOADS_FILTER, EXTENDED_BW
 from utils import run_quantile_rdd
 
 def main():
@@ -29,7 +29,8 @@ def main():
     print("=========================================\n")
     print(results_df[["Label", "Estimate", "Std.Err", "P-value", "N"]].round(4).to_string(index=False))
     
-    results_df.to_csv(RESULTS_DIR / "quantile_investigation.csv", index=False)
+    RESULTS_ROBUSTNESS.mkdir(parents=True, exist_ok=True)
+    results_df.to_csv(RESULTS_ROBUSTNESS / "quantile_investigation.csv", index=False)
 
 if __name__ == "__main__":
     main()

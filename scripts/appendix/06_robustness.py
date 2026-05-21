@@ -5,11 +5,11 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
-from config import FINAL_DIR, RESULTS_DIR, CUTOFFS, DONUT_WEEKS, DEFAULT_BW, MIN_DOWNLOADS_FILTER
+from config import FINAL_DIR, RESULTS_ROBUSTNESS, CUTOFFS, DONUT_WEEKS, DEFAULT_BW, MIN_DOWNLOADS_FILTER
 from utils import run_rdrobust_est, run_quantile_rdd, setup_plotting_style
 
 def main():
-    RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+    RESULTS_ROBUSTNESS.mkdir(parents=True, exist_ok=True)
     setup_plotting_style()
 
     robust_results = []
@@ -72,7 +72,7 @@ def main():
 
     # Compile and Save
     robust_df = pd.DataFrame(robust_results)
-    out_path = RESULTS_DIR / "robustness_placebo_median_summary.csv"
+    out_path = RESULTS_ROBUSTNESS / "robustness_placebo_median_summary.csv"
     robust_df.to_csv(out_path, index=False)
 
     print("\n=========================================")
