@@ -15,7 +15,7 @@
 <p align="center">
   <img src="results/figures/main/normalized_diffusion_gap_pypi.png" alt="Normalized Diffusion Gap (Pre- vs Post-Cutoff Libraries)" width="800">
   <br>
-  <em>Log ratio of pre- vs post-cutoff cumulative PyPI downloads (positive = pre-cutoff advantage), with 95% bootstrap confidence interval. The gap is absent at release and emerges only after ChatGPT launches (November 2022), then widens persistently through early 2026.</em>
+  <em>Weekly log ratio of pre- vs post-cutoff cohort downloads (positive = pre-cutoff advantage), with 95% bootstrap CI. The gap activates only after ChatGPT (November 2022); see Caveats for the persistence claim.</em>
 </p>
 
 ---
