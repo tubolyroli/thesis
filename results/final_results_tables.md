@@ -1,6 +1,8 @@
-# Finalized Empirical Results: Tables & Evidence
+# Empirical Results: Thesis-Reported Tables
 
-This document provides the definitive tables for the master's thesis, matching the rigorously identified results in the `results/*.csv` data records. All estimates are on the log(1+Y) scale unless otherwise noted.
+> **Status (May 2026):** This document is a snapshot of the results as reported in `thesis.pdf` and presented at the May 2026 TDK defense. A post-submission estimation audit found that some of the magnitudes below are sensitive to specification choices; the defensible (post-audit) numbers and the audit script live in [`results/audit/`](audit/). For the calibrated framing of which results survive the audit, see the README's "Caveats and post-submission audit" section. The tables here are preserved as the historical record of what the thesis claims.
+
+All estimates are on the log(1+Y) scale unless otherwise noted. Producing-script CSVs are in the topic subfolders (`results/main/`, `results/robustness/`, `results/descriptive/`, `results/mechanism/`).
 
 ---
 
