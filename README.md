@@ -43,7 +43,7 @@ PyPI weekly per-package download counts from the Google BigQuery public dataset 
 
 ```
 thesis/
-├── thesis.pdf                  # Compiled paper (read this)
+├── thesis.pdf                  # Compiled paper
 ├── thesis.tex                  # LaTeX source
 ├── references.bib              # Bibliography (natbib)
 ├── scripts/
@@ -70,7 +70,7 @@ thesis/
 │       ├── audit/              # Post-submission audit visuals
 │       ├── appendix/           # Common-origin trajectory etc.
 │       └── mechanism/          # Exploratory mechanism diagnostics
-├── TDK_presentation.pptx       # Defense slide deck (May 2026)
+├── TDK_presentation.pptx       # Slide deck presented
 ├── run_pipeline.py             # Orchestrates all scripts (--skip-pipeline, --appendix)
 └── requirements.txt
 ```
@@ -84,10 +84,10 @@ make audit        # rerun the post-submission audit scripts
 make thesis       # compile thesis.pdf via latexmk
 ```
 
-Equivalent direct calls (`python run_pipeline.py --skip-pipeline`, `python run_pipeline.py --appendix`, etc.) are listed in the `Makefile`. Requires access to the source data files in `data/raw/` (not tracked); scripts `14`, `16`, and `19` in `scripts/main/` load the full raw PyPI parquet and require >8 GB of RAM.
+Equivalent direct calls (`python run_pipeline.py --skip-pipeline`, `python run_pipeline.py --appendix`, etc.) are listed in the `Makefile`. Requires access to the source data files in `data/raw/` (not tracked); scripts `14`, `16`, and `19` in `scripts/main/` load the full raw PyPI parquet.
 
-The pinned versions in `requirements.txt` reflect the exact environment used to produce the results in this repository (Python 3.14, pandas 3.x, numpy 2.x, statsmodels 0.14, rdrobust 1.3). Older Python environments will require relaxing the pins; the analysis itself only relies on standard pandas, numpy, statsmodels, and rdrobust APIs.
+The pinned versions in `requirements.txt` reflect the exact environment used to produce the results in this repository (Python 3.14, pandas 3.x, numpy 2.x, statsmodels 0.14, rdrobust 1.3).
 
-## Caveats and post-submission audit
+## Caveats
 
-A post-submission audit (May 2026) found that two of the reported magnitudes are sensitive to specification choices: (i) three contaminated placebo weeks load the Diff-in-RDD against the post-cutoff cohort, and (ii) the headline `rdrobust` point estimates are bias-corrected rather than conventional. The direction of the baseline-adjusted Diff-in-RDD is preserved under both corrections, but the magnitudes collapse. The +30 pp pre-AI covariate balance result, the activation pattern, and the AI-exposure null are all unaffected. The audit script is `scripts/appendix/19_audit_github_diff_in_rdd.py`; the audit output is `results/audit/audit_matched_diff_in_rdd.csv`.
+A post-submission audit (May 2026) found that two of the reported magnitudes are sensitive to specification choices: (i) three contaminated placebo weeks load the Diff-in-RDD against the post-cutoff cohort, and (ii) the long-horizon "no catch-up" claim rests on an arithmetic-mean cohort comparison that is dominated by a single library. The direction of the baseline-adjusted Diff-in-RDD is preserved under spike-corrected specifications, but the magnitudes collapse. The +30 pp pre-AI covariate balance result, the activation pattern, and the AI-exposure null are all unaffected. The audit script is `scripts/appendix/19_audit_github_diff_in_rdd.py`; the audit output is `results/audit/audit_matched_diff_in_rdd.csv`.
