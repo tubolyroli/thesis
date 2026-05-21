@@ -35,6 +35,10 @@ The main finding is that the diffusion gap between pre- and post-cutoff librarie
 - **Persistence:** no catch-up through January 2026 in the arithmetic-mean cohort comparison.
 - **AI exposure moderation (exploratory):** not statistically significant (p = 0.179, N = 1,303); likely underpowered, and the moderator is measured post-treatment.
 
+## Data Sources
+
+PyPI weekly per-package download counts from the Google BigQuery public dataset (527,361 packages in window) and a GitHub library-week panel of public repository code imports with a per-commit AI-scoring layer (28,243 matched libraries). The two are joined by PEP 503-lite normalized package name. Raw inputs in `data/raw/` are not tracked; the construction pipeline is in `scripts/pipeline/` (steps 01-03).
+
 ## Repository Structure
 
 ```
