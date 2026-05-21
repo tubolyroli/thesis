@@ -60,14 +60,43 @@ def main():
     print("=========================================\n")
     print(res_df[["Label", "Estimate", "Std.Err", "P-value", "N"]].round(4).to_string(index=False))
     
-    # 5. Visual Comparison
-    plt.figure(figsize=(10, 6))
-    plt.errorbar(res_df["Label"], res_df["Estimate"], yerr=res_df["Std.Err"]*1.96, fmt='o', capsize=5)
-    plt.axhline(0, color='red', linestyle='--')
-    plt.title("Stacked Placebo Jump vs. 2021 Main Jump")
-    plt.ylabel("Estimate")
-    plt.xticks(rotation=15)
-    plt.savefig(RESULTS_DIR / "figures" / "stacked_rdd_comparison.png")
+    # 5. Visual Comparison — two-bar chart (Mean estimates only; log-points scale)
+    mean_df = res_df[res_df["Label"].str.contains("Mean")].reset_index(drop=True)
+    labels_plot = ["Placebo years\n(2018-2020)", "2021 cohort\n(LLM cutoff)"]
+    estimates_plot = mean_df["Estimate"].values
+    ses_plot = mean_df["Std.Err"].values
+    colors_plot = ["#4C72B0", "#DD8452"]
+
+    fig, ax = plt.subplots(figsize=(8, 6))
+    x = [0, 1]
+    ax.bar(x, estimates_plot, width=0.5, color=colors_plot, alpha=0.85,
+           yerr=ses_plot * 1.96, capsize=6, error_kw={"elinewidth": 1.5, "ecolor": "black"})
+
+    for xi, est, se in zip(x, estimates_plot, ses_plot):
+        ax.text(xi, est + se * 1.96 + 0.04, f"+{est:.1f}%",
+                ha="center", va="bottom", fontsize=13, fontweight="bold")
+
+    bracket_x = 1.22
+    ax.annotate("", xy=(bracket_x, estimates_plot[1]), xytext=(bracket_x, estimates_plot[0]),
+                arrowprops=dict(arrowstyle="<->", color="black", lw=1.8))
+    ax.text(bracket_x + 0.06, (estimates_plot[0] + estimates_plot[1]) / 2,
+            r"$\beta_3$" + "\n(LLM effect)", va="center", ha="left", fontsize=13)
+
+    ax.set_xlim(-0.5, 1.85)
+    ax.set_xticks(x)
+    ax.set_xticklabels(labels_plot)
+    ax.set_ylabel("Cutoff discontinuity (log points ≈ %)")
+    ax.set_title("Diff-in-RDD intuition: subtract the placebo seasonal jump", pad=10)
+    ax.set_ylim(0, max(estimates_plot) + max(ses_plot) * 1.96 + 0.35)
+    ax.axhline(0, color="gray", linewidth=0.8, linestyle="--")
+    ax.text(0.5, -0.16,
+            "52-week downloads, h = 26 illustrative spec.\n"
+            r"Headline (post-AI window, h = 13): $\beta_3$ = $-$7%; see slide 11.",
+            transform=ax.transAxes, ha="center", va="top", fontsize=10, color="#555555")
+
+    plt.tight_layout(rect=[0, 0.08, 1, 1])
+    plt.savefig(RESULTS_DIR / "figures" / "stacked_rdd_comparison.png", dpi=150, bbox_inches="tight")
+    plt.close(fig)
     
     res_df.to_csv(RESULTS_DIR / "stacked_rdd_results.csv", index=False)
     print(f"\nSaved results to: {RESULTS_DIR / 'stacked_rdd_results.csv'}")

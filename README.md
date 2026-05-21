@@ -6,6 +6,8 @@
 
 **Institution:** Corvinus University of Budapest, MSc in Social Data Science
 
+**Award:** 1st place, Corvinus University TDK (Scientific Students' Associations Conference), 2026. Nominated for OTDK (national round).
+
 **Full paper:** [`thesis.pdf`](thesis.pdf)
 
 ---
@@ -20,17 +22,18 @@
 
 ## Summary
 
-This paper investigates whether large language models with dated training cutoffs shape the diffusion of newly released Python libraries. Using a Regression Discontinuity Design around the documented September 2021 GPT-3.5/GPT-4 knowledge cutoff, it estimates the causal effect of training data inclusion on subsequent library adoption. A Difference-in-Discontinuities design using 2018-2020 placebo cohorts isolates the cutoff-specific effect from seasonal confounding.
+This paper investigates whether large language models with dated training cutoffs shape the diffusion of newly released Python libraries. Using a Regression Discontinuity Design around the documented September 2021 GPT-3.5/GPT-4 training cutoff, with a Difference-in-Discontinuities design using 2018-2020 placebo cohorts to isolate the cutoff-specific effect from seasonal confounding.
 
-The main finding is a statistically significant suppression of post-cutoff library adoption (baseline-adjusted Diff-in-RDD, p = 0.002). Before ChatGPT, libraries on either side of the cutoff differed by roughly 28% in weekly downloads; by early 2026, pre-cutoff libraries average approximately five times more weekly downloads, and the gap continues to widen. The suppression is directionally larger in GitHub code imports than in PyPI downloads, consistent with LLM-steered code generation as the operative channel, though the GitHub Diff-in-RDD does not reach conventional significance (p = 0.060) due to the small matched subsample. As of January 2026, the gap shows no evidence of catch-up.
+The main finding is that the diffusion gap between pre- and post-cutoff libraries is absent at release, emerges only after ChatGPT launches in November 2022, and persists through January 2026. Before ChatGPT, the post-cutoff cohort is in fact ~30 percentage points *more* likely to reach the Successful tier (a probability outcome that is robust to specification choices), which makes the post-launch suppression direction conservative. After ChatGPT, the discontinuity is significant in the baseline-adjusted Diff-in-RDD specification and directionally larger in GitHub code imports than in PyPI downloads, consistent with LLM-steered code generation as the operative channel.
 
 ## Key Results
 
-- **Diff-in-RDD suppression:** Statistically significant for Successful libraries (min 500 downloads at 26 weeks), baseline-adjusted p = 0.002, with year-by-week clustered standard errors. Pre-cutoff libraries average roughly five times more weekly downloads by early 2026.
-- **Implementation gap:** The discontinuity in GitHub code imports is directionally larger than the PyPI discontinuity, but the GitHub Diff-in-RDD is not significant at conventional levels (p = 0.060). The GitHub subsample is smaller (~1,500 libraries per cohort year within bandwidth; 5.3% of PyPI libraries are GitHub-matched).
-- **Activation pattern:** The gap is absent at release and emerges only after November 2022 (ChatGPT launch).
-- **Persistence:** No catch-up through January 2026 across any outcome measure.
-- **AI exposure moderation (exploratory):** Not statistically significant (p = 0.179, N = 1,303). Likely underpowered; the moderator is post-treatment.
+- **Pre-AI covariate balance:** +30 pp higher probability of Successful tier for the post-cutoff cohort before ChatGPT, p < 0.001, N ≈ 529k. Robust across specifications.
+- **Diff-in-RDD suppression (post-ChatGPT):** statistically significant in the baseline-adjusted spec for Successful libraries, with year-by-week clustered standard errors.
+- **Activation pattern:** the gap is absent at release and emerges only after ChatGPT (November 2022).
+- **Implementation gap:** the discontinuity is directionally larger in GitHub code imports than in PyPI downloads.
+- **Persistence:** no catch-up through January 2026 in the arithmetic-mean cohort comparison.
+- **AI exposure moderation (exploratory):** not statistically significant (p = 0.179, N = 1,303); likely underpowered, and the moderator is measured post-treatment.
 
 ## Repository Structure
 
@@ -40,8 +43,8 @@ thesis/
 ├── references.bib              # Bibliography (natbib)
 ├── scripts/
 │   ├── pipeline/               # Data construction (01-03)
-│   ├── main/                   # Core results in paper body (04-05, 08, 10-11, 14, 19)
-│   ├── appendix/               # Robustness and sensitivity checks (06-07, 09, 12-13, 15-18)
+│   ├── main/                   # Core results in paper body (04-05, 08, 10-11, 14-17, 19)
+│   ├── appendix/               # Robustness, sensitivity checks, post-submission audit (06-07, 09, 12-13, 15-19)
 │   ├── config.py               # Shared constants
 │   └── utils.py                # Shared helpers
 ├── data/
@@ -62,18 +65,16 @@ thesis/
 ## Reproduction
 
 ```bash
-pip install -r requirements.txt
-
-# Full pipeline (data construction + main analysis + appendix)
-python run_pipeline.py --appendix
-
-# Main analysis only, using existing processed data
-python run_pipeline.py --skip-pipeline
-
-# Appendix/robustness only
-python run_pipeline.py --appendix-only
+make install      # pip install -r requirements.txt
+make figures      # rebuild every figure and table from processed data
+make audit        # rerun the post-submission audit scripts
+make thesis       # compile thesis.pdf via latexmk
 ```
 
-Requires access to the source data files in `data/raw/`. Scripts 11 and 14 load the full raw PyPI parquet and require sufficient RAM (>8GB).
+Equivalent direct calls (`python run_pipeline.py --skip-pipeline`, `python run_pipeline.py --appendix`, etc.) are listed in the `Makefile`. Requires access to the source data files in `data/raw/`; scripts 11 and 14 load the full raw PyPI parquet and require >8 GB of RAM.
 
 The pinned versions in `requirements.txt` reflect the exact environment used to produce the results in this repository (Python 3.14, pandas 3.x, numpy 2.x, statsmodels 0.14, rdrobust 1.3). Older Python environments will require relaxing the pins; the analysis itself only relies on standard pandas, numpy, statsmodels, and rdrobust APIs.
+
+## Caveats and post-submission audit
+
+A post-submission audit (May 2026) found that two of the reported magnitudes are sensitive to specification choices: (i) three contaminated placebo weeks load the Diff-in-RDD against the post-cutoff cohort, and (ii) the headline `rdrobust` point estimates are bias-corrected rather than conventional. The direction of the baseline-adjusted Diff-in-RDD is preserved under both corrections, but the magnitudes collapse. The +30 pp pre-AI covariate balance result, the activation pattern, and the AI-exposure null are all unaffected. The audit script is `scripts/appendix/19_audit_github_diff_in_rdd.py`; the audit output is `results/audit_matched_diff_in_rdd.csv`.

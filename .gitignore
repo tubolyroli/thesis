@@ -3,6 +3,13 @@
 CLAUDE.md
 GEMINI.md
 notes.txt
+findings.txt
+issues.md
+speaker_notes_transcript.txt
+prezi_notes.md
+notebooks/
+*.bak
+presentations/add_appendix_slides.py
 
 # LaTeX build artifacts
 *.aux
@@ -37,6 +44,8 @@ share/
 .idea/
 .DS_Store
 .history/
+.Rhistory
+.RData
 
 # Data Files (Reproducible by scripts)
 data/raw/
@@ -59,4 +68,8 @@ docs/
 !thesis.pdf
 memos/*.ipynb
 memos/tdk_defense_prep.md
+memos/transcript.md
+memos/asymmetric_bandwidth_robustness.md
+memos/covariate_balance.md
+memos/visualizations.md
 archive/

@@ -22,6 +22,9 @@ MAIN_SCRIPTS = [
     ("main", "10_ai_mechanism_split.py"),
     ("main", "11_visualize_results.py"),
     ("main", "14_visualize_long_horizon_trajectories.py"),
+    ("main", "15_outlier_sensitivity_bar.py"),
+    ("main", "16_trajectory_weeks_since_launch.py"),
+    ("main", "17_rdd_intuition_plot.py"),
     ("main", "19_compute_descriptive_percentages.py"),
 ]
 
@@ -36,6 +39,7 @@ APPENDIX_SCRIPTS = [
     ("appendix", "16_bandwidth_sensitivity_github.py"),
     ("appendix", "17_visualize_suppression.py"),
     ("appendix", "18_bandwidth_sensitivity_suppression.py"),
+    ("appendix", "19_audit_github_diff_in_rdd.py"),
 ]
 
 
