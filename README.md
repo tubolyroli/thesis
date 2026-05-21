@@ -91,3 +91,7 @@ The pinned versions in `requirements.txt` reflect the exact environment used to 
 ## Caveats
 
 A post-submission audit (May 2026) found that two of the reported magnitudes are sensitive to specification choices: (i) three contaminated placebo weeks load the Diff-in-RDD against the post-cutoff cohort, and (ii) the long-horizon "no catch-up" claim rests on an arithmetic-mean cohort comparison that is dominated by a single library. The direction of the baseline-adjusted Diff-in-RDD is preserved under spike-corrected specifications, but the magnitudes collapse. The +30 pp pre-AI covariate balance result, the activation pattern, and the AI-exposure null are all unaffected. The audit script is `scripts/appendix/19_audit_github_diff_in_rdd.py`; the audit output is `results/audit/audit_matched_diff_in_rdd.csv`.
+
+## License
+
+Released under the MIT License. See [`LICENSE`](LICENSE) for the full text.
