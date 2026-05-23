@@ -94,4 +94,4 @@ A post-submission audit (May 2026) found that two of the reported magnitudes are
 
 ## License
 
-Released under the MIT License. See [`LICENSE`](LICENSE) for the full text.
+See [`LICENSE`](LICENSE).
